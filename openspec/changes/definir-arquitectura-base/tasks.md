@@ -26,12 +26,12 @@
 
 ## 5. Servidor base (Express)
 
-- [ ] 5.1 Crear `server/` con Express 5, `app.js`/`server.js` y lectura de configuración validada con los esquemas de `shared` que falla con mensaje claro si falta una variable; verificar con una prueba que la carga de configuración rechaza un entorno incompleto
+- [ ] 5.1 Crear `server/` con Express 5, la estructura MVC del diseño (`routes/`, `controllers/`, `views/`, `models/`, `services/`, `repositories/`, `middlewares/`, `utils/`, `config/`), `app.js`/`server.js` y lectura de configuración validada con los esquemas de `shared` que falla con mensaje claro si falta una variable; verificar con una prueba que la carga de configuración rechaza un entorno incompleto
 - [ ] 5.2 Implementar conexión a MongoDB que verifica al arrancar que hay replica set y explica cómo corregirlo si no lo hay; verificar arrancando contra la instancia local
 - [ ] 5.3 Agregar helmet, cors (origen `CLIENT_URL` con credenciales), cookie-parser, parseo JSON y logger pino; verificar con Supertest que las cabeceras de seguridad y CORS están presentes
 - [ ] 5.4 Implementar clases de error de dominio, manejador central de errores (incluye duplicado de Mongoose → 409 y `CastError` → 404) y manejador 404 bajo `/api/v1`; verificar con Supertest los escenarios "Ruta inexistente", "Error interno sin filtrar detalles" y "Conflicto por duplicado" de `contrato-api`
 - [ ] 5.5 Implementar middleware de validación con los esquemas de `shared` que responde `VALIDATION_ERROR` con `details` por campo; verificar con Supertest los escenarios "Error de validación con detalle por campo", "Límite superior de página" y "Fecha con formato inválido"
-- [ ] 5.6 Implementar utilidades de respuesta (`{ data }`, `{ data, meta }`), paginación y ordenamiento; verificar con Supertest el escenario "Listado paginado con valores por defecto" usando una ruta de prueba
+- [ ] 5.6 Implementar la vista base (`{ data }`, `{ data, meta }`) que usarán las vistas de cada recurso, junto con paginación y ordenamiento; verificar con Supertest el escenario "Listado paginado con valores por defecto" usando una ruta de prueba
 - [ ] 5.7 Implementar utilidades de dinero (`Decimal128` ↔ texto con 2 decimales, aritmética con decimal.js) y de fechas (día calendario en UTC, mes en curso según `APP_TIMEZONE`, con Day.js); verificar con pruebas unitarias de redondeo y de límites de mes
 - [ ] 5.8 Implementar el repositorio base por `tenantId` y el plugin de Mongoose que rechaza consultas sin `tenantId`; verificar con pruebas sobre `MongoMemoryReplSet` que un inquilino no lee ni modifica documentos de otro y que una consulta sin `tenantId` lanza error
 - [ ] 5.9 Implementar el servicio de correo con Nodemailer (SMTP por `.env`, log en desarrollo si no hay `SMTP_HOST`, transporte simulado en pruebas); verificar con una prueba que el modo sin SMTP registra el correo en el log
@@ -41,7 +41,8 @@
 ## 6. Cliente base (React + Vite)
 
 - [ ] 6.1 Crear `client/` con Vite + React, Tailwind CSS y proxy de `/api` hacia el servidor; verificar que `npm run dev -w client` muestra la página inicial y que una llamada a `/api/v1/health` pasa por el proxy
-- [ ] 6.2 Configurar React Router con layout base, página 404 y estructura `src/features/` y `src/components/`; verificar navegando entre una ruta existente y una inexistente
+- [ ] 6.2 Crear la estructura Screaming Architecture del diseño (carpetas de dominio con `components/`, `hooks/`, `services/`, `pages/` e `index.js`, más `router/` y `shared/`) y configurar React Router en `router/` con layout base y página 404; verificar navegando entre una ruta existente y una inexistente
+- [ ] 6.6 Configurar reglas de ESLint (`no-restricted-imports`) que impidan importar archivos internos de otro dominio y que `shared/` importe de un dominio; verificar que `npm run lint` falla con una importación prohibida de prueba y pasa al quitarla
 - [ ] 6.3 Crear el cliente HTTP (`fetch` con `credentials: 'include'`) que interpreta `{ data, meta }` y `{ error }`; verificar con pruebas Vitest que expone `code`, `message` y `details` de un error de la API
 - [ ] 6.4 Instalar y configurar react-toastify, SweetAlert2, Chart.js + react-chartjs-2 y Day.js (locale `es`) y crear el Context de aplicación; verificar con una prueba Vitest que el proveedor de contexto y el contenedor de notificaciones se renderizan
 - [ ] 6.5 Configurar Vitest con React Testing Library y jsdom; verificar que `npm test -w client` ejecuta las pruebas en verde
@@ -50,7 +51,7 @@
 
 - [ ] 7.1 Crear `server/.env.example` y `client/.env.example` con todas las variables del diseño y valores de ejemplo seguros; verificar que el servidor arranca copiando el ejemplo y completando solo los secretos
 - [ ] 7.2 Escribir `README.md` con requisitos (Node 22, MongoDB como replica set), instalación, variables de entorno, cambio a MongoDB Atlas, comandos y flujo de ramas; verificar siguiendo los pasos desde un clon limpio
-- [ ] 7.3 Actualizar `CLAUDE.md` con comandos reales (incluida cómo ejecutar una sola prueba en servidor y cliente) y la arquitectura (workspaces, capas, aislamiento por `tenantId`, contrato de la API); verificar que cada comando documentado funciona
+- [ ] 7.3 Actualizar `CLAUDE.md` con comandos reales (incluida cómo ejecutar una sola prueba en servidor y cliente) y la arquitectura (workspaces, MVC en el backend, Screaming Architecture en el frontend, aislamiento por `tenantId`, contrato de la API); verificar que cada comando documentado funciona
 
 ## 8. Verificación integral
 

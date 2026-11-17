@@ -27,25 +27,30 @@ Un solo repositorio con `package.json` raíz que declara los workspaces y script
 - Node.js 22 LTS, fijado en `.nvmrc` y `engines`.
 - *Alternativa descartada*: dos repositorios separados. Complica compartir validaciones y coordinar cambios que tocan API y UI a la vez.
 
-### 2. Backend: Express 5 por módulos con capas Controller–Service–Repository
+### 2. Backend: Express 5 con arquitectura MVC
+El backend sigue el patrón **Modelo–Vista–Controlador** (decisión del equipo), organizado por capa. Para cumplir también lo que pide el enunciado (capas Controller–Service–Repository, autorización en servicios y aislamiento en el repositorio), la capa **Modelo** se subdivide en modelos, servicios y repositorios:
+
 ```
 server/src/
   app.js                 # arma la app Express (middlewares, rutas, manejador de errores)
   server.js              # conecta a MongoDB y levanta el servidor
   config/                # lectura y validación de variables de entorno
+  routes/                # una ruta por recurso; conecta URL + middlewares + controlador
+  controllers/           # C: lee la solicitud, llama al servicio y entrega el resultado a la vista
+  views/                 # V: arma la representación JSON de cada recurso
+  models/                # M: esquemas Mongoose (estructura, índices, plugins)
+  services/              # M: reglas de negocio y autorización por rol
+  repositories/          # M: único acceso a los modelos, siempre filtrado por tenantId
   middlewares/           # autenticación, autorización por rol, validación, errores
-  modules/<modulo>/      # auth, usuarios, categorias, cuentas, movimientos,
-                         # presupuestos, dashboard, reportes, admin
-    <modulo>.routes.js
-    <modulo>.controller.js   # HTTP: lee la solicitud, llama al servicio, responde
-    <modulo>.service.js      # reglas de negocio y autorización
-    <modulo>.repository.js   # único acceso a Mongoose, siempre filtrado por tenantId
-    <modulo>.model.js
-  shared/ (errores, logger, utilidades de dinero y fechas)
+  utils/                 # errores, logger, utilidades de dinero y fechas
 ```
-- Los controladores no acceden a modelos; los servicios no conocen `req`/`res`; solo los repositorios usan Mongoose.
+Cada recurso (`auth`, `usuarios`, `categorias`, `cuentas`, `movimientos`, `presupuestos`, `dashboard`, `reportes`, `admin`) tiene un archivo por capa con el mismo nombre (`movimiento.controller.js`, `movimiento.view.js`, `movimiento.model.js`, `movimiento.service.js`, `movimiento.repository.js`, `movimientos.routes.js`).
+
+- **Vista**: como la aplicación es una API REST, la vista no es HTML sino la representación JSON de la respuesta. Las vistas reciben documentos del dominio y devuelven objetos planos listos para el contrato (`{ data, meta }`, montos `Decimal128` como texto, fechas `YYYY-MM-DD`, sin campos internos como `passwordHash` o `tenantId`). Los reportes PDF y Excel son también vistas del recurso `reportes`.
+- **Flujo**: ruta → middlewares → controlador → servicio → repositorio → modelo; el controlador pasa el resultado a la vista y responde.
+- **Reglas de dependencia**: los controladores no acceden a modelos ni repositorios; los servicios no conocen `req`/`res`; solo los repositorios usan los modelos Mongoose; las vistas no contienen lógica de negocio.
 - Nombres de dominio en español (`movimiento`, `cuenta`, `presupuesto`); sufijos de capa y términos técnicos genéricos en inglés.
-- *Alternativa descartada*: organizar por capa (`controllers/`, `services/`…). Por módulo mantiene junto todo lo de una historia y facilita que cada cambio OpenSpec toque una carpeta.
+- *Alternativa descartada*: carpetas por módulo (`modules/<modulo>/`). Agrupa mejor cada historia, pero el equipo eligió MVC, que se expresa más claramente con una carpeta por capa.
 
 ### 3. Aislamiento multiinquilino por `tenantId` en el repositorio
 - Al registrarse, cada usuario recibe un `tenantId` (UUID v4, librería `uuid`). Todo documento de datos financieros guarda `tenantId` y `usuarioId` (quién lo creó).
@@ -129,24 +134,56 @@ Todos con `timestamps`. Las referencias entre colecciones son `ObjectId`; la int
 - React con **React Router** (rutas protegidas por sesión y rol), estado global con **Context** (sesión del usuario y preferencias como la moneda seleccionada), **Tailwind CSS** para estilos responsivos.
 - Librerías del enunciado: **Chart.js** vía react-chartjs-2, **Day.js** para fechas, **SweetAlert2** para confirmaciones, **react-toastify** para notificaciones.
 - Un único cliente HTTP (`fetch` con `credentials: 'include'`) que maneja el formato de errores y la renovación automática de sesión.
-- Estructura por funcionalidad: `client/src/features/<modulo>/` con páginas, componentes y llamadas a la API; `client/src/components/` para componentes comunes.
 
-### 15. Fechas
+### 15. Frontend: Screaming Architecture con componentes, hooks y router
+El frontend usa **Screaming Architecture** (decisión del equipo, solo para el frontend): la estructura de carpetas "grita" el dominio de la aplicación, no el framework. Al abrir `src/` se ven las funcionalidades del negocio:
+
+```
+client/src/
+  autenticacion/         # registro, inicio de sesión, recuperación de contraseña
+  categorias/
+  cuentas/
+  movimientos/           # registro, edición, historial y filtros
+  dashboard/             # indicadores y gráficos
+  presupuestos/
+  reportes/
+  administracion/        # consulta de usuarios y gestión de roles
+    components/          # diseño: componentes de presentación
+    hooks/               # lógica de negocio y estado del dominio
+    services/            # llamadas a la API del dominio
+    pages/               # páginas que unen hooks y componentes
+    index.js             # API pública del dominio (lo que otros dominios pueden importar)
+  router/                # definición de rutas, rutas protegidas por sesión y por rol
+  shared/                # transversal, sin lógica de un dominio concreto
+    components/          # UI reutilizable (botones, inputs, tarjetas, tablas, layout)
+    hooks/               # hooks genéricos (paginación, filtros en la URL, debounce)
+    context/             # sesión del usuario y preferencias (moneda seleccionada)
+    api/                 # cliente HTTP
+    utils/               # formato de montos y fechas (Day.js), notificaciones
+  App.jsx, main.jsx
+```
+
+- **Separación de lógica y diseño**: los componentes de `components/` son de presentación. Reciben datos y callbacks por props, no llaman a la API ni contienen reglas de negocio. Toda la lógica (estado, validación con los esquemas de `shared`, llamadas a `services/`, cálculo de valores derivados, manejo de errores y notificaciones) vive en **hooks** del dominio (`useMovimientos`, `useRegistrarMovimiento`, `usePresupuestoMensual`). Las páginas solo conectan un hook con los componentes.
+- **Router**: todas las rutas se declaran en `router/` con React Router; las páginas de cada dominio se importan desde su `index.js`. Las rutas privadas exigen sesión y las de `administracion/` además el rol administrador.
+- **Dependencias entre carpetas**: un dominio solo importa de `shared/` o del `index.js` de otro dominio, nunca de sus archivos internos; `shared/` no importa de ningún dominio.
+- *Alternativa descartada*: organizar por tipo técnico (`src/components/`, `src/hooks/`, `src/pages/` globales). Es más común en React, pero esconde el dominio y mezcla los archivos de todas las funcionalidades.
+
+### 16. Fechas
 - `fecha` del movimiento representa un día calendario: se guarda como `Date` a las 00:00 UTC de ese día y se intercambia como `YYYY-MM-DD`, evitando desfases por zona horaria. Los períodos mensuales usan `YYYY-MM`. Zona horaria de referencia para "mes en curso": `APP_TIMEZONE` (por defecto `America/Lima`).
 
-### 16. Calidad: lint, formato y pruebas
+### 17. Calidad: lint, formato y pruebas
 - **ESLint** (flat config, con reglas de React en `client/`) y **Prettier** en la raíz.
 - Servidor: **Jest** + **Supertest** + **mongodb-memory-server** (replica set en memoria). Jest corre en modo ES Modules (`NODE_OPTIONS=--experimental-vm-modules`).
 - Cliente: **Vitest** + React Testing Library + jsdom.
 - Cada escenario de las specs debería poder trazarse a al menos una prueba.
 
-### 17. Configuración, entorno y preparación para despliegue
+### 18. Configuración, entorno y preparación para despliegue
 - Variables en `server/.env` y `client/.env`, con `server/.env.example` y `client/.env.example` versionados; todo `.env` está en `.gitignore`. El servidor valida sus variables al arrancar (con los mismos esquemas de validación) y falla con un mensaje claro si falta alguna.
 - Variables del servidor: `NODE_ENV`, `PORT`, `MONGODB_URI`, `CLIENT_URL`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL`, `REFRESH_INACTIVITY_MIN`, `REFRESH_ABSOLUTE_DAYS`, `RESET_TOKEN_TTL_MIN`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `APP_TIMEZONE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Cliente: `VITE_API_URL`.
 - Local: `MONGODB_URI=mongodb://localhost:27017/finanzas?replicaSet=rs0`. Atlas: basta con reemplazar la URI por `mongodb+srv://...`.
 - Despliegue futuro: el servidor sirve con `npm start -w server` y el cliente se compila con `npm run build -w client` (salida estática). No se crean archivos de proveedor hasta decidir dónde desplegar.
 
-### 18. Protección de ramas en GitHub
+### 19. Protección de ramas en GitHub
 - `main` y `dev` exigen pull request para recibir cambios, sin push directo ni force push ni borrado. Se exige 0 aprobaciones para que el equipo pueda fusionar sus propios PR (se puede subir a 1 cuando haya revisión cruzada).
 - El flujo de `CLAUDE.md` pasa de "merge local en `dev`" a "PR hacia `dev`".
 
