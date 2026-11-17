@@ -15,6 +15,13 @@ The specs also fix these technical points, which the implementation must respect
 - React frontend uses Chart.js for dashboard charts and SweetAlert2 for confirmation dialogs.
 - Reports exportable to PDF and Excel.
 
+## Architecture (mandatory)
+
+Full technical design, with rationale: [openspec/changes/definir-arquitectura-base/design.md](openspec/changes/definir-arquitectura-base/design.md) (moves to `openspec/changes/archive/` once archived). Monorepo with npm workspaces `client/`, `server/`, `shared/` (validation schemas built on Validator.js, constants and Spanish messages used by both sides). JavaScript with ES Modules, no TypeScript.
+
+- **Backend — MVC, organized by layer** (`server/src/routes|controllers|views|models|services|repositories|middlewares`). The Model layer is split into Mongoose `models/`, `services/` (business rules and role authorization) and `repositories/` (the only code that touches models, always filtered by `tenantId`). Views build the JSON representation (and PDF/Excel files) of each resource. Controllers never touch models or repositories; services never see `req`/`res`.
+- **Frontend — Screaming Architecture**: top-level folders in `client/src/` are business domains (`autenticacion/`, `movimientos/`, `dashboard/`…), each with `components/` (presentation only, data via props), `hooks/` (all business logic and state), `services/` (API calls), `pages/` (wire hooks to components) and an `index.js` public API. Routes live only in `client/src/router/`; cross-cutting code in `client/src/shared/`. A domain imports only from `shared/` or another domain's `index.js`; `shared/` never imports from a domain.
+
 ## Language
 
 All project artifacts (specs, proposals, designs, tasks, docs, commit messages) are written in **Spanish**. In OpenSpec files, keep the structural headings (`## Purpose`, `## Requirements`, `### Requirement:`, `#### Scenario:`) and the keywords `SHALL`/`MUST`/`GIVEN`/`WHEN`/`THEN` in English (configured in [openspec/config.yaml](openspec/config.yaml)).

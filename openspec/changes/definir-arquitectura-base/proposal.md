@@ -14,7 +14,7 @@ Las historias de usuario y las specs dejaron supuestos abiertos (alcance del adm
 - La sesión usa un token de acceso de corta duración y un token de renovación, ambos en cookies `httpOnly`, con cierre de sesión explícito.
 - Los reportes PDF y Excel se generan en el servidor (jsPDF y SheetJS) y se descargan desde la API.
 - Se define el contrato común de la API REST: versionado `/api/v1`, formato estándar de respuestas y errores, paginación y filtros.
-- Se define la arquitectura base del proyecto (monorepo `client/`, `server/`, `shared/` con npm workspaces, JavaScript, capas Controller–Service–Repository, aislamiento por `tenantId` en el repositorio, tooling de lint, formato y pruebas, configuración por `.env`, MongoDB local preparado para Atlas, protección de ramas en GitHub).
+- Se define la arquitectura base del proyecto (monorepo `client/`, `server/`, `shared/` con npm workspaces, JavaScript, backend con arquitectura MVC cuya capa Modelo se divide en modelos, servicios y repositorios, frontend con Screaming Architecture (dominios con componentes, hooks y servicios, router central y lógica de negocio separada del diseño), aislamiento por `tenantId` en el repositorio, tooling de lint, formato y pruebas, configuración por `.env`, MongoDB local preparado para Atlas, protección de ramas en GitHub).
 
 ## Capabilities
 
