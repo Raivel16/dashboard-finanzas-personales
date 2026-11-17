@@ -4,6 +4,9 @@ context: |
   Language: es
   All artifacts must be written in es.
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+  Tech stack: MERN (MongoDB, Express, React, Node.js).
+  REST API in Express with JWT auth and RBAC; React frontend with Chart.js and SweetAlert2.
+  Every user-owned MongoDB document stores userId and all queries filter by it.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

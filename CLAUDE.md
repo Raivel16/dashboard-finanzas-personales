@@ -6,11 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 "Dashboard de Finanzas Personales" is a university project (UC) that is currently **requirements-only**: there is no application code, package manifest, build, lint or test setup yet. The repo holds user stories and OpenSpec specs that will drive implementation. When code is added, update this file with the real commands and architecture.
 
-No tech stack (language/framework/database) has been chosen in the repo. The specs only fix these technical points, which any implementation must respect:
+**Tech stack: MERN** — MongoDB (database), Express (REST API), React (frontend), Node.js (runtime). Use it for every proposal, design and implementation; don't introduce other backend frameworks, databases or frontend libraries that replace these.
 
-- REST API backend with JWT authentication; roles `usuario estándar` and `administrador` (RBAC), with the role re-validated in the service layer, not just hidden in the UI.
-- Multi-tenant data isolation: every movement, account, category and budget belongs to a `userId`/`tenantId`, and ownership is enforced at the repository layer (requests for another user's resource return 403/404 without leaking data).
-- Frontend uses Chart.js for dashboard charts and SweetAlert2 for confirmation dialogs.
+The specs also fix these technical points, which the implementation must respect:
+
+- Express REST API with JWT authentication; roles `usuario estándar` and `administrador` (RBAC), with the role re-validated in the API (middleware/service layer), not just hidden in the React UI.
+- Multi-tenant data isolation: every MongoDB document for movements, accounts, categories and budgets carries its owner's `userId`/`tenantId`, and every query filters by the authenticated user's id at the data-access layer (requests for another user's resource return 403/404 without leaking data).
+- React frontend uses Chart.js for dashboard charts and SweetAlert2 for confirmation dialogs.
 - Reports exportable to PDF and Excel.
 
 ## Language
