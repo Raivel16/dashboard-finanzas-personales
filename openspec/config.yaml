@@ -6,7 +6,9 @@ context: |
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
   Tech stack: MERN (MongoDB, Express, React, Node.js).
   REST API in Express with JWT auth and RBAC; React frontend with Chart.js and SweetAlert2.
-  Every user-owned MongoDB document stores userId and all queries filter by it.
+  Every user-owned MongoDB document stores tenantId and usuarioId; repositories always filter by tenantId.
+  Backend uses MVC; frontend uses Screaming Architecture. UI follows DESIGN.md.
+  Every requirement cites its user story (Origen: HU-xx) or technical requirement (Origen: RT-xx); user stories are functional only. See docs/trazabilidad.md.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

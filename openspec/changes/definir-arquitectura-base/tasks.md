@@ -1,65 +1,77 @@
 # Tasks
 
-> Alcance: este cambio deja lista la base del proyecto e implementa el contrato común de la API (`contrato-api`). Los requisitos de las demás specs de este cambio (multimoneda, saldo, roles, sesión, reportes, categorías iniciales) quedan documentados aquí y se implementan en los cambios de cada historia de usuario.
+> Alcance: este cambio implementa los requisitos técnicos RT-01 a RT-07. Las historias de usuario creadas aquí se implementan en los cambios indicados en `docs/trazabilidad.md`.
 
-## 1. Documentación y repositorio
+## 1. Documentación y repositorio [RT-01, RT-04]
 
-- [ ] 1.1 Actualizar `docs/historias-de-usuario.md`: convertir "Supuestos y Vacíos Detectados" en decisiones confirmadas (HU-09 incluida, sesión de 30 min por inactividad, enlace de 30 min, umbral 90 %, administrador de solo lectura, sin categorías globales, multimoneda) y ajustar los escenarios de HU-02 y HU-04 para que coincidan con las specs de este cambio; verificar con una búsqueda que no quedan menciones a "categoría global"
-- [x] 1.2 Crear `.gitignore` raíz (`node_modules/`, `.env`, `*.env.local`, `dist/`, `coverage/`, logs) y verificar con `git status` que ningún `.env` aparece como archivo a versionar
-- [ ] 1.3 Proteger `main` y `dev` en GitHub (PR obligatorio con 0 aprobaciones, sin force push ni borrado) con `gh api` y verificar leyendo la protección de cada rama
-- [ ] 1.4 Actualizar la regla de ramas de `CLAUDE.md` (integración a `dev` y `main` solo por pull request) y el contexto de `openspec/config.yaml` (aislamiento por `tenantId`); verificar con `openspec validate --all`
+- [x] 1.1 Actualizar `docs/historias-de-usuario.md` y su versión Word agregando las historias funcionales HU-18 a HU-31 sin modificar HU-01 a HU-17; verificar que ambas contienen 31 historias y 124 escenarios
+- [x] 1.2 Crear `.gitignore` raíz y verificar con `git status` que ningún `.env` aparece como archivo a versionar
+- [ ] 1.3 Proteger `main` y `dev` en GitHub (pull request obligatorio con 0 aprobaciones, comprobación `verificar`, sin force push ni borrado) después de que exista la integración continua; verificar leyendo la protección de cada rama
+- [x] 1.4 Actualizar `CLAUDE.md` y `openspec/config.yaml` con el flujo de ramas, la trazabilidad y el aislamiento por `tenantId`; verificar con `openspec validate --all`
 
-## 2. MongoDB local como replica set
+## 2. MongoDB local como replica set [RT-01]
 
-- [ ] 2.1 Configurar el servicio MongoDB 9.0 local como replica set `rs0` (agregar `replication.replSetName: rs0` en `mongod.cfg`, reiniciar el servicio, ejecutar `rs.initiate()` desde mongosh de Compass) y verificar que `rs.status()` reporta un nodo `PRIMARY`
+- [ ] 2.1 Configurar el servicio MongoDB 9.0 local como replica set `rs0` (agregar `replication.replSetName: rs0` en `mongod.cfg`, reiniciar el servicio y ejecutar `rs.initiate()` desde mongosh de Compass); verificar que `rs.status()` reporta un nodo `PRIMARY`
 
-## 3. Monorepo y tooling
+## 3. Monorepo y tooling [RT-01]
 
-- [ ] 3.1 Crear `package.json` raíz con workspaces `client`, `server`, `shared`, `"type": "module"`, `engines.node >= 22` y `.nvmrc`; verificar que `npm install` en la raíz instala los tres workspaces
-- [ ] 3.2 Configurar ESLint (flat config, reglas de React para `client/`) y Prettier en la raíz con scripts `lint` y `format`; verificar que `npm run lint` termina sin errores
-- [ ] 3.3 Agregar scripts raíz `dev` (cliente y servidor en paralelo), `test` (todos los workspaces) y `build`; verificar que cada script se ejecuta
+- [ ] 3.1 Crear `package.json` raíz con workspaces `client`, `server`, `shared`, `"type": "module"`, `engines.node >= 22` y `.nvmrc`; verificar que `npm install` instala los tres workspaces
+- [ ] 3.2 Configurar ESLint (flat config, reglas de React para `client/`) y Prettier con scripts `lint` y `format`; verificar que `npm run lint` termina sin errores
+- [ ] 3.3 Agregar scripts raíz `dev`, `test` y `build`; verificar que cada uno se ejecuta
 
-## 4. Paquete `shared`
+## 4. Paquete `shared` [RT-02, RT-03]
 
-- [ ] 4.1 Crear constantes compartidas (roles, tipos de movimiento, tipos de cuenta, monedas `PEN`/`USD`/`EUR`) y mensajes de error en español; verificar con pruebas unitarias que se exportan correctamente
-- [ ] 4.2 Crear el validador de esquemas sobre Validator.js (`validar(esquema, datos)` que devuelve datos saneados o errores `{ campo, mensaje }`) y los esquemas base reutilizables: monto decimal positivo como texto, fecha `YYYY-MM-DD`, período `YYYY-MM`, moneda ISO 4217 soportada, contraseña segura, paginación (`page`, `limit` ≤ 100) y ordenamiento; verificar con pruebas unitarias de casos válidos e inválidos usando los mensajes de las specs
+- [ ] 4.1 Crear constantes compartidas (roles, tipos de movimiento, tipos de cuenta, monedas `PEN`/`USD`/`EUR`, categorías predeterminadas) y mensajes en español; verificar con pruebas unitarias
+- [ ] 4.2 Crear `validar(esquema, datos)` sobre Validator.js y los esquemas de "Reglas de validación comunes" (diseño, sección 25), paginación y ordenamiento; verificar con pruebas de casos válidos e inválidos
 
-## 5. Servidor base (Express)
+## 5. Servidor base [RT-01, RT-02, RT-03]
 
-- [ ] 5.1 Crear `server/` con Express 5, la estructura MVC del diseño (`routes/`, `controllers/`, `views/`, `models/`, `services/`, `repositories/`, `middlewares/`, `utils/`, `config/`), `app.js`/`server.js` y lectura de configuración validada con los esquemas de `shared` que falla con mensaje claro si falta una variable; verificar con una prueba que la carga de configuración rechaza un entorno incompleto
-- [ ] 5.2 Implementar conexión a MongoDB que verifica al arrancar que hay replica set y explica cómo corregirlo si no lo hay; verificar arrancando contra la instancia local
-- [ ] 5.3 Agregar helmet, cors (origen `CLIENT_URL` con credenciales), cookie-parser, parseo JSON y logger pino; verificar con Supertest que las cabeceras de seguridad y CORS están presentes
-- [ ] 5.4 Implementar clases de error de dominio, manejador central de errores (incluye duplicado de Mongoose → 409 y `CastError` → 404) y manejador 404 bajo `/api/v1`; verificar con Supertest los escenarios "Ruta inexistente", "Error interno sin filtrar detalles" y "Conflicto por duplicado" de `contrato-api`
-- [ ] 5.5 Implementar middleware de validación con los esquemas de `shared` que responde `VALIDATION_ERROR` con `details` por campo; verificar con Supertest los escenarios "Error de validación con detalle por campo", "Límite superior de página" y "Fecha con formato inválido"
-- [ ] 5.6 Implementar la vista base (`{ data }`, `{ data, meta }`) que usarán las vistas de cada recurso, junto con paginación y ordenamiento; verificar con Supertest el escenario "Listado paginado con valores por defecto" usando una ruta de prueba
-- [ ] 5.7 Implementar utilidades de dinero (`Decimal128` ↔ texto con 2 decimales, aritmética con decimal.js) y de fechas (día calendario en UTC, mes en curso según `APP_TIMEZONE`, con Day.js); verificar con pruebas unitarias de redondeo y de límites de mes
-- [ ] 5.8 Implementar el repositorio base por `tenantId` y el plugin de Mongoose que rechaza consultas sin `tenantId`; verificar con pruebas sobre `MongoMemoryReplSet` que un inquilino no lee ni modifica documentos de otro y que una consulta sin `tenantId` lanza error
-- [ ] 5.9 Implementar el servicio de correo con Nodemailer (SMTP por `.env`, log en desarrollo si no hay `SMTP_HOST`, transporte simulado en pruebas); verificar con una prueba que el modo sin SMTP registra el correo en el log
-- [ ] 5.10 Exponer `GET /api/v1/health` con el estado de la conexión a la base de datos; verificar con Supertest y con `curl` contra el servidor local
-- [ ] 5.11 Configurar Jest en modo ES Modules con Supertest y `mongodb-memory-server` (replica set); verificar que `npm test -w server` ejecuta todas las pruebas anteriores en verde
+- [ ] 5.1 Crear `server/` con Express 5, la estructura MVC del diseño, `app.js`/`server.js` y configuración validada; verificar el escenario "Configuración incompleta" de RT-01
+- [ ] 5.2 Implementar la conexión a MongoDB con comprobación de replica set; verificar el escenario "Base de datos sin replica set"
+- [ ] 5.3 Agregar helmet, cors, cookie-parser, parseo JSON y pino; verificar con Supertest cabeceras de seguridad y CORS
+- [ ] 5.4 Implementar errores de dominio y manejadores central y 404; verificar "Error interno sin filtrar detalles" y "Recurso inexistente o de otro usuario" de RT-02
+- [ ] 5.5 Implementar el middleware de validación; verificar "Error de validación con detalle por campo" de RT-02 y "Límite superior de página" y "Fecha con formato inválido" de RT-03
+- [ ] 5.6 Implementar la vista base `{ data }` / `{ data, meta }`, paginación, filtros y orden; verificar "Respuesta exitosa con formato estándar" de RT-02 y "Listado paginado con valores por defecto" y "Filtros combinados y orden" de RT-03
+- [ ] 5.7 Implementar utilidades de dinero (`Decimal128`, decimal.js) y fechas (Day.js, `APP_TIMEZONE`); verificar con pruebas de redondeo y límites de mes
+- [ ] 5.8 Implementar el repositorio base por `tenantId` y el plugin de guardia; verificar con `MongoMemoryReplSet` que un inquilino no accede a datos de otro y que una consulta sin `tenantId` falla
+- [ ] 5.9 Implementar el servicio de correo con Nodemailer, registro en log sin SMTP y transporte simulado en pruebas; verificar el modo sin SMTP
+- [ ] 5.10 Exponer `GET /api/v1/health` con el estado de la base de datos; verificar con Supertest
+- [ ] 5.11 Configurar Jest en modo ES Modules con Supertest y `mongodb-memory-server`; verificar que `npm test -w server` pasa
 
-## 6. Cliente base (React + Vite)
+## 6. Cliente base e interfaz [RT-01, RT-05]
 
-- [ ] 6.1 Crear `client/` con Vite + React, Tailwind CSS y proxy de `/api` hacia el servidor; verificar que `npm run dev -w client` muestra la página inicial y que una llamada a `/api/v1/health` pasa por el proxy
-- [ ] 6.2 Crear la estructura Screaming Architecture del diseño (carpetas de dominio con `components/`, `hooks/`, `services/`, `pages/` e `index.js`, más `router/` y `shared/`) y configurar React Router en `router/` con layout base y página 404; verificar navegando entre una ruta existente y una inexistente
-- [ ] 6.6 Configurar reglas de ESLint (`no-restricted-imports`) que impidan importar archivos internos de otro dominio y que `shared/` importe de un dominio; verificar que `npm run lint` falla con una importación prohibida de prueba y pasa al quitarla
-- [ ] 6.3 Crear el cliente HTTP (`fetch` con `credentials: 'include'`) que interpreta `{ data, meta }` y `{ error }`; verificar con pruebas Vitest que expone `code`, `message` y `details` de un error de la API
-- [ ] 6.4 Instalar y configurar react-toastify, SweetAlert2, Chart.js + react-chartjs-2 y Day.js (locale `es`) y crear el Context de aplicación; verificar con una prueba Vitest que el proveedor de contexto y el contenedor de notificaciones se renderizan
-- [ ] 6.5 Configurar Vitest con React Testing Library y jsdom; verificar que `npm test -w client` ejecuta las pruebas en verde
+- [ ] 6.1 Crear `client/` con Vite, React, Tailwind y proxy de `/api`; verificar que la página inicial consulta `/api/v1/health`
+- [ ] 6.2 Crear la estructura Screaming Architecture y React Router con layout y página 404; verificar navegando por una ruta existente y otra inexistente
+- [ ] 6.3 Crear el cliente HTTP que interpreta `{ data, meta }` y `{ error }`; verificar con Vitest
+- [ ] 6.4 Definir en Tailwind los tokens de `DESIGN.md`, cargar Public Sans e IBM Plex Mono y aplicar el tema a SweetAlert2, react-toastify y Chart.js; verificar con una página de componentes en celular y escritorio
+- [ ] 6.5 Crear el layout responsivo (barra lateral, navegación inferior y panel o pantalla de registro) y los componentes comunes accesibles; verificar los 4 escenarios de RT-05
+- [ ] 6.6 Configurar Vitest con React Testing Library y jsdom; verificar que `npm test -w client` pasa
+- [ ] 6.7 Configurar `no-restricted-imports` para los límites entre dominios; verificar que una importación prohibida hace fallar `npm run lint`
 
-## 7. Configuración y documentación del proyecto
+## 7. Datos de demostración y primer administrador [RT-06, RT-07]
 
-- [ ] 7.1 Crear `server/.env.example` y `client/.env.example` con todas las variables del diseño y valores de ejemplo seguros; verificar que el servidor arranca copiando el ejemplo y completando solo los secretos
-- [ ] 7.2 Escribir `README.md` con requisitos (Node 22, MongoDB como replica set), instalación, variables de entorno, cambio a MongoDB Atlas, comandos y flujo de ramas; verificar siguiendo los pasos desde un clon limpio
-- [ ] 7.3 Actualizar `CLAUDE.md` con comandos reales (incluida cómo ejecutar una sola prueba en servidor y cliente) y la arquitectura (workspaces, MVC en el backend, Screaming Architecture en el frontend, aislamiento por `tenantId`, contrato de la API); verificar que cada comando documentado funciona
+- [ ] 7.1 Agregar a `server/package.json` las dependencias y los scripts `seed` (`node scripts/seed.js`) y `seed:admin` (`node scripts/seed.js --solo-admin`); verificar los 4 escenarios de RT-06 y de RT-07 contra MongoDB local
+- [ ] 7.2 Agregar pruebas automatizadas de `server/scripts/seed.js` con `MongoMemoryReplSet`, incluida la coincidencia de saldos y la protección de entornos; verificar con `npm test -w server`
 
-## 8. Verificación integral
+## 8. Integración continua [RT-04]
 
-- [ ] 8.1 Ejecutar `npm run lint`, `npm test` y `npm run build` desde la raíz y levantar `npm run dev`; verificar que todo pasa y que el cliente muestra el estado de `/api/v1/health` obtenido a través del proxy
-- [ ] 8.2 Ejecutar `openspec validate definir-arquitectura-base --strict` y verificar que el cambio es válido
+- [ ] 8.1 Crear `.github/workflows/ci.yml` con el job `verificar` (`npm ci`, lint, pruebas y compilación con Node.js 22) para pull requests hacia `dev` y `main`; verificar con un pull request real
+- [ ] 8.2 Comprobar que el job falla ante una prueba rota y que corre sin `.env`; verificar en el historial de GitHub Actions
+
+## 9. Configuración y documentación [RT-01]
+
+- [ ] 9.1 Crear `server/.env.example` y `client/.env.example`; verificar que el servidor arranca copiando el ejemplo y completando los secretos
+- [ ] 9.2 Escribir `README.md` con requisitos, instalación, replica set, Atlas, comandos, datos demo y flujo de ramas; verificar los escenarios "Proyecto levantado desde un clon limpio" y "Cambio a MongoDB Atlas"
+- [ ] 9.3 Actualizar `CLAUDE.md` con los comandos reales, incluida la ejecución de una sola prueba; verificar que cada comando funciona
+
+## 10. Verificación integral [RT-01 a RT-07]
+
+- [ ] 10.1 Ejecutar `npm run lint`, `npm test` y `npm run build`, levantar `npm run dev` y comprobar el estado de `/api/v1/health` desde el cliente
+- [ ] 10.2 Ejecutar `openspec validate definir-arquitectura-base --strict` y verificar que el cambio es válido
 
 ## Workflow follow-up
 
 - Abrir un pull request de `chore/configurar-proyecto-base` hacia `dev`.
-- Archivar el cambio con `openspec-archive-change` tras fusionar el PR, para sincronizar las specs principales.
-- Crear los siguientes cambios por historia, empezando por autenticación (HU-01, HU-02, HU-03) y control de acceso (HU-04, HU-05).
+- Archivar el cambio con `openspec-archive-change` tras fusionarlo, para sincronizar las specs principales.
+- Fusionar `dev` en `main` por pull request y etiquetar `v0.1.0`.
+- Crear el cambio `implementar-autenticacion`, según `docs/trazabilidad.md`.

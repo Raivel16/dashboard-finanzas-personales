@@ -66,7 +66,7 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 
 - **DADO QUE** el usuario ha iniciado sesión correctamente y su rol es "administrador"
 - **CUANDO** el sistema carga el dashboard
-- **ENTONCES** el usuario visualiza además las opciones de gestión de categorías, cuentas y configuración del sistema, no disponibles para el rol "usuario estándar"
+- **ENTONCES** el usuario visualiza además la sección "Administración", con la consulta en modo de solo lectura de los datos de los usuarios y la gestión de roles, no disponible para el rol "usuario estándar"
 
 **Escenario 3: Bloqueo temporal por credenciales incorrectas**
 
@@ -116,6 +116,150 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **CUANDO** hace clic en el enlace vencido
 - **ENTONCES** el sistema muestra el mensaje "El enlace ha expirado" y ofrece la opción de solicitar uno nuevo
 
+### HU-18 — Cerrar sesión
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-18 |
+| **Rol** | Como usuario con una sesión iniciada |
+| **Funcionalidad** | Quiero cerrar mi sesión cuando termine de usar la aplicación |
+| **Razón / Resultado** | Para que nadie más pueda acceder a mi información desde ese dispositivo |
+| **Prioridad** | Alta |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-18)
+
+**Escenario 1: Cierre de sesión exitoso**
+
+- **DADO QUE** el usuario ha iniciado sesión
+- **CUANDO** selecciona "Cerrar sesión"
+- **ENTONCES** el sistema cierra la sesión y lo redirige a la pantalla de inicio de sesión
+
+**Escenario 2: Otras sesiones permanecen activas**
+
+- **DADO QUE** el usuario tiene sesiones abiertas en su celular y en su computadora
+- **CUANDO** cierra la sesión en la computadora
+- **ENTONCES** la sesión del celular continúa activa
+
+**Escenario 3: Regreso a una página tras cerrar sesión**
+
+- **DADO QUE** el usuario cerró su sesión
+- **CUANDO** usa el botón "Atrás" o abre un enlace guardado del dashboard
+- **ENTONCES** el sistema le pide iniciar sesión y no muestra ningún dato financiero
+
+**Escenario 4: Cierre de sesión con la sesión ya expirada**
+
+- **DADO QUE** la sesión del usuario expiró por inactividad
+- **CUANDO** selecciona "Cerrar sesión"
+- **ENTONCES** el sistema lo lleva a la pantalla de inicio de sesión sin mostrar un error
+
+### HU-19 — Mantener la sesión activa durante el uso
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-19 |
+| **Rol** | Como usuario que está usando la aplicación |
+| **Funcionalidad** | Quiero que mi sesión se renueve sola mientras siga activo |
+| **Razón / Resultado** | Para trabajar sin interrupciones y con mis credenciales protegidas |
+| **Prioridad** | Alta |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-19)
+
+**Escenario 1: Sesión renovada mientras el usuario está activo**
+
+- **DADO QUE** el usuario inició sesión hace 2 horas y ha realizado acciones con intervalos menores a 30 minutos
+- **CUANDO** realiza una nueva acción en el dashboard
+- **ENTONCES** el sistema completa la acción sin pedirle iniciar sesión nuevamente
+
+**Escenario 2: Regreso después de una pausa corta**
+
+- **DADO QUE** el usuario dejó la aplicación abierta sin usarla durante 20 minutos
+- **CUANDO** vuelve y realiza una acción
+- **ENTONCES** el sistema la completa sin pedirle iniciar sesión
+
+**Escenario 3: Sesión cerrada desde otro dispositivo**
+
+- **DADO QUE** el usuario cambió su contraseña desde otro dispositivo
+- **CUANDO** realiza una acción en este dispositivo
+- **ENTONCES** el sistema lo lleva al inicio de sesión con el mensaje "Tu sesión se cerró, por favor inicia sesión nuevamente"
+
+**Escenario 4: Límite máximo de la sesión**
+
+- **DADO QUE** el usuario inició sesión hace 7 días y la ha usado a diario
+- **CUANDO** realiza una nueva acción
+- **ENTONCES** el sistema le pide iniciar sesión nuevamente
+
+### HU-20 — Gestionar mi perfil
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-20 |
+| **Rol** | Como usuario registrado |
+| **Funcionalidad** | Quiero actualizar mi nombre y mi moneda principal |
+| **Razón / Resultado** | Para mantener mis datos al día y ver el dashboard en la moneda que más uso |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-20)
+
+**Escenario 1: Actualización exitosa del nombre**
+
+- **DADO QUE** el usuario se encuentra en la sección "Mi perfil"
+- **CUANDO** cambia su nombre y guarda los cambios
+- **ENTONCES** el sistema actualiza el nombre, lo muestra en la navegación y confirma el cambio con una notificación
+
+**Escenario 2: Cambio de moneda principal**
+
+- **DADO QUE** la moneda principal del usuario es "PEN"
+- **CUANDO** la cambia a "USD" y guarda
+- **ENTONCES** el dashboard se abre desde entonces en "USD" y sus datos existentes no se modifican
+
+**Escenario 3: Nombre inválido rechazado**
+
+- **DADO QUE** el usuario edita su perfil
+- **CUANDO** deja el nombre vacío
+- **ENTONCES** el sistema bloquea el guardado y muestra el mensaje "El nombre es obligatorio"
+
+**Escenario 4: Correo no editable**
+
+- **DADO QUE** el usuario consulta su perfil
+- **CUANDO** intenta modificar su correo electrónico
+- **ENTONCES** el correo se muestra como dato de solo lectura con la nota "El correo no se puede cambiar"
+
+### HU-21 — Cambiar mi contraseña
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-21 |
+| **Rol** | Como usuario con una sesión iniciada |
+| **Funcionalidad** | Quiero cambiar mi contraseña indicando la actual |
+| **Razón / Resultado** | Para proteger mi cuenta si sospecho que alguien la conoce |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-21)
+
+**Escenario 1: Cambio exitoso de contraseña**
+
+- **DADO QUE** el usuario se encuentra en "Mi perfil"
+- **CUANDO** ingresa su contraseña actual y una nueva válida, y confirma
+- **ENTONCES** el sistema actualiza la contraseña cifrada y muestra una confirmación
+
+**Escenario 2: Cierre de las demás sesiones**
+
+- **DADO QUE** el usuario tiene otra sesión abierta en su celular
+- **CUANDO** cambia su contraseña desde la computadora
+- **ENTONCES** la sesión del celular se invalida y la actual continúa activa
+
+**Escenario 3: Contraseña actual incorrecta**
+
+- **DADO QUE** el usuario intenta cambiar su contraseña
+- **CUANDO** ingresa una contraseña actual incorrecta
+- **ENTONCES** el sistema rechaza el cambio y muestra el mensaje "La contraseña actual es incorrecta"
+
+**Escenario 4: Nueva contraseña igual a la actual**
+
+- **DADO QUE** el usuario intenta cambiar su contraseña
+- **CUANDO** ingresa como nueva la misma contraseña actual
+- **ENTONCES** el sistema rechaza el cambio y muestra el mensaje "La nueva contraseña debe ser distinta de la actual"
+
 ## Épica 2: Seguridad y Control de Acceso (RBAC)
 
 ### HU-04 — Control de acceso basado en roles
@@ -133,18 +277,18 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 **Escenario 1: Restricción de acceso para usuario estándar**
 
 - **DADO QUE** un usuario con rol "usuario estándar" ha iniciado sesión
-- **CUANDO** intenta acceder a la sección de "Configuración del sistema"
+- **CUANDO** intenta acceder a la sección de "Administración"
 - **ENTONCES** el sistema oculta dicha opción del menú y, si se accede directamente por URL, responde con un error 403 "Acceso no autorizado"
 
 **Escenario 2: Administración autorizada para usuario administrador**
 
 - **DADO QUE** un usuario con rol "administrador" ha iniciado sesión
-- **CUANDO** accede a la sección de gestión de categorías y cuentas de todos los usuarios
-- **ENTONCES** el sistema le permite visualizar y administrar dicha información conforme a los permisos otorgados a su rol
+- **CUANDO** accede a la sección "Administración"
+- **ENTONCES** el sistema le permite consultar en modo de solo lectura las categorías, cuentas y movimientos de todos los usuarios y gestionar sus roles, sin crear, editar ni eliminar sus datos financieros
 
 **Escenario 3: Operación rechazada por falta de permisos**
 
-- **DADO QUE** la capa de servicios recibe una solicitud para eliminar una categoría global del sistema
+- **DADO QUE** la capa de servicios recibe una solicitud para cambiar el rol de un usuario
 - **CUANDO** la solicitud proviene de un token JWT correspondiente a un rol "usuario estándar"
 - **ENTONCES** el sistema rechaza la operación en la capa de servicios y registra el intento de acceso no autorizado
 
@@ -190,6 +334,78 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **CUANDO** el usuario A filtra su historial por la categoría "Alimentación"
 - **ENTONCES** el sistema muestra solo los gastos del usuario A y los totales no incluyen los gastos del usuario B
 
+### HU-22 — Consultar datos de usuarios en modo de solo lectura
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-22 |
+| **Rol** | Como administrador del sistema |
+| **Funcionalidad** | Quiero consultar los usuarios y sus categorías, cuentas, movimientos y presupuestos |
+| **Razón / Resultado** | Para supervisar el sistema sin alterar la información financiera de nadie |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-22)
+
+**Escenario 1: Consulta de los datos de un usuario**
+
+- **DADO QUE** un administrador está en la sección "Administración"
+- **CUANDO** selecciona a un usuario
+- **ENTONCES** el sistema muestra sus categorías, cuentas, movimientos y presupuestos sin opciones para crear, editar ni eliminar
+
+**Escenario 2: Búsqueda de usuarios**
+
+- **DADO QUE** existen muchos usuarios registrados
+- **CUANDO** el administrador busca por nombre o correo
+- **ENTONCES** el sistema muestra un listado paginado con los usuarios que coinciden
+
+**Escenario 3: Modificación de datos ajenos rechazada**
+
+- **DADO QUE** un administrador visualiza los movimientos de otro usuario
+- **CUANDO** intenta editar o eliminar uno de ellos por cualquier medio, incluso desde un enlace directo
+- **ENTONCES** el sistema no lo permite, muestra el mensaje "El recurso solicitado no existe o no tienes permiso para acceder a él" y el movimiento permanece sin cambios
+
+**Escenario 4: Usuario sin información registrada**
+
+- **DADO QUE** un usuario no tiene movimientos
+- **CUANDO** el administrador consulta sus datos
+- **ENTONCES** el sistema muestra el estado vacío "Este usuario aún no tiene movimientos"
+
+### HU-23 — Gestionar roles de usuarios
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-23 |
+| **Rol** | Como administrador del sistema |
+| **Funcionalidad** | Quiero cambiar el rol de los usuarios |
+| **Razón / Resultado** | Para decidir quién puede administrar el sistema |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-23)
+
+**Escenario 1: Promoción de un usuario a administrador**
+
+- **DADO QUE** un administrador se encuentra en el listado de usuarios
+- **CUANDO** cambia el rol de "ana@correo.com" a "administrador" y confirma
+- **ENTONCES** el sistema actualiza el rol y el usuario obtiene acceso a "Administración" en su siguiente acción
+
+**Escenario 2: Degradación de otro administrador**
+
+- **DADO QUE** existen dos administradores
+- **CUANDO** uno cambia el rol del otro a "usuario estándar" y confirma
+- **ENTONCES** el sistema actualiza el rol y el usuario degradado pierde el acceso de inmediato
+
+**Escenario 3: Cambio de rol sin confirmar**
+
+- **DADO QUE** un administrador inicia el cambio de rol de un usuario
+- **CUANDO** cierra el cuadro de confirmación sin aceptar
+- **ENTONCES** el rol del usuario se mantiene sin cambios
+
+**Escenario 4: Degradación del último administrador rechazada**
+
+- **DADO QUE** existe un único usuario con rol "administrador"
+- **CUANDO** ese administrador intenta cambiar su propio rol a "usuario estándar"
+- **ENTONCES** el sistema rechaza el cambio y muestra el mensaje "Debe existir al menos un administrador"
+
 ## Épica 3: Gestión de Categorías
 
 ### HU-06 — Administrar categorías de ingresos y gastos
@@ -228,6 +444,42 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **CUANDO** confirma la acción de eliminación
 - **ENTONCES** el sistema impide la eliminación directa y muestra la advertencia "No se puede eliminar una categoría con movimientos asociados. Reasigna o elimina los movimientos primero"
 
+### HU-24 — Recibir categorías predeterminadas
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-24 |
+| **Rol** | Como usuario que acaba de registrarse |
+| **Funcionalidad** | Quiero contar con categorías iniciales de ingresos y gastos |
+| **Razón / Resultado** | Para registrar movimientos de inmediato sin configurar todo desde cero |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-24)
+
+**Escenario 1: Categorías disponibles tras el registro**
+
+- **DADO QUE** un visitante completó su registro
+- **CUANDO** ingresa por primera vez a "Categorías"
+- **ENTONCES** el sistema muestra categorías de gasto ("Alimentación", "Transporte", "Vivienda", "Salud", "Entretenimiento", "Educación", "Otros gastos") y de ingreso ("Sueldo", "Ventas", "Otros ingresos") asociadas a su usuario
+
+**Escenario 2: Edición sin afectar a otros usuarios**
+
+- **DADO QUE** los usuarios A y B tienen la categoría predeterminada "Transporte"
+- **CUANDO** el usuario A la renombra a "Movilidad"
+- **ENTONCES** la categoría del usuario B sigue llamándose "Transporte"
+
+**Escenario 3: Falla al crear las categorías iniciales**
+
+- **DADO QUE** ocurre un error al crear las categorías durante el registro
+- **CUANDO** el sistema procesa el registro
+- **ENTONCES** no queda una cuenta incompleta y el visitante recibe un mensaje para intentarlo nuevamente
+
+**Escenario 4: Categoría predeterminada eliminada**
+
+- **DADO QUE** el usuario eliminó una categoría predeterminada sin movimientos
+- **CUANDO** vuelve a iniciar sesión
+- **ENTONCES** la categoría no reaparece
+
 ## Épica 4: Gestión de Cuentas y Medios de Pago
 
 ### HU-07 — Administrar cuentas o medios de pago
@@ -265,6 +517,42 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **DADO QUE** el usuario intenta eliminar una cuenta que posee movimientos financieros registrados
 - **CUANDO** confirma la acción de eliminación
 - **ENTONCES** el sistema impide la eliminación y muestra la advertencia "No se puede eliminar una cuenta con movimientos asociados"
+
+### HU-25 — Definir moneda y saldo inicial de la cuenta
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-25 |
+| **Rol** | Como usuario que maneja dinero en distintas monedas |
+| **Funcionalidad** | Quiero indicar la moneda y el saldo inicial de cada cuenta |
+| **Razón / Resultado** | Para que mis saldos reflejen el dinero real sin mezclar monedas |
+| **Prioridad** | Alta |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-25)
+
+**Escenario 1: Cuenta creada en otra moneda**
+
+- **DADO QUE** el usuario registra una cuenta
+- **CUANDO** elige la moneda "USD" y un saldo inicial de 200.00
+- **ENTONCES** el sistema crea la cuenta en "USD" y muestra su saldo con el símbolo "$"
+
+**Escenario 2: Corrección del saldo inicial**
+
+- **DADO QUE** una cuenta con movimientos tiene saldo inicial 100.00 y saldo actual 70.00
+- **CUANDO** el usuario corrige el saldo inicial a 120.00
+- **ENTONCES** el saldo actual pasa a 90.00 y los movimientos no cambian
+
+**Escenario 3: Moneda no seleccionada**
+
+- **DADO QUE** el usuario registra una nueva cuenta
+- **CUANDO** no selecciona ninguna moneda y presiona "Guardar"
+- **ENTONCES** el sistema bloquea el guardado y muestra el mensaje "La moneda es obligatoria"
+
+**Escenario 4: Cambio de moneda impedido en una cuenta con movimientos**
+
+- **DADO QUE** el usuario posee una cuenta "Ahorros" en "USD" con movimientos
+- **CUANDO** intenta cambiar su moneda a "PEN"
+- **ENTONCES** el sistema rechaza el cambio y muestra el mensaje "No se puede cambiar la moneda de una cuenta con movimientos asociados"
 
 ## Épica 5: Gestión de Transacciones (Movimientos)
 
@@ -339,6 +627,78 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **DADO QUE** el usuario A intenta editar o eliminar, mediante manipulación directa de la solicitud, un movimiento perteneciente al usuario B
 - **CUANDO** envía la solicitud de edición o eliminación a la API REST
 - **ENTONCES** el sistema valida en la capa de repositorio que el movimiento no pertenece a su userId/tenantId y rechaza la operación con un error 403/404, sin modificar ni eliminar el registro ajeno
+
+### HU-26 — Mantener el saldo de la cuenta consistente
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-26 |
+| **Rol** | Como usuario que confía en sus cifras |
+| **Funcionalidad** | Quiero que el saldo de cada cuenta coincida siempre con sus movimientos |
+| **Razón / Resultado** | Para poder comprobar de dónde sale cada cifra |
+| **Prioridad** | Alta |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-26)
+
+**Escenario 1: Saldo coherente tras varias operaciones**
+
+- **DADO QUE** la cuenta "Efectivo" tiene saldo inicial 100.00
+- **CUANDO** el usuario registra un ingreso de 50.00, un gasto de 30.00 y luego elimina el ingreso
+- **ENTONCES** el saldo de la cuenta es 70.00
+
+**Escenario 2: Saldo resultante en el historial**
+
+- **DADO QUE** la cuenta "Efectivo" tiene varios movimientos
+- **CUANDO** el usuario consulta su historial
+- **ENTONCES** cada movimiento muestra el saldo que dejó en su cuenta, calculado por fecha y orden de registro, aunque existan filtros aplicados
+
+**Escenario 3: Registro interrumpido no altera el saldo**
+
+- **DADO QUE** la cuenta "Efectivo" tiene saldo 70.00
+- **CUANDO** se pierde la conexión mientras el usuario registra un gasto de 20.00
+- **ENTONCES** el gasto queda registrado con saldo 50.00 o no queda registrado y el saldo sigue en 70.00; nunca se registra sin descontarse
+
+**Escenario 4: Movimiento registrado con fecha anterior**
+
+- **DADO QUE** la cuenta tiene movimientos hasta el 15/11/2026
+- **CUANDO** el usuario registra un gasto con fecha 10/11/2026
+- **ENTONCES** el sistema recalcula el saldo que dejó cada movimiento posterior y el saldo final es correcto
+
+### HU-27 — Validar la coherencia del movimiento
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-27 |
+| **Rol** | Como usuario que registra movimientos |
+| **Funcionalidad** | Quiero que el sistema valide moneda, categoría, fecha y montos |
+| **Razón / Resultado** | Para evitar errores que distorsionen mis saldos y reportes |
+| **Prioridad** | Alta |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-27)
+
+**Escenario 1: Movimiento registrado en la moneda de su cuenta**
+
+- **DADO QUE** el usuario tiene la cuenta "Ahorros USD" en "USD"
+- **CUANDO** registra un gasto de 40.00 en esa cuenta
+- **ENTONCES** el movimiento queda en "USD" y el saldo de la cuenta disminuye en 40.00
+
+**Escenario 2: Cambio de cuenta al editar un movimiento**
+
+- **DADO QUE** existe un gasto de 40.00 en "Ahorros USD"
+- **CUANDO** el usuario lo asigna a la cuenta "Efectivo" en "PEN"
+- **ENTONCES** el movimiento pasa a "PEN", "Ahorros USD" aumenta en 40.00 y "Efectivo" disminuye en 40.00
+
+**Escenario 3: Categoría incompatible con el tipo**
+
+- **DADO QUE** el usuario eligió la categoría de gasto "Alimentación" en el formulario
+- **CUANDO** cambia el tipo de movimiento a "Ingreso"
+- **ENTONCES** el sistema quita la categoría y muestra el mensaje "Selecciona una categoría de ingreso"
+
+**Escenario 4: Fecha futura rechazada**
+
+- **DADO QUE** hoy es 18/11/2026
+- **CUANDO** el usuario registra un movimiento con fecha 19/11/2026
+- **ENTONCES** el sistema lo rechaza con el mensaje "La fecha no puede ser futura"; la fecha de hoy sí se acepta
 
 ## Épica 6: Consulta y Filtrado de Movimientos
 
@@ -488,6 +848,42 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **CUANDO** se genera el gráfico de distribución de gastos por categoría
 - **ENTONCES** el sistema muestra un estado vacío específico para ese gráfico indicando "No hay gastos registrados en este período" sin generar un gráfico circular vacío o erróneo
 
+### HU-28 — Ver el dashboard por moneda
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-28 |
+| **Rol** | Como usuario con cuentas en varias monedas |
+| **Funcionalidad** | Quiero elegir la moneda de mis indicadores y gráficos |
+| **Razón / Resultado** | Para analizar cada moneda sin sumas engañosas |
+| **Prioridad** | Alta |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-28)
+
+**Escenario 1: Dashboard en la moneda principal**
+
+- **DADO QUE** la moneda principal es "PEN" y hay movimientos en "PEN" y "USD"
+- **CUANDO** el usuario accede al dashboard
+- **ENTONCES** los indicadores y gráficos muestran solo los totales en "PEN" con el símbolo "S/"
+
+**Escenario 2: Cambio de moneda en el dashboard**
+
+- **DADO QUE** el usuario ve el dashboard en "PEN"
+- **CUANDO** selecciona "USD"
+- **ENTONCES** el sistema recalcula todo usando solo los movimientos en "USD"
+
+**Escenario 3: Error al cambiar de moneda**
+
+- **DADO QUE** el usuario ve el dashboard en "PEN"
+- **CUANDO** selecciona "USD" y ocurre un error de conexión
+- **ENTONCES** el sistema mantiene visibles los datos en "PEN" y muestra el mensaje "No se pudieron cargar los indicadores en USD" con la opción de reintentar
+
+**Escenario 4: Selector limitado a las monedas en uso**
+
+- **DADO QUE** el usuario solo tiene cuentas en "PEN"
+- **CUANDO** abre el selector de moneda
+- **ENTONCES** el sistema muestra únicamente "PEN"; si aún no tiene cuentas, muestra su moneda principal
+
 ## Épica 8: Presupuestos
 
 ### HU-14 — Definir presupuesto mensual
@@ -561,6 +957,78 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **DADO QUE** el usuario ha registrado gastos que superan el 100% del presupuesto mensual definido
 - **CUANDO** visualiza el indicador de seguimiento
 - **ENTONCES** el sistema muestra la barra de progreso al límite en color de alerta (rojo), indica el porcentaje excedido (por ejemplo 115%) y el monto sobregirado
+
+### HU-29 — Definir presupuestos por moneda y período
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-29 |
+| **Rol** | Como usuario con gastos en varias monedas |
+| **Funcionalidad** | Quiero definir presupuestos separados por moneda |
+| **Razón / Resultado** | Para controlar cada moneda con un límite propio |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-29)
+
+**Escenario 1: Presupuestos independientes por moneda**
+
+- **DADO QUE** el usuario tiene presupuestos de 1500.00 PEN y 200.00 USD para el mes
+- **CUANDO** registra un gasto de 50.00 USD
+- **ENTONCES** el avance en USD sube a 25 % y el de PEN no cambia
+
+**Escenario 2: Gastos en otra moneda no cuentan**
+
+- **DADO QUE** el usuario solo tiene un presupuesto de 1500.00 PEN
+- **CUANDO** registra gastos por 300.00 USD
+- **ENTONCES** el porcentaje utilizado en PEN no cambia
+
+**Escenario 3: Mes pasado rechazado**
+
+- **DADO QUE** el usuario define un presupuesto
+- **CUANDO** selecciona un mes anterior al actual
+- **ENTONCES** el sistema lo rechaza con el mensaje "Solo puedes definir presupuestos para el mes actual o meses futuros"; los presupuestos pasados se pueden consultar
+
+**Escenario 4: Presupuesto en una moneda sin gastos**
+
+- **DADO QUE** el usuario definió un presupuesto en "EUR" y no tiene gastos en esa moneda
+- **CUANDO** consulta su seguimiento
+- **ENTONCES** el sistema muestra 0 % utilizado y el monto completo disponible
+
+### HU-30 — Mantener los presupuestos por categoría dentro del general
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-30 |
+| **Rol** | Como usuario que planifica sus gastos |
+| **Funcionalidad** | Quiero repartir mi presupuesto general entre categorías |
+| **Razón / Resultado** | Para que mis límites por categoría sean coherentes con mi límite total |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-30)
+
+**Escenario 1: Presupuesto por categoría dentro del general**
+
+- **DADO QUE** el usuario tiene un presupuesto general de 1500.00 PEN y categorías que suman 1000.00
+- **CUANDO** asigna 300.00 a "Entretenimiento"
+- **ENTONCES** el sistema lo guarda y muestra 200.00 sin asignar
+
+**Escenario 2: Gasto sin presupuesto de categoría**
+
+- **DADO QUE** la categoría "Salud" no tiene presupuesto propio
+- **CUANDO** el usuario registra un gasto en "Salud"
+- **ENTONCES** el gasto cuenta para el presupuesto general
+
+**Escenario 3: Suma superior al presupuesto general**
+
+- **DADO QUE** el usuario tiene 200.00 sin asignar
+- **CUANDO** intenta asignar 300.00 a una categoría
+- **ENTONCES** el sistema lo rechaza con el mensaje "La suma por categorías supera el presupuesto general"
+
+**Escenario 4: Reducción del general por debajo de lo asignado**
+
+- **DADO QUE** las categorías suman 1300.00
+- **CUANDO** el usuario intenta reducir el presupuesto general a 1000.00
+- **ENTONCES** el sistema lo rechaza con el mensaje "El presupuesto general no puede ser menor a lo asignado por categorías"
 
 ## Épica 9: Reportes y Exportación
 
@@ -636,6 +1104,42 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **CUANDO** ocurre el corte de conexión
 - **ENTONCES** el sistema cancela la descarga, muestra el mensaje "Ocurrió un error al generar el archivo. Intenta nuevamente" y no genera un archivo corrupto o incompleto
 
+### HU-31 — Exportar reportes separados por moneda
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-31 |
+| **Rol** | Como usuario con movimientos en varias monedas |
+| **Funcionalidad** | Quiero que mis reportes separen los totales por moneda |
+| **Razón / Resultado** | Para que los archivos exportados sean correctos y verificables |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-31)
+
+**Escenario 1: Reporte Excel con varias monedas**
+
+- **DADO QUE** existen movimientos en "PEN" y "USD" en el período filtrado
+- **CUANDO** el usuario exporta a Excel
+- **ENTONCES** la hoja "Resumen" muestra los totales por categoría y tipo separados por moneda
+
+**Escenario 2: Reporte PDF con totales por moneda**
+
+- **DADO QUE** existen movimientos en "PEN" y "USD" en el período filtrado
+- **CUANDO** el usuario exporta a PDF
+- **ENTONCES** el documento muestra ingresos, gastos y balance por separado para cada moneda
+
+**Escenario 3: Excel que supera el límite**
+
+- **DADO QUE** los filtros incluyen más de 5000 movimientos
+- **CUANDO** el usuario exporta a Excel
+- **ENTONCES** el sistema no genera el archivo y muestra el mensaje "El reporte supera los 5000 movimientos. Reduce el período o aplica más filtros"
+
+**Escenario 4: Reporte aislado por usuario**
+
+- **DADO QUE** los usuarios A y B tienen movimientos en el mismo período
+- **CUANDO** el usuario A exporta su reporte
+- **ENTONCES** el archivo contiene solo los datos del usuario A
+
 ## Resumen General de Historias de Usuario
 
 | ID | Épica | Título de la Historia | Prioridad |
@@ -657,6 +1161,20 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 | HU-15 | Presupuestos | Seguimiento del cumplimiento del presupuesto | Media |
 | HU-16 | Reportes y Exportación | Exportar reporte financiero en PDF | Media |
 | HU-17 | Reportes y Exportación | Exportar reporte financiero en Excel | Media |
+| HU-18 | Autenticación y Gestión de Usuarios | Cerrar sesión | Alta |
+| HU-19 | Autenticación y Gestión de Usuarios | Mantener la sesión activa durante el uso | Alta |
+| HU-20 | Autenticación y Gestión de Usuarios | Gestionar mi perfil | Media |
+| HU-21 | Autenticación y Gestión de Usuarios | Cambiar mi contraseña | Media |
+| HU-22 | Seguridad y Control de Acceso (RBAC) | Consultar datos de usuarios en modo de solo lectura | Media |
+| HU-23 | Seguridad y Control de Acceso (RBAC) | Gestionar roles de usuarios | Media |
+| HU-24 | Gestión de Categorías | Recibir categorías predeterminadas | Media |
+| HU-25 | Gestión de Cuentas y Medios de Pago | Definir moneda y saldo inicial de la cuenta | Alta |
+| HU-26 | Gestión de Transacciones (Movimientos) | Mantener el saldo de la cuenta consistente | Alta |
+| HU-27 | Gestión de Transacciones (Movimientos) | Validar la coherencia del movimiento | Alta |
+| HU-28 | Dashboard e Indicadores Financieros | Ver el dashboard por moneda | Alta |
+| HU-29 | Presupuestos | Definir presupuestos por moneda y período | Media |
+| HU-30 | Presupuestos | Mantener los presupuestos por categoría dentro del general | Media |
+| HU-31 | Reportes y Exportación | Exportar reportes separados por moneda | Media |
 
 ## Supuestos y Vacíos Detectados
 
@@ -671,6 +1189,6 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 
 | Criterio de la Rúbrica | Evidencia en este documento |
 |---|---|
-| Sintaxis y Estructura Gherkin (40%) | Las 17 historias incluyen 4 escenarios cada una (Happy Path, Flujo Alternativo, Manejo de Errores, Caso de Borde) redactados estrictamente en formato Dado que / Cuando / Entonces, sin mezclar contexto, acción y resultado. |
+| Sintaxis y Estructura Gherkin (40%) | Las 31 historias incluyen 4 escenarios cada una (Happy Path, Flujo Alternativo, Manejo de Errores, Caso de Borde) redactados estrictamente en formato Dado que / Cuando / Entonces, sin mezclar contexto, acción y resultado. |
 | Coherencia y Valor de Negocio (35%) | Cada historia está delimitada al alcance funcional del proyecto (a-l del documento), especifica un rol concreto, una funcionalidad accionable y un beneficio de negocio claro y justificable. |
 | Completitud y Uso de Plantilla (25%) | Se completan los campos ID, Rol, Funcionalidad, Razón/Resultado y Prioridad para cada historia, agrupadas por épica, con tabla resumen final y sección de supuestos, siguiendo el formato de la guía pedagógica. |
