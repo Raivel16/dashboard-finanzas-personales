@@ -280,8 +280,9 @@ export async function crearAdministrador({ email, password }) {
   const existente = await coleccion('usuarios').findOne({ email: correo });
   if (existente?.rol === 'admin') return 'sin cambios';
   if (existente) {
-    await coleccion('usuarios').updateOne({ _id: existente._id }, { $set: { rol: 'admin', updatedAt: new Date() } });
-    return 'promovido';
+    // No se promueve una cuenta existente: quien la registró conservaría el acceso como administrador.
+    // Los siguientes administradores se promueven desde la gestión de roles (HU-23).
+    throw new Error(`Ya existe un usuario estándar con ${correo}. Usa otro ADMIN_EMAIL o promuévelo desde la gestión de roles.`);
   }
   const usuario = crearUsuario({ nombre: 'Administrador', email: correo, passwordHash: await bcrypt.hash(password, COSTO_BCRYPT), rol: 'admin' });
   await coleccion('usuarios').insertOne(usuario);

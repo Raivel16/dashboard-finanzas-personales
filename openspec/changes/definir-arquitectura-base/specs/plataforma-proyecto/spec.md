@@ -82,7 +82,7 @@ Origen: RT-06, requisito técnico que habilita demostración de HU-12, HU-13, HU
 - **THEN** existen casos con varias monedas, presupuesto normal, en alerta y excedido, y un usuario sin movimientos
 
 ### Requirement: Crear el primer administrador
-El sistema SHALL ofrecer un comando que cree o promueva al administrador indicado en la configuración, sin duplicar cuentas ni exponer su contraseña.
+El sistema SHALL ofrecer un comando que cree el administrador indicado en la configuración, sin duplicar cuentas, sin promover cuentas existentes y sin exponer su contraseña.
 
 Origen: RT-07, requisito técnico que habilita HU-22, HU-23 (ver `docs/trazabilidad.md`).
 
@@ -91,10 +91,10 @@ Origen: RT-07, requisito técnico que habilita HU-22, HU-23 (ver `docs/trazabili
 - **WHEN** se ejecuta el comando de creación
 - **THEN** el sistema crea la cuenta con rol "administrador" y su propio espacio de datos
 
-#### Scenario: Promoción de una cuenta existente
+#### Scenario: Correo ya registrado por un usuario estándar
 - **GIVEN** el correo configurado ya pertenece a un usuario estándar
 - **WHEN** se ejecuta el comando
-- **THEN** el usuario pasa a ser administrador sin cambiar su contraseña ni perder sus datos
+- **THEN** el comando termina con un error que indica usar otro correo o promover al usuario desde la gestión de roles, y no modifica la cuenta
 
 #### Scenario: Configuración incompleta
 - **GIVEN** falta el correo o la contraseña del administrador
