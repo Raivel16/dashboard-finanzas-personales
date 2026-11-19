@@ -14,7 +14,7 @@ Las decisiones del equipo que este diseño concreta están en `proposal.md`; los
 - Poder pasar de MongoDB local a Atlas, y desplegar más adelante, cambiando solo variables de entorno.
 
 **Non-Goals:**
-- Implementar las historias de usuario (cada una tendrá su propio cambio).
+- Implementar historias de usuario o requisitos técnicos distintos de RT-01 a RT-07: cada grupo tiene su propio cambio, indicado en `docs/trazabilidad.md`.
 - Conversión entre monedas o tipos de cambio.
 - Despliegue real (solo se deja preparado).
 - Familias o inquilinos con varios usuarios: hoy cada usuario es su propio inquilino; el modelo solo deja la puerta abierta.
@@ -82,11 +82,12 @@ Todos con `timestamps`. Las referencias entre colecciones son `ObjectId`; la int
 ### 6. Multimoneda sin conversión
 - Monedas soportadas como constante en `shared/` (inicialmente `PEN`, `USD`, `EUR`); ampliar la lista no requiere cambios de modelo.
 - La moneda vive en la cuenta; el movimiento copia la moneda de su cuenta al guardarse (permite filtrar y agregar sin `$lookup`).
-- Dashboard, presupuestos y reportes siempre agregan filtrando o agrupando por moneda. `monedaPrincipal` del usuario (por defecto `PEN`, elegible en el registro) define la moneda inicial del dashboard.
+- Dashboard, presupuestos y reportes siempre agregan filtrando o agrupando por moneda. `monedaPrincipal` del usuario (por defecto `PEN`, editable en su perfil según HU-20) define la moneda inicial del dashboard.
 
 ### 7. Saldo de cuenta consistente con transacciones
 - Crear, editar o eliminar un movimiento se hace en una **transacción de MongoDB** que guarda el movimiento y ajusta `saldoActual` de las cuentas afectadas con `$inc`.
 - Dentro de la misma transacción se recalcula el saldo esperado (`saldoInicial + Σ ingresos − Σ gastos`, por agregación) y, si difiere del almacenado, se corrige y se registra un aviso en el log (ver spec `gestion-cuentas`). Además se expone un script `npm run verificar-saldos -w server` para revisar todas las cuentas.
+- El historial entrega `saldoResultante` por movimiento, calculado con `$setWindowFields` por cuenta, ordenando por `fecha` y `createdAt` antes de aplicar los filtros de la consulta (HU-26).
 - **Las transacciones requieren replica set**. Atlas siempre lo es; en local se configura el servicio MongoDB como replica set de un nodo (`rs0`). Las pruebas usan `MongoMemoryReplSet`.
 - *Alternativa descartada*: solo calcular el saldo al leer. Es siempre correcto, pero el equipo pidió guardarlo y verificar que coincida.
 
@@ -106,12 +107,13 @@ Todos con `timestamps`. Las referencias entre colecciones son `ObjectId`; la int
 - Tras express-jwt, un middleware carga el usuario desde la BD en cada solicitud y usa su **rol vigente** (no el del token), lo que cumple el escenario de degradación de rol durante la sesión.
 - Las rutas de administración pasan por un middleware `requireRol('admin')`, y además cada servicio verifica el permiso antes de operar (defensa en profundidad, como pide el enunciado).
 - Los accesos denegados se registran en el log con usuario, ruta y motivo.
-- El primer administrador se crea con un script de seed (`npm run seed:admin -w server`) a partir de `ADMIN_EMAIL`/`ADMIN_PASSWORD` del `.env`; los siguientes se promueven desde el panel.
+- El primer administrador se crea con `npm run seed:admin -w server` (RT-07), a partir de `ADMIN_EMAIL`/`ADMIN_PASSWORD` del `.env`; los siguientes se promueven desde el panel (HU-23).
 
 ### 10. Validación con Validator.js
 - **Validator.js** (recomendado por el enunciado) valida y sanea cadenas (`isEmail`, `isStrongPassword`, `isDate`, `isDecimal`, `isIn`, `isMongoId`, `trim`, `normalizeEmail`…), pero no valida objetos completos. Por eso `shared/` define un pequeño validador propio: cada esquema es un objeto `campo → reglas` (obligatorio, tipo, función de Validator.js, mensaje en español) y una función `validar(esquema, datos)` devuelve los datos saneados o la lista de errores `{ campo, mensaje }`.
 - El servidor aplica los esquemas con un middleware que traduce los errores al formato de `contrato-api`; el cliente reutiliza los mismos esquemas en los formularios, así los mensajes son idénticos en ambos lados.
 - Validator.js solo trabaja con texto: los valores no textuales (números de query, booleanos) se convierten a cadena antes de validar y se convierten al tipo final después.
+- Los límites de cada campo están en "Reglas de validación comunes" (sección 25); los esquemas de `shared/` son su única implementación.
 - *Alternativa descartada*: Zod o Joi. Validan objetos de forma nativa, pero el equipo prefirió seguir la recomendación del enunciado.
 
 ### 11. Contrato de la API y manejo de errores
@@ -128,9 +130,11 @@ Todos con `timestamps`. Las referencias entre colecciones son `ObjectId`; la int
 - Endpoints `GET /api/v1/reportes/movimientos.pdf` y `.xlsx` que reciben los mismos filtros que el historial y responden el archivo con `Content-Disposition: attachment`.
 - **jsPDF** (+ jspdf-autotable para tablas) y **SheetJS** se usan en Node, cumpliendo tanto la recomendación de librerías del enunciado como la decisión de generar en el servidor.
 - SheetJS se instala desde su CDN oficial (`https://cdn.sheetjs.com/`), no desde el paquete `xlsx` de npm, que está desactualizado y tiene vulnerabilidades conocidas.
-- Para volúmenes grandes la descarga se hace por `fetch` con indicador de carga en el cliente; si se vuelve lento se evaluará generar en segundo plano (no se implementa ahora, YAGNI).
+- Cada reporte admite hasta 5000 movimientos; por encima responde 400 con el mensaje de HU-16 y HU-31. El cliente descarga con `fetch` y muestra un indicador de carga.
+- El PDF contiene resumen de indicadores por moneda y tabla de movimientos, sin gráficos. El Excel contiene las hojas de movimientos y "Resumen".
 
 ### 14. Frontend: React + Vite
+- El aspecto visual sigue `DESIGN.md` (mundo "La libreta de ahorros"); los tokens se definen en el tema de Tailwind y se aplican también a SweetAlert2, react-toastify y Chart.js (RT-05).
 - React con **React Router** (rutas protegidas por sesión y rol), estado global con **Context** (sesión del usuario y preferencias como la moneda seleccionada), **Tailwind CSS** para estilos responsivos.
 - Librerías del enunciado: **Chart.js** vía react-chartjs-2, **Day.js** para fechas, **SweetAlert2** para confirmaciones, **react-toastify** para notificaciones.
 - Un único cliente HTTP (`fetch` con `credentials: 'include'`) que maneja el formato de errores y la renovación automática de sesión.
@@ -175,17 +179,66 @@ client/src/
 - **ESLint** (flat config, con reglas de React en `client/`) y **Prettier** en la raíz.
 - Servidor: **Jest** + **Supertest** + **mongodb-memory-server** (replica set en memoria). Jest corre en modo ES Modules (`NODE_OPTIONS=--experimental-vm-modules`).
 - Cliente: **Vitest** + React Testing Library + jsdom.
-- Cada escenario de las specs debería poder trazarse a al menos una prueba.
+- Cada escenario de las specs se traza a al menos una prueba automatizada. No se exige un porcentaje mínimo de cobertura.
 
 ### 18. Configuración, entorno y preparación para despliegue
 - Variables en `server/.env` y `client/.env`, con `server/.env.example` y `client/.env.example` versionados; todo `.env` está en `.gitignore`. El servidor valida sus variables al arrancar (con los mismos esquemas de validación) y falla con un mensaje claro si falta alguna.
-- Variables del servidor: `NODE_ENV`, `PORT`, `MONGODB_URI`, `CLIENT_URL`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL`, `REFRESH_INACTIVITY_MIN`, `REFRESH_ABSOLUTE_DAYS`, `RESET_TOKEN_TTL_MIN`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `APP_TIMEZONE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Cliente: `VITE_API_URL`.
+- Variables del servidor: `NODE_ENV`, `PORT`, `MONGODB_URI`, `CLIENT_URL`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL`, `REFRESH_INACTIVITY_MIN`, `REFRESH_ABSOLUTE_DAYS`, `RESET_TOKEN_TTL_MIN`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `APP_TIMEZONE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SEED_PASSWORD` (opcional). Cliente: `VITE_API_URL`.
 - Local: `MONGODB_URI=mongodb://localhost:27017/finanzas?replicaSet=rs0`. Atlas: basta con reemplazar la URI por `mongodb+srv://...`.
 - Despliegue futuro: el servidor sirve con `npm start -w server` y el cliente se compila con `npm run build -w client` (salida estática). No se crean archivos de proveedor hasta decidir dónde desplegar.
 
 ### 19. Protección de ramas en GitHub
-- `main` y `dev` exigen pull request para recibir cambios, sin push directo ni force push ni borrado. Se exige 0 aprobaciones para que el equipo pueda fusionar sus propios PR (se puede subir a 1 cuando haya revisión cruzada).
+- `main` y `dev` exigen pull request y la verificación de integración continua para recibir cambios, sin push directo ni force push ni borrado. Se exige 0 aprobaciones para que el equipo pueda fusionar sus propios PR (se puede subir a 1 cuando haya revisión cruzada).
 - El flujo de `CLAUDE.md` pasa de "merge local en `dev`" a "PR hacia `dev`".
+
+### 20. Presupuestos y alertas
+- Un presupuesto de categoría exige un presupuesto general del mismo mes y moneda, y la suma de categorías no puede superarlo; ambas reglas se validan en el servicio dentro de una transacción.
+- Al crear o editar un gasto, el servicio compara el porcentaje anterior y el nuevo de cada presupuesto afectado. Si cruza 90 % o 100 %, la respuesta incluye `alertas` y el cliente muestra una notificación. Así el aviso aparece una sola vez sin guardar estado adicional; el indicador sigue visible en el dashboard.
+
+### 21. Integración continua
+- GitHub Actions (`.github/workflows/ci.yml`) se ejecuta en cada pull request hacia `dev` y `main`: `npm ci`, `npm run lint`, `npm test` y `npm run build` con Node.js 22. No usa secretos: las pruebas emplean MongoDB en memoria y correo simulado.
+- El job se llama `verificar` y es la comprobación obligatoria en la protección de ramas.
+
+### 22. Publicación por épica
+- Las ramas de trabajo se fusionan en `dev` por pull request. Cuando todas las historias de una épica están terminadas, un pull request lleva `dev` a `main` y se crea la etiqueta indicada en `docs/trazabilidad.md`. Las épicas se implementan una a la vez para que `dev` no lleve trabajo parcial a `main`.
+
+### 23. Datos de demostración
+- `server/scripts/seed.js` implementa RT-06 y RT-07. Crea datos deterministas por usuario, sin usar los repositorios porque es una herramienta de carga, y comprueba al final que cada saldo coincide con sus movimientos.
+- Solo reemplaza usuarios del dominio `demo.finanzas.test`. Se niega a cargar datos demo en producción o en una base remota salvo `--permitir-remoto`.
+
+### 24. Trazabilidad
+- `docs/trazabilidad.md` asigna cada historia a una spec, un cambio de OpenSpec y una rama. Cada tarea y cada commit de código citan su historia (`feat(hu-08): ...`).
+
+### 25. Decisiones confirmadas y reglas de validación
+
+Completan las historias sin modificar su texto. Si una historia original es más general, se aplica esta precisión.
+
+**Decisiones confirmadas**
+
+- Alcance: se mantienen los requisitos (a) a (l) del enunciado y las historias HU-01 a HU-17 tal como las redactó el equipo. HU-09 forma parte del proyecto y las historias HU-18 a HU-31 cubren las necesidades del usuario que faltaban. Lo que solo sirve al desarrollo (base del proyecto, contrato de la API, integración continua, interfaz, datos de demostración y primer administrador) no es una historia: se registra como requisitos técnicos RT-01 a RT-07 en las specs y en `docs/trazabilidad.md`.
+- Base de datos: se usa MongoDB en lugar de la mención a SQLite del enunciado; en desarrollo es local y puede cambiarse a MongoDB Atlas modificando la URI de conexión.
+- Sesión: expira tras 30 minutos sin actividad, se renueva mientras exista actividad y tiene un máximo de 7 días. El enlace de recuperación de contraseña dura 30 minutos.
+- Administrador: consulta los datos de los usuarios en modo de solo lectura y gestiona roles. No crea, edita ni elimina datos financieros ajenos.
+- Categorías: no existen categorías globales. Cada usuario recibe categorías predeterminadas propias al registrarse.
+- Monedas: se admiten PEN, USD y EUR. Cada cuenta tiene una moneda, sus movimientos la heredan y los totales nunca mezclan monedas ni aplican conversiones.
+- Saldo: se actualiza con cada movimiento y debe coincidir siempre con saldo inicial + ingresos − gastos.
+- Presupuestos: se definen por mes y moneda para el mes actual o futuros. Los de categoría requieren un presupuesto general y su suma no puede superarlo.
+- Alertas de presupuesto: se avisa una sola vez cuando un gasto cruza el 90 % y cuando cruza el 100 %; el indicador permanece visible.
+- Reportes: el PDF contiene resumen de indicadores y tabla de movimientos, sin gráficos, y cada reporte admite como máximo 5000 movimientos.
+- Prioridad: el campo "Prioridad" se mantiene como buena práctica de gestión del backlog, aunque no forma parte del formato obligatorio de la guía.
+
+**Reglas de validación comunes**
+
+- Nombre de usuario: obligatorio, de 2 a 80 caracteres.
+- Correo electrónico: formato válido, sin distinguir mayúsculas y único en el sistema.
+- Contraseña: de 8 a 72 caracteres, con al menos una mayúscula y un número.
+- Nombre de cuenta o categoría: obligatorio, de 2 a 50 caracteres y único por usuario (por tipo en categorías), sin distinguir mayúsculas.
+- Montos de movimientos y presupuestos: mayores a 0, con hasta 2 decimales y máximo 999,999,999.99.
+- Saldo inicial: puede ser cero o negativo, con hasta 2 decimales y valor absoluto máximo 999,999,999.99.
+- Fecha del movimiento: obligatoria, en formato YYYY-MM-DD, no futura según la zona horaria America/Lima.
+- Descripción del movimiento: opcional, de hasta 255 caracteres.
+- Moneda: PEN, USD o EUR. Período de presupuesto: formato YYYY-MM.
+- Toda validación se aplica antes de guardar; el formulario avisa los errores antes de enviar.
 
 ## Risks / Trade-offs
 
@@ -194,7 +247,7 @@ client/src/
 - [Consultar el usuario en BD en cada solicitud agrega latencia] → Es una consulta por `_id` indexada; aceptable para el volumen del proyecto y necesaria para revalidar el rol.
 - [Recalcular el saldo en cada movimiento es una agregación extra] → Usa el índice `(tenantId, cuentaId)`; aceptable para volúmenes personales.
 - [Sin conversión de monedas, el usuario no ve un patrimonio total consolidado] → Fuera de alcance; el dashboard deja claro en qué moneda muestra los datos.
-- [Generar PDF grandes en el servidor bloquea el hilo de Node] → Límite de filas por reporte y medición; mover a segundo plano solo si se observa el problema.
+- [Generar PDF grandes en el servidor bloquea el hilo de Node] → Límite de 5000 movimientos por reporte.
 - [Plugin de guardia de `tenantId` puede romper consultas legítimas sin inquilino (p. ej. `usuarios`)] → Solo se aplica a los modelos de datos financieros.
 
 ## Migration Plan

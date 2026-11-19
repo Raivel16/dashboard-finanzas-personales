@@ -2,22 +2,27 @@
 
 ## ADDED Requirements
 
-### Requirement: Indicadores y gráficos por moneda
-El sistema SHALL calcular los indicadores y gráficos del dashboard solo con los movimientos de la moneda seleccionada, sin convertir ni sumar montos de monedas distintas. Por defecto MUST usar la moneda principal del usuario y permitirle elegir otra moneda en la que tenga cuentas.
+### Requirement: Ver el dashboard por moneda
+El sistema SHALL calcular indicadores y gráficos solo con los movimientos de la moneda seleccionada, sin conversiones. Por defecto MUST usar la moneda principal del usuario.
 
-Origen: HU-12, HU-13 (ver `docs/historias-de-usuario.md`).
+Origen: HU-28 (ver `docs/historias-de-usuario.md`).
 
 #### Scenario: Dashboard en la moneda principal
-- **GIVEN** la moneda principal del usuario es "PEN" y tiene movimientos en "PEN" y en "USD" en el mes en curso
-- **WHEN** accede al dashboard
+- **GIVEN** la moneda principal es "PEN" y hay movimientos en "PEN" y "USD"
+- **WHEN** el usuario accede al dashboard
 - **THEN** los indicadores y gráficos muestran solo los totales en "PEN" con el símbolo "S/"
 
 #### Scenario: Cambio de moneda en el dashboard
-- **GIVEN** el usuario está viendo el dashboard en "PEN"
-- **WHEN** selecciona la moneda "USD" en el selector de moneda
-- **THEN** el sistema recalcula indicadores y gráficos usando solo los movimientos en "USD" y muestra los montos con el símbolo "$"
+- **GIVEN** el usuario ve el dashboard en "PEN"
+- **WHEN** selecciona "USD"
+- **THEN** el sistema recalcula todo usando solo los movimientos en "USD"
 
-#### Scenario: Selector limitado a monedas en uso
+#### Scenario: Error al cambiar de moneda
+- **GIVEN** el usuario ve el dashboard en "PEN"
+- **WHEN** selecciona "USD" y ocurre un error de conexión
+- **THEN** el sistema mantiene visibles los datos en "PEN" y muestra el mensaje "No se pudieron cargar los indicadores en USD" con la opción de reintentar
+
+#### Scenario: Selector limitado a las monedas en uso
 - **GIVEN** el usuario solo tiene cuentas en "PEN"
-- **WHEN** abre el selector de moneda del dashboard
-- **THEN** el sistema muestra únicamente "PEN" como opción disponible
+- **WHEN** abre el selector de moneda
+- **THEN** el sistema muestra únicamente "PEN"; si aún no tiene cuentas, muestra su moneda principal

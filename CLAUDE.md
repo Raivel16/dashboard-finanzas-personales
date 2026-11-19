@@ -11,9 +11,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 The specs also fix these technical points, which the implementation must respect:
 
 - Express REST API with JWT authentication; roles `usuario estándar` and `administrador` (RBAC), with the role re-validated in the API (middleware/service layer), not just hidden in the React UI.
-- Multi-tenant data isolation: every MongoDB document for movements, accounts, categories and budgets carries its owner's `userId`/`tenantId`, and every query filters by the authenticated user's id at the data-access layer (requests for another user's resource return 403/404 without leaking data).
+- Multi-tenant data isolation: every MongoDB document for movements, accounts, categories and budgets carries `tenantId` and `usuarioId`, and every query filters by the authenticated user's `tenantId` at the repository layer (another user's resource returns 404 without leaking data). Administrators get read-only access to other users' data.
 - React frontend uses Chart.js for dashboard charts and SweetAlert2 for confirmation dialogs.
-- Reports exportable to PDF and Excel.
+- Reports exportable to PDF and Excel, generated on the server.
+- UI follows [DESIGN.md](DESIGN.md) (visual system, "La libreta de ahorros") and [PRODUCT.md](PRODUCT.md) (users, voice, principles). Read both before building any screen.
+- `server/scripts/seed.js` already exists (RT-07, RT-06); its npm scripts and dependencies are added with the base project.
 
 ## Architecture (mandatory)
 
@@ -32,8 +34,8 @@ Follows [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ra
 
 **Long-lived branches**
 
-- `main` — only finished, working functionality. Never commit or develop directly on it; it only receives merges from `dev` (or a `release/` branch) once a set of features is ready, plus `hotfix/` merges.
-- `dev` — integration branch. **Every work branch starts from `dev` and merges back into `dev`.** Never commit directly on it either.
+- `main` — only finished, working functionality. Never commit or develop directly on it. It receives `dev` through a pull request **when a whole epic is complete** (tagged per [docs/trazabilidad.md](docs/trazabilidad.md)), plus `hotfix/` merges.
+- `dev` — integration branch. **Every work branch starts from `dev` and returns to it through a pull request** with CI passing. Never commit directly on it either. Implement one epic at a time.
 - Exception: `hotfix/` branches start from `main` (critical production fix), and are merged into both `main` and `dev`.
 
 Before starting any task, branch from an up-to-date `dev`: `git switch dev && git pull && git switch -c <prefijo>/<nombre>`.
@@ -52,20 +54,22 @@ Before starting any task, branch from an up-to-date `dev`: `git switch dev && gi
 | `ci/` | CI/CD pipelines |
 | `release/` | Prepare a version for `main` (e.g. `release/v1.0.0`) |
 
-**Naming:** all lowercase, words separated by hyphens (no spaces or underscores), short Spanish description. Include the user-story ID when the branch implements one: `feature/hu-08-registrar-movimiento`, `fix/hu-02-bloqueo-intentos`, `docs/actualizar-guia-instalacion`.
+**Naming:** all lowercase, words separated by hyphens (no spaces or underscores), short Spanish description. Feature branches use the name assigned in [docs/trazabilidad.md](docs/trazabilidad.md) (`feature/implementar-movimientos`); fixes for one story include its ID (`fix/hu-02-bloqueo-intentos`).
 
-**Commits:** Conventional Commits in Spanish, using the same types as the prefixes — `<tipo>: <descripción en imperativo>` (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`), optionally with a scope (`feat(movimientos): ...`) and a bullet body explaining the why. The commit type should match the branch prefix (`feature/` → `feat:`).
+**Commits:** Conventional Commits in Spanish, using the same types as the prefixes — `<tipo>: <descripción en imperativo>` (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`), and a bullet body explaining the why. Code commits use the user story or technical requirement as scope (`feat(hu-08): ...`, `chore(rt-01): ...`). The commit type should match the branch prefix (`feature/` → `feat:`).
+
+**Traceability:** no code without a user story (functional, HU-xx) or technical requirement (RT-xx). Never write technical items as user stories. Each one maps to one spec requirement and one OpenSpec change in [docs/trazabilidad.md](docs/trazabilidad.md); if work fits none, create or adjust the story or requirement first. A story or requirement is done when its 4 scenarios have passing automated tests, lint and CI are green, and its pull request is merged into `dev`. There is no minimum coverage percentage.
 
 ## Requirements sources
 
-- [docs/historias-de-usuario.md](docs/historias-de-usuario.md) is the source of truth for requirements: 17 user stories (HU-01 … HU-17) grouped into 9 epics, each with exactly 4 Gherkin scenarios (camino feliz, flujo alternativo, manejo de errores, caso de borde). Its final section "Supuestos y Vacíos Detectados" lists open assumptions (JWT/reset-link expiry of 30 min, 90% budget alert threshold, HU-09 being an extra story, admin can view but not edit other users' movements) — check it before deciding those behaviours.
-- `docs/HU_Dashboard_Finanzas_Personales_editado.docx` is the original document the Markdown was converted from; edit the Markdown, not the .docx.
+- [docs/historias-de-usuario.md](docs/historias-de-usuario.md) is the source of truth for requirements: 31 user stories (HU-01 … HU-31) grouped into 9 epics, each with exactly 4 Gherkin scenarios (camino feliz, flujo alternativo, manejo de errores, caso de borde). HU-01 … HU-17 are the team's original stories and must not be reworded; HU-18 … HU-31 fill functional gaps. Stories hold only user needs: development-only work (seed data, CI, project base, API conventions, first admin) is never a story; it lives as technical requirements RT-01 … RT-07 in the specs and [docs/trazabilidad.md](docs/trazabilidad.md). Confirmed decisions and field validation rules are in section 25 of the architecture design — check them before deciding those behaviours.
+- `docs/HU_Dashboard_Finanzas_Personales_editado.docx` is the Word version of the same content. Whenever the Markdown changes, update the .docx too so both stay identical.
 
 ## OpenSpec workflow
 
 Development is spec-driven with OpenSpec (CLI `openspec`, v2.x, schema `spec-driven`).
 
-- `openspec/specs/<capability>/spec.md` — one spec per epic (autenticacion-usuarios, control-acceso, gestion-categorias, gestion-cuentas, gestion-movimientos, consulta-movimientos, dashboard-indicadores, presupuestos, reportes-exportacion). Each `Requirement` cites its origin story (`Origen: HU-xx`), keep that traceability when adding or changing requirements.
+- `openspec/specs/<capability>/spec.md` — one spec per capability (autenticacion-usuarios, control-acceso, gestion-categorias, gestion-cuentas, gestion-movimientos, consulta-movimientos, dashboard-indicadores, presupuestos, reportes-exportacion; `definir-arquitectura-base` adds contrato-api, plataforma-proyecto and interfaz-usuario when archived). Each `Requirement` cites its origin story (`Origen: HU-xx`), keep that traceability when adding or changing requirements.
 - `openspec/changes/` — in-progress change proposals; completed ones go to `openspec/changes/archive/`.
 - Workflow skills live in `.claude/skills/` (mirrored in `.agents/skills/` for other agents — keep both in sync if edited): `openspec-propose` → `openspec-apply-change` → `openspec-sync-specs` / `openspec-archive-change`, plus `openspec-explore` and `openspec-update-change`. New features should go through a change proposal rather than editing code or main specs directly.
 
