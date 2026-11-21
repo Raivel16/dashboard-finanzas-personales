@@ -11,12 +11,12 @@
 
 ## 2. MongoDB local como replica set [RT-01]
 
-- [ ] 2.1 Configurar el servicio MongoDB 9.0 local como replica set `rs0` (agregar `replication.replSetName: rs0` en `mongod.cfg`, reiniciar el servicio y ejecutar `rs.initiate()` desde mongosh de Compass); verificar que `rs.status()` reporta un nodo `PRIMARY`
+- [x] 2.1 Configurar el servicio MongoDB 9.0 local como replica set `rs0` (agregar `replication.replSetName: rs0` en `mongod.cfg`, reiniciar el servicio y ejecutar `rs.initiate()` desde mongosh de Compass); verificar que `rs.status()` reporta un nodo `PRIMARY`
 
 ## 3. Monorepo y tooling [RT-01]
 
-- [ ] 3.1 Crear `package.json` raíz con workspaces `client`, `server`, `shared`, `"type": "module"`, `engines.node >= 22` y `.nvmrc`; verificar que `npm install` instala los tres workspaces
-- [ ] 3.2 Configurar ESLint (flat config, reglas de React para `client/`) y Prettier con scripts `lint` y `format`; verificar que `npm run lint` termina sin errores
+- [x] 3.1 Crear `package.json` raíz con workspaces `client`, `server`, `shared`, `"type": "module"`, `engines.node >= 22` y `.nvmrc`; verificar que `npm install` instala los tres workspaces
+- [x] 3.2 Configurar ESLint (flat config, reglas de React para `client/`) y Prettier con scripts `lint` y `format`; verificar que `npm run lint` termina sin errores
 - [ ] 3.3 Agregar scripts raíz `dev`, `test` y `build`; verificar que cada uno se ejecuta
 
 ## 4. Paquete `shared` [RT-02, RT-03]
