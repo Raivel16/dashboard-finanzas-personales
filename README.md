@@ -2,7 +2,7 @@
 
 Proyecto universitario (UC) con stack **MERN**: MongoDB, Express, React y Node.js. Permite registrar cuentas, categorías, movimientos y presupuestos, y ver indicadores y reportes de las finanzas personales.
 
-El desarrollo es guiado por especificaciones (OpenSpec): las historias de usuario están en [docs/historias-de-usuario.md](docs/historias-de-usuario.md), la trazabilidad en [docs/trazabilidad.md](docs/trazabilidad.md) y el diseño técnico en [openspec/changes/definir-arquitectura-base/design.md](openspec/changes/definir-arquitectura-base/design.md). La interfaz sigue [DESIGN.md](DESIGN.md) y [PRODUCT.md](PRODUCT.md).
+El desarrollo es guiado por especificaciones (OpenSpec): las historias de usuario están en [docs/historias-de-usuario.md](docs/historias-de-usuario.md), la trazabilidad en [docs/trazabilidad.md](docs/trazabilidad.md) y el diseño técnico en [openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md](openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md). La interfaz sigue [DESIGN.md](DESIGN.md) y [PRODUCT.md](PRODUCT.md).
 
 ## Requisitos
 
