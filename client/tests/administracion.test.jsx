@@ -180,7 +180,7 @@ describe('HU-23 · gestión de roles', () => {
           respuestaError(409, 'CONFLICT', 'Debe existir al menos un administrador'),
       },
     });
-    await screen.findByText('Ada Admin');
+    await screen.findByLabelText('Rol de Ada Admin');
     await usuario.selectOptions(screen.getByLabelText('Rol de Ada Admin'), 'usuario');
 
     await waitFor(() =>
