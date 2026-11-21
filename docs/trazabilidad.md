@@ -21,6 +21,14 @@ Las épicas se implementan una a la vez. Al completarse todas las historias de u
 
 Presupuestos va antes que el Dashboard porque el indicador de presupuesto utilizado (HU-12) depende de esa épica.
 
+## Obligaciones de las épicas de datos (acceso de administrador)
+
+`implementar-control-acceso` entrega el mecanismo (rol vigente en cada solicitud, `requerirRol`, `RepositorioLectura` y las rutas de usuarios), probado con un recurso de prueba. HU-04, HU-05 y HU-22 mencionan categorías, cuentas, movimientos y presupuestos, así que **no se marcan como hechas** hasta que cada épica de datos (`implementar-categorias`, `implementar-cuentas`, `implementar-movimientos`, `implementar-presupuestos`) agregue:
+
+- su ruta `GET /api/v1/admin/usuarios/:id/<recurso>` con `admin.repositorioLecturaDe`, sin rutas de escritura de administrador;
+- sus secciones en el detalle de usuario de "Administración";
+- las pruebas de los escenarios de HU-04 (administrador consulta datos de todos), HU-05 (aislamiento) y HU-22 (consulta, estado vacío y modificación ajena rechazada) sobre sus datos reales.
+
 ## Matriz
 
 | Historia | Título | Épica | Spec | Cambio de OpenSpec | Rama |

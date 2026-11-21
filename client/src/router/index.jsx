@@ -1,6 +1,6 @@
 // Único lugar donde se declaran las rutas. Cada dominio expone su página por su index.js.
 import { createBrowserRouter, createMemoryRouter, Outlet } from 'react-router-dom';
-import { Home, LayoutGrid, UserRound } from 'lucide-react';
+import { Home, LayoutGrid, ShieldCheck, UserRound } from 'lucide-react';
 import { InicioPage } from '../inicio/index.js';
 import { CatalogoPage, FormularioDemo, useFormularioDemo } from '../catalogo/index.js';
 import {
@@ -10,10 +10,12 @@ import {
   OlvideContrasenaPage,
   ProveedorSesion,
   RegistroPage,
+  RutaAdmin,
   RestablecerContrasenaPage,
   RutaProtegida,
   RutaPublica,
 } from '../autenticacion/index.js';
+import { AdministracionPage, UsuarioDetallePage } from '../administracion/index.js';
 import { PerfilPage } from '../perfil/index.js';
 import { PaginaNoEncontrada } from '../shared/components/PaginaNoEncontrada.jsx';
 
@@ -42,6 +44,19 @@ export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
 
   destinos.push({ ruta: '/perfil', etiqueta: 'Mi perfil', icono: UserRound });
   hijas.push({ path: 'perfil', element: <PerfilPage />, handle: { titulo: 'Mi perfil' } });
+
+  destinos.push({ ruta: '/administracion', etiqueta: 'Administración', icono: ShieldCheck, soloAdmin: true });
+  hijas.push({
+    element: <RutaAdmin />,
+    children: [
+      { path: 'administracion', element: <AdministracionPage />, handle: { titulo: 'Administración' } },
+      {
+        path: 'administracion/usuarios/:id',
+        element: <UsuarioDetallePage />,
+        handle: { titulo: 'Datos del usuario' },
+      },
+    ],
+  });
 
   if (desarrollo) {
     destinos.push({ ruta: '/catalogo', etiqueta: 'Catálogo', icono: LayoutGrid });

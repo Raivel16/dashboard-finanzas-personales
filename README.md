@@ -123,6 +123,20 @@ Perfil (requiere sesión; actúa siempre sobre la persona autenticada, sin ident
 - **Correo real (Brevo u otro):** define `SMTP_*` y `MAIL_FROM` en `server/.env`. Gmail y otros proveedores pueden enviar estos mensajes a la carpeta de spam la primera vez; pide a quien pruebe que revise esa carpeta o marque el remitente como seguro.
 - **Límites conocidos:** no hay límite por IP (solo el bloqueo por cuenta y el enfriamiento de los correos); es una mejora futura que no cambia el contrato.
 
+## Administración y roles
+
+Rutas de `/api/v1/admin` (solo rol `admin`; el rol se lee de la base en cada solicitud, así que una degradación se aplica de inmediato):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `GET /usuarios?q=&page=&limit=&sort=` | Lista usuarios paginados; `q` busca por nombre o correo (texto literal). |
+| `GET /usuarios/:id` | Datos de un usuario, sin información sensible. |
+| `PATCH /usuarios/:id/rol` | Cambia el rol (`usuario` o `admin`). Responde 409 "Debe existir al menos un administrador" si dejaría al sistema sin ninguno; la comprobación es atómica (transacción con documento centinela). |
+
+- Un usuario estándar recibe 403 "Acceso no autorizado", y cada denegación queda en el log. La autorización se comprueba en el middleware `requerirRol` y otra vez en el servicio.
+- Para leer datos financieros de otra persona, las rutas `GET` de administración usan `RepositorioLectura` (sin métodos de escritura). Las rutas de escritura siempre usan el `tenantId` de quien llama, por lo que editar un recurso ajeno responde 404.
+- Los administradores adicionales se promueven desde "Administración"; el primero se crea con `npm run seed:admin -w server`.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).

@@ -5,6 +5,11 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { pinoHttp } from 'pino-http';
 import healthRoutes from './routes/health.routes.js';
+import { crearAutorizacion } from './services/autorizacion.service.js';
+import { crearAdminService } from './services/admin.service.js';
+import { crearAdminController } from './controllers/admin.controller.js';
+import { crearAdminRoutes } from './routes/admin.routes.js';
+import { crearRequerirRol } from './middlewares/autorizacion.middleware.js';
 import { crearPerfilService } from './services/perfil.service.js';
 import { crearPerfilController } from './controllers/perfil.controller.js';
 import { crearPerfilRoutes } from './routes/perfil.routes.js';
@@ -56,8 +61,11 @@ export function crearApp({
   const auth = crearAuthService({ config, reloj, correo, logger, sesiones, costoBcrypt });
   const recuperacion = crearRecuperacionService({ config, reloj, correo, logger, sesiones, costoBcrypt });
   const perfil = crearPerfilService({ reloj, correo, logger, sesiones, costoBcrypt });
+  const autorizacion = crearAutorizacion({ logger });
+  const admin = crearAdminService({ autorizacion, logger });
   const autenticar = crearAutenticar(sesiones);
-  app.locals.servicios = { sesiones, auth, recuperacion, perfil };
+  const requerirRol = crearRequerirRol(autorizacion);
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin };
 
   const api = express.Router();
   api.use(sinCache);
@@ -70,7 +78,11 @@ export function crearApp({
     }),
   );
   api.use('/perfil', crearPerfilRoutes({ controlador: crearPerfilController({ perfil }), autenticar }));
-  extras?.(api, { autenticar });
+  api.use(
+    '/admin',
+    crearAdminRoutes({ controlador: crearAdminController({ admin }), autenticar, requerirRol }),
+  );
+  extras?.(api, { autenticar, requerirRol, admin });
   app.use('/api/v1', api);
 
   app.use(rutaNoEncontrada);

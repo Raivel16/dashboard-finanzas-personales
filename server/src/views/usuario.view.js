@@ -9,3 +9,12 @@ export function usuarioJson(usuario) {
     monedaPrincipal: usuario.monedaPrincipal,
   };
 }
+
+/** Vista para administración: agrega el estado y la fecha de alta, sin datos sensibles. */
+export function usuarioAdminJson(usuario) {
+  return {
+    ...usuarioJson(usuario),
+    activo: usuario.activo,
+    creadoEn: usuario.createdAt,
+  };
+}

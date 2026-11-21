@@ -3,7 +3,11 @@
 import mongoose from 'mongoose';
 import { sinCamposProtegidos } from '../models/plugins/tenant.plugin.js';
 
-export class RepositorioBase {
+/**
+ * Acceso de SOLO LECTURA a los datos de un inquilino. No tiene métodos de escritura: es el único camino por el
+ * que un administrador lee los datos de otra persona (HU-22), construido con el tenantId de esa persona.
+ */
+export class RepositorioLectura {
   constructor(modelo, tenantId) {
     if (typeof tenantId !== 'string' || tenantId.length === 0) {
       throw new Error(`El repositorio de ${modelo?.modelName ?? 'datos'} requiere un tenantId`);
@@ -40,6 +44,16 @@ export class RepositorioBase {
     return this.modelo.countDocuments(this._filtro(filtro)).session(session ?? null);
   }
 
+  /** Agregaciones: el $match por tenantId se antepone siempre. */
+  async agregar(etapas, { session } = {}) {
+    return this.modelo
+      .aggregate([{ $match: { tenantId: this.tenantId } }, ...etapas])
+      .session(session ?? null);
+  }
+}
+
+/** Acceso completo (lectura y escritura) a los datos del propio inquilino autenticado. */
+export class RepositorioBase extends RepositorioLectura {
   async crear(datos, { session } = {}) {
     const [documento] = await this.modelo.create([{ ...datos, tenantId: this.tenantId }], { session });
     return documento;
@@ -58,12 +72,5 @@ export class RepositorioBase {
   async eliminarPorId(id, { session } = {}) {
     if (!mongoose.isValidObjectId(id)) return null;
     return this.modelo.findOneAndDelete(this._filtro({ _id: id }), { session });
-  }
-
-  /** Agregaciones: el $match por tenantId se antepone siempre. */
-  async agregar(etapas, { session } = {}) {
-    return this.modelo
-      .aggregate([{ $match: { tenantId: this.tenantId } }, ...etapas])
-      .session(session ?? null);
   }
 }
