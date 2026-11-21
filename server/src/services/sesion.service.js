@@ -144,6 +144,7 @@ export function crearSesionService({ config, reloj }) {
       if (sesionId) await sesionRepository.revocar(sesionId, ahora);
     },
 
+    revocarOtras: (usuarioId, sesionId) => sesionRepository.revocarOtras(usuarioId, sesionId, reloj.ahora()),
     revocarTodas: (usuarioId) => sesionRepository.revocarTodasDeUsuario(usuarioId, reloj.ahora()),
   };
 }

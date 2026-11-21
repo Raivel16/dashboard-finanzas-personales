@@ -51,6 +51,12 @@ export const usuarioRepository = {
     await Usuario.updateOne({ _id: id }, { $set: { intentosFallidos: 0, bloqueadoHasta: null } });
   },
 
+  /** Actualiza solo los datos editables del perfil; el correo, el rol y el tenant no se tocan nunca. */
+  async actualizarPerfil(id, { nombre, monedaPrincipal }) {
+    const cambios = { nombre, ...(monedaPrincipal && { monedaPrincipal }) };
+    return Usuario.findByIdAndUpdate(id, { $set: cambios }, { returnDocument: 'after' }).lean();
+  },
+
   /** Guarda la nueva contraseña y levanta cualquier bloqueo por intentos. */
   async actualizarPassword(id, passwordHash) {
     await Usuario.updateOne(

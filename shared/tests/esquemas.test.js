@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   crearEsquemaMovimiento,
+  esquemaActualizarPerfil,
+  esquemaCambiarContrasena,
   esquemaCategoria,
   esquemaConsultaMovimientos,
   esquemaCuenta,
@@ -266,5 +268,32 @@ describe('autenticación: mensajes y esquemas de recuperación', () => {
     expect(validar(esquemaRestablecerContrasena, { token: 'abc', password: 'Clave1234' }).valido).toBe(true);
     const r = validar(esquemaRestablecerContrasena, { token: '', password: 'floja' });
     expect(campos(r)).toEqual(['token', 'password']);
+  });
+});
+
+describe('esquemas de perfil (HU-20, HU-21)', () => {
+  it('el nombre es obligatorio y la moneda es opcional', () => {
+    const vacio = validar(esquemaActualizarPerfil, { nombre: '   ' });
+    expect(vacio.errores).toEqual([{ campo: 'nombre', mensaje: 'El nombre es obligatorio' }]);
+    const ok = validar(esquemaActualizarPerfil, { nombre: ' Ana ' });
+    expect(ok.datos).toEqual({ nombre: 'Ana' });
+    expect(validar(esquemaActualizarPerfil, { nombre: 'Ana', monedaPrincipal: 'usd' }).datos).toEqual({
+      nombre: 'Ana',
+      monedaPrincipal: 'USD',
+    });
+    expect(validar(esquemaActualizarPerfil, { nombre: 'Ana', monedaPrincipal: 'XXX' }).valido).toBe(false);
+  });
+
+  it('ignora el correo: no forma parte del esquema', () => {
+    const r = validar(esquemaActualizarPerfil, { nombre: 'Ana', email: 'otro@correo.com' });
+    expect(r.datos).toEqual({ nombre: 'Ana' });
+  });
+
+  it('la contraseña actual solo debe venir y la nueva debe ser segura', () => {
+    expect(
+      validar(esquemaCambiarContrasena, { passwordActual: 'vieja', passwordNueva: 'Clave1234' }).valido,
+    ).toBe(true);
+    const r = validar(esquemaCambiarContrasena, { passwordActual: '', passwordNueva: 'floja' });
+    expect(r.errores.map((e) => e.campo)).toEqual(['passwordActual', 'passwordNueva']);
   });
 });

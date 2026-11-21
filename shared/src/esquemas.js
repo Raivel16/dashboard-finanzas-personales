@@ -144,6 +144,17 @@ export const esquemaRestablecerContrasena = {
   password: contrasena,
 };
 
+export const esquemaActualizarPerfil = {
+  nombre: nombreUsuario,
+  monedaPrincipal: monedaRegla(false),
+};
+
+export const esquemaCambiarContrasena = {
+  // La actual no se valida como contraseña nueva: solo debe venir.
+  passwordActual: { requerido: true, etiqueta: 'La contraseña actual' },
+  passwordNueva: { ...contrasena, etiqueta: 'La contraseña nueva' },
+};
+
 export const esquemaCuenta = {
   nombre: nombreCuentaCategoria,
   tipo: {

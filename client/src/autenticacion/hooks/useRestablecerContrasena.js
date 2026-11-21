@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CODIGOS_ERROR, MENSAJES, esquemaRestablecerContrasena } from '@finanzas/shared';
 import { useFormulario } from '../../shared/hooks/useFormulario.js';
 import { restablecerContrasena } from '../services/autenticacion.service.js';
-import { erroresPorCampo } from './erroresApi.js';
+import { erroresPorCampo } from '../../shared/utils/erroresApi.js';
 
 export function useRestablecerContrasena() {
   const navegar = useNavigate();

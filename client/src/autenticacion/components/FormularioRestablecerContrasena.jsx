@@ -1,7 +1,7 @@
 import { MENSAJES } from '@finanzas/shared';
 import { Boton } from '../../shared/components/Boton.jsx';
 import { Campo } from '../../shared/components/Campo.jsx';
-import { Aviso } from './Aviso.jsx';
+import { Aviso } from '../../shared/components/Aviso.jsx';
 import { EnlaceTexto } from './EnlaceTexto.jsx';
 
 export function FormularioRestablecerContrasena({ formulario, enlaceExpirado, errorGeneral }) {

@@ -109,6 +109,13 @@ Rutas de `/api/v1/auth` (diseño completo en `openspec/changes/archive/2026-11-2
 | `POST /olvide-contrasena` | Responde siempre igual, exista o no el correo. Un enlace cada 60 segundos. |
 | `POST /restablecer-contrasena` | Cambia la contraseña con el enlace (un solo uso) y cierra todas las sesiones. |
 
+Perfil (requiere sesión; actúa siempre sobre la persona autenticada, sin identificador en la ruta):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `PATCH /api/v1/perfil` | Actualiza `nombre` y `monedaPrincipal` (PEN, USD o EUR). El correo, el rol y el tenant se ignoran. |
+| `PUT /api/v1/perfil/contrasena` | Cambia la contraseña con `passwordActual` y `passwordNueva`: rechaza la actual incorrecta (400) y la nueva igual a la actual (400), cierra las demás sesiones y conserva la actual. Los intentos fallidos con la actual comparten el límite de 3 del inicio de sesión (429). |
+
 - **Cookies** `httpOnly` con `sameSite=lax` (`secure` en producción): `access_token` (JWT de 15 minutos) y `refresh_token` (opaco, solo en `/api/v1/auth`). Solo el hash de este último se guarda en la base.
 - **Tiempos:** la sesión caduca tras 30 minutos sin actividad (`REFRESH_INACTIVITY_MIN`) y, en todo caso, a los 7 días (`REFRESH_ABSOLUTE_DAYS`). El enlace de recuperación vence a los 30 minutos (`RESET_TOKEN_TTL_MIN`).
 - **Errores de sesión:** `TOKEN_EXPIRED` (el cliente renueva solo), `SESSION_EXPIRED` y `SESSION_REVOKED` (hay que iniciar sesión de nuevo).

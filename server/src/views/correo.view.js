@@ -37,14 +37,17 @@ export function correoRecuperacion({ nombre, enlace, minutos }) {
   };
 }
 
-export function correoContrasenaActualizada({ nombre }) {
+export function correoContrasenaActualizada({ nombre, conservaSesion = false }) {
   return {
     asunto: 'Tu contraseña fue actualizada',
     texto:
-      `Hola ${nombre}, tu contraseña se actualizó y se cerraron tus sesiones abiertas. ` +
+      `Hola ${nombre}, tu contraseña se actualizó y se cerraron ` +
+      (conservaSesion ? 'tus otras sesiones abiertas. ' : 'tus sesiones abiertas. ') +
       'Si no fuiste tú, restablécela de inmediato desde "¿Olvidaste tu contraseña?".',
     html: envolver('Tu contraseña fue actualizada', [
-      `<p>Hola ${escapar(nombre)}, tu contraseña se actualizó y se cerraron tus sesiones abiertas.</p>`,
+      `<p>Hola ${escapar(nombre)}, tu contraseña se actualizó y se cerraron ${
+        conservaSesion ? 'tus otras sesiones abiertas' : 'tus sesiones abiertas'
+      }.</p>`,
       '<p>Si no fuiste tú, restablécela de inmediato desde "¿Olvidaste tu contraseña?".</p>',
     ]),
   };
