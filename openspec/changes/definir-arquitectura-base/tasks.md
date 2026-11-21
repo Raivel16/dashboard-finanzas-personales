@@ -40,13 +40,13 @@
 
 ## 6. Cliente base e interfaz [RT-01, RT-05]
 
-- [ ] 6.1 Crear `client/` con Vite, React, Tailwind y proxy de `/api`; verificar que la página inicial consulta `/api/v1/health`
-- [ ] 6.2 Crear la estructura Screaming Architecture y React Router con layout y página 404; verificar navegando por una ruta existente y otra inexistente
-- [ ] 6.3 Crear el cliente HTTP que interpreta `{ data, meta }` y `{ error }`; verificar con Vitest
-- [ ] 6.4 Definir en Tailwind los tokens de `DESIGN.md`, cargar Public Sans e IBM Plex Mono y aplicar el tema a SweetAlert2, react-toastify y Chart.js; verificar con una página de componentes en celular y escritorio
-- [ ] 6.5 Crear el layout responsivo (barra lateral, navegación inferior y panel o pantalla de registro) y los componentes comunes accesibles; verificar los 4 escenarios de RT-05
-- [ ] 6.6 Configurar Vitest con React Testing Library y jsdom; verificar que `npm test -w client` pasa
-- [ ] 6.7 Configurar `no-restricted-imports` para los límites entre dominios; verificar que una importación prohibida hace fallar `npm run lint`
+- [x] 6.1 Crear `client/` con Vite, React, Tailwind y proxy de `/api`; verificar que la página inicial consulta `/api/v1/health`
+- [x] 6.2 Crear la estructura Screaming Architecture y React Router con layout y página 404; verificar navegando por una ruta existente y otra inexistente
+- [x] 6.3 Crear el cliente HTTP que interpreta `{ data, meta }` y `{ error }`; verificar con Vitest
+- [x] 6.4 Definir en Tailwind los tokens de `DESIGN.md`, cargar Public Sans e IBM Plex Mono y aplicar el tema a SweetAlert2, react-toastify y Chart.js; verificar con una página de componentes en celular y escritorio
+- [x] 6.5 Crear el layout responsivo (barra lateral, navegación inferior y panel o pantalla de registro) y los componentes comunes accesibles; verificar los 4 escenarios de RT-05
+- [x] 6.6 Configurar Vitest con React Testing Library y jsdom; verificar que `npm test -w client` pasa
+- [x] 6.7 Configurar `no-restricted-imports` para los límites entre dominios; verificar que una importación prohibida hace fallar `npm run lint`
 
 ## 7. Datos de demostración y primer administrador [RT-06, RT-07]
 
