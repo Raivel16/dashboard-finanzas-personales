@@ -25,7 +25,7 @@ La base técnica ya está fusionada, pero la aplicación no tiene identidad: nad
 
 ## Impact
 
-- **Servidor**: nuevos modelos, repositorios, servicios, controladores, vistas, rutas y middleware de autenticación; dependencias `jsonwebtoken` y `express-jwt`; nuevo código `SESSION_REVOKED` en `shared/`.
+- **Servidor**: nuevos modelos, repositorios, servicios, controladores, vistas, rutas y middleware de autenticación; dependencia `jsonwebtoken`; nuevo código `SESSION_REVOKED` en `shared/`.
 - **Cliente**: nuevo dominio `autenticacion/`; cambios en `shared/api/clienteHttp.js` (renovación automática), `AppLayout` (ranura de menú de usuario) y `router/` (rutas públicas y protegidas).
 - **Datos**: tres colecciones nuevas con índices (`email` único, TTL en sesiones y tokens). El seed ya genera `usuarios` con la forma definida en el diseño.
 - **Correo**: primer uso real del SMTP de Brevo (bienvenida y recuperación).

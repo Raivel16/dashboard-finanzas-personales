@@ -63,9 +63,12 @@ const contrasena = {
   reglas: [
     {
       // Se mide en bytes UTF-8: bcrypt ignora lo que exceda de 72 bytes.
+      ok: (t) => new TextEncoder().encode(t).length <= LIMITES.CONTRASENA.max,
+      mensaje: MENSAJES.usuario.contrasenaLarga,
+    },
+    {
       ok: (t) =>
         t.length >= LIMITES.CONTRASENA.min &&
-        new TextEncoder().encode(t).length <= LIMITES.CONTRASENA.max &&
         validator.isStrongPassword(t, {
           minLength: LIMITES.CONTRASENA.min,
           minLowercase: 0,
@@ -132,6 +135,13 @@ export const esquemaRegistro = {
 export const esquemaInicioSesion = {
   email: { ...correo },
   password: { requerido: true, etiqueta: 'La contraseña' },
+};
+
+export const esquemaOlvideContrasena = { email: { ...correo } };
+
+export const esquemaRestablecerContrasena = {
+  token: { requerido: true, etiqueta: 'El enlace', sanear: recortar },
+  password: contrasena,
 };
 
 export const esquemaCuenta = {

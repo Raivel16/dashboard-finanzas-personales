@@ -7,7 +7,9 @@ import {
   esquemaInicioSesion,
   esquemaPaginacion,
   esquemaPresupuesto,
+  esquemaOlvideContrasena,
   esquemaRegistro,
+  esquemaRestablecerContrasena,
   fechaHoy,
   normalizarMonto,
   validar,
@@ -232,5 +234,37 @@ describe('normalizarMonto', () => {
     ['+4', '4.00'],
   ])('%s -> %s', (entrada, salida) => {
     expect(normalizarMonto(entrada)).toBe(salida);
+  });
+});
+
+describe('autenticación: mensajes y esquemas de recuperación', () => {
+  const base = { nombre: 'Ana', email: 'a@b.com' };
+
+  it('usa el mensaje exacto de la spec para una contraseña insegura', () => {
+    const r = validar(esquemaRegistro, { ...base, password: 'abc' });
+    expect(r.errores).toEqual([
+      {
+        campo: 'password',
+        mensaje: 'La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número',
+      },
+    ]);
+  });
+
+  it('distingue una contraseña demasiado larga para bcrypt (72 bytes)', () => {
+    const r = validar(esquemaRegistro, { ...base, password: `A1${'x'.repeat(71)}` });
+    expect(r.errores[0].mensaje).toBe('La contraseña no puede superar 72 caracteres');
+  });
+
+  it('valida el correo de olvidé mi contraseña', () => {
+    expect(validar(esquemaOlvideContrasena, { email: ' Ana@Correo.com ' }).datos).toEqual({
+      email: 'ana@correo.com',
+    });
+    expect(validar(esquemaOlvideContrasena, { email: 'no' }).valido).toBe(false);
+  });
+
+  it('exige el enlace y una contraseña válida al restablecer', () => {
+    expect(validar(esquemaRestablecerContrasena, { token: 'abc', password: 'Clave1234' }).valido).toBe(true);
+    const r = validar(esquemaRestablecerContrasena, { token: '', password: 'floja' });
+    expect(campos(r)).toEqual(['token', 'password']);
   });
 });

@@ -14,8 +14,19 @@ export const MENSAJES = Object.freeze({
   usuario: {
     nombre: `El nombre debe tener entre ${LIMITES.NOMBRE_USUARIO.min} y ${LIMITES.NOMBRE_USUARIO.max} caracteres`,
     correo: 'Ingresa un correo electrónico válido',
-    contrasena: `La contraseña debe tener entre ${LIMITES.CONTRASENA.min} y ${LIMITES.CONTRASENA.max} caracteres, una mayúscula y un número`,
+    contrasena: 'La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número',
+    contrasenaLarga: `La contraseña no puede superar ${LIMITES.CONTRASENA.max} caracteres`,
     contrasenaDistinta: 'Las contraseñas no coinciden',
+  },
+  auth: {
+    credencialesInvalidas: 'Credenciales inválidas',
+    correoRegistrado: 'Este correo ya se encuentra registrado',
+    bloqueado: (minutos) =>
+      `Demasiados intentos fallidos. Inténtalo nuevamente en ${minutos} ${minutos === 1 ? 'minuto' : 'minutos'}.`,
+    recuperacionSolicitada: 'Si el correo existe, recibirás un enlace de recuperación',
+    enlaceExpirado: 'El enlace ha expirado',
+    contrasenaRestablecida: 'Tu contraseña se actualizó. Ya puedes iniciar sesión.',
+    registroExitoso: 'Tu cuenta se creó correctamente. Ya puedes iniciar sesión.',
   },
   nombreCuentaCategoria: `El nombre debe tener entre ${LIMITES.NOMBRE_CUENTA_CATEGORIA.min} y ${LIMITES.NOMBRE_CUENTA_CATEGORIA.max} caracteres`,
   monto: {
