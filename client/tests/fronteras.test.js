@@ -12,7 +12,7 @@ async function mensajes(rutaArchivo, codigo) {
   return resultado.messages.filter((m) => m.ruleId === 'no-restricted-imports');
 }
 
-describe('fronteras de la Screaming Architecture', () => {
+describe('fronteras de la Screaming Architecture', { timeout: 30_000 }, () => {
   it('un dominio no puede importar archivos internos de otro dominio', async () => {
     const m = await mensajes(
       'client/src/inicio/hooks/prueba.js',

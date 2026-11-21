@@ -1,9 +1,19 @@
 // Único lugar donde se declaran las rutas. Cada dominio expone su página por su index.js.
-import { createBrowserRouter, createMemoryRouter } from 'react-router-dom';
+import { createBrowserRouter, createMemoryRouter, Outlet } from 'react-router-dom';
 import { Home, LayoutGrid } from 'lucide-react';
 import { InicioPage } from '../inicio/index.js';
 import { CatalogoPage, FormularioDemo, useFormularioDemo } from '../catalogo/index.js';
-import { AppLayout } from '../shared/components/AppLayout.jsx';
+import {
+  InicioSesionPage,
+  LayoutAutenticado,
+  LayoutPublico,
+  OlvideContrasenaPage,
+  ProveedorSesion,
+  RegistroPage,
+  RestablecerContrasenaPage,
+  RutaProtegida,
+  RutaPublica,
+} from '../autenticacion/index.js';
 import { PaginaNoEncontrada } from '../shared/components/PaginaNoEncontrada.jsx';
 
 function FormularioRegistroDemo({ cerrar }) {
@@ -16,6 +26,13 @@ const REGISTRAR_DEMO = {
   titulo: 'Nuevo registro',
   contenido: (cerrar) => <FormularioRegistroDemo cerrar={cerrar} />,
 };
+
+/** La sesión vive por encima de todas las rutas: las públicas y las protegidas la comparten. */
+const RaizSesion = () => (
+  <ProveedorSesion>
+    <Outlet />
+  </ProveedorSesion>
+);
 
 /** Los destinos de navegación crecerán con cada dominio; el catálogo solo existe en desarrollo. */
 export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
@@ -30,9 +47,39 @@ export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
 
   return [
     {
-      path: '/',
-      element: <AppLayout destinos={destinos} registrar={desarrollo ? REGISTRAR_DEMO : undefined} />,
-      children: hijas,
+      element: <RaizSesion />,
+      children: [
+        {
+          element: <RutaPublica />,
+          children: [
+            {
+              element: <LayoutPublico />,
+              children: [
+                { path: '/registro', element: <RegistroPage /> },
+                { path: '/iniciar-sesion', element: <InicioSesionPage /> },
+                { path: '/olvide-contrasena', element: <OlvideContrasenaPage /> },
+              ],
+            },
+          ],
+        },
+        // El enlace de recuperación debe abrirse con o sin sesión iniciada.
+        {
+          element: <LayoutPublico />,
+          children: [{ path: '/restablecer-contrasena', element: <RestablecerContrasenaPage /> }],
+        },
+        {
+          element: <RutaProtegida />,
+          children: [
+            {
+              path: '/',
+              element: (
+                <LayoutAutenticado destinos={destinos} registrar={desarrollo ? REGISTRAR_DEMO : undefined} />
+              ),
+              children: hijas,
+            },
+          ],
+        },
+      ],
     },
   ];
 }

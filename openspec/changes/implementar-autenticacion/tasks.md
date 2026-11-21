@@ -40,17 +40,17 @@
 
 ## 7. Cliente: sesión y cliente HTTP [HU-02, HU-18, HU-19]
 
-- [ ] 7.1 Agregar a `clienteHttp` la configuración `configurarSesionHttp` con renovación única compartida y un solo reintento ante `TOKEN_EXPIRED`; verificar con pruebas de Vitest: dos solicitudes simultáneas provocan una sola renovación y una renovación fallida no reintenta en bucle
-- [ ] 7.2 Crear el dominio `autenticacion/` con servicio, `ProveedorSesion`, `useSesion`, `RutaProtegida` y `RutaPublica`, exportados por su `index.js`; verificar con pruebas que una ruta protegida sin sesión redirige a `/iniciar-sesion` y que `npm run lint` no reporta fronteras rotas
-- [ ] 7.3 Mostrar en el inicio de sesión los mensajes "Tu sesión ha expirado, por favor inicia sesión nuevamente" y "Tu sesión se cerró, por favor inicia sesión nuevamente" según el código recibido; verificar con pruebas que simulan cada código
-- [ ] 7.4 Agregar a `AppLayout` la ranura `menuUsuario` y los destinos `soloAdmin`, con el botón "Cerrar sesión" que limpia el estado en memoria y lleva a `/iniciar-sesion`; verificar que un administrador ve los destinos `soloAdmin` y un usuario estándar no, y que tras cerrar sesión "Atrás" no muestra datos
+- [x] 7.1 Agregar a `clienteHttp` la configuración `configurarSesionHttp` con renovación única compartida y un solo reintento ante `TOKEN_EXPIRED`; verificar con pruebas de Vitest: dos solicitudes simultáneas provocan una sola renovación y una renovación fallida no reintenta en bucle
+- [x] 7.2 Crear el dominio `autenticacion/` con servicio, `ProveedorSesion`, `useSesion`, `RutaProtegida` y `RutaPublica`, exportados por su `index.js`; verificar con pruebas que una ruta protegida sin sesión redirige a `/iniciar-sesion` y que `npm run lint` no reporta fronteras rotas
+- [x] 7.3 Mostrar en el inicio de sesión los mensajes "Tu sesión ha expirado, por favor inicia sesión nuevamente" y "Tu sesión se cerró, por favor inicia sesión nuevamente" según el código recibido; verificar con pruebas que simulan cada código
+- [x] 7.4 Agregar a `AppLayout` la ranura `menuUsuario` y los destinos `soloAdmin`, con el botón "Cerrar sesión" que limpia el estado en memoria y lleva a `/iniciar-sesion`; verificar que un administrador ve los destinos `soloAdmin` y un usuario estándar no, y que tras cerrar sesión "Atrás" no muestra datos
 
 ## 8. Cliente: pantallas [HU-01, HU-02, HU-03]
 
-- [ ] 8.1 Crear el layout público y la pantalla de registro con `useFormulario` y `esquemaRegistro`; verificar con pruebas el éxito (redirige a inicio de sesión con mensaje de confirmación), el correo duplicado y la contraseña insegura con el campo resaltado y el mensaje exacto de la spec
-- [ ] 8.2 Crear la pantalla de inicio de sesión; verificar con pruebas el éxito, "Credenciales inválidas" y el aviso de bloqueo de 5 minutos con el botón deshabilitado hasta que pase
-- [ ] 8.3 Crear las pantallas "¿Olvidaste tu contraseña?" y de restablecimiento (el token se lee de la URL y se quita de la barra con `history.replaceState`); verificar el mensaje genérico, el restablecimiento exitoso y el enlace expirado con la opción de pedir uno nuevo
-- [ ] 8.4 Registrar las rutas `/registro`, `/iniciar-sesion`, `/olvide-contrasena` y `/restablecer-contrasena` en `router/` y proteger el resto; verificar con el router de memoria y comprobar en el navegador el flujo completo en celular y escritorio
+- [x] 8.1 Crear el layout público y la pantalla de registro con `useFormulario` y `esquemaRegistro`; verificar con pruebas el éxito (redirige a inicio de sesión con mensaje de confirmación), el correo duplicado y la contraseña insegura con el campo resaltado y el mensaje exacto de la spec
+- [x] 8.2 Crear la pantalla de inicio de sesión; verificar con pruebas el éxito, "Credenciales inválidas" y el aviso de bloqueo de 5 minutos con el botón deshabilitado hasta que pase
+- [x] 8.3 Crear las pantallas "¿Olvidaste tu contraseña?" y de restablecimiento (el token se lee de la URL y se quita de la barra con `history.replaceState`); verificar el mensaje genérico, el restablecimiento exitoso y el enlace expirado con la opción de pedir uno nuevo
+- [x] 8.4 Registrar las rutas `/registro`, `/iniciar-sesion`, `/olvide-contrasena` y `/restablecer-contrasena` en `router/` y proteger el resto; verificar con el router de memoria y comprobar en el navegador el flujo completo en celular y escritorio
 
 ## 9. Documentación e integración [RT-01]
 

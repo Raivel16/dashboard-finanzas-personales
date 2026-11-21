@@ -29,11 +29,7 @@ function construirUrl(ruta, consulta) {
   return `${BASE}${ruta}${texto ? `?${texto}` : ''}`;
 }
 
-/**
- * @returns {Promise<{ data: any, meta: object | null }>}
- * @throws {ErrorApi}
- */
-export async function solicitar(ruta, { metodo = 'GET', cuerpo, consulta, signal, fetchImpl = fetch } = {}) {
+async function ejecutar(ruta, { metodo = 'GET', cuerpo, consulta, signal, fetchImpl = fetch } = {}) {
   let respuesta;
   try {
     respuesta = await fetchImpl(construirUrl(ruta, consulta), {
@@ -68,6 +64,70 @@ export async function solicitar(ruta, { metodo = 'GET', cuerpo, consulta, signal
     });
   }
   return { data: json?.data ?? null, meta: json?.meta ?? null };
+}
+
+// --- Sesión: renovación automática del token de acceso (HU-19) ---------------------------------------
+// El cliente no sabe de autenticación: quien la conozca llama a configurarSesionHttp con dos funciones.
+
+const CODIGOS_FIN_SESION = new Set(['SESSION_EXPIRED', 'SESSION_REVOKED']);
+let configuracionSesion = { renovar: null, alSesionTerminada: null };
+let renovando = null;
+
+/**
+ * @param {{ renovar?: () => Promise<void>, alSesionTerminada?: (error: ErrorApi) => void }} [configuracion]
+ *   `renovar` pide un token nuevo; `alSesionTerminada` se llama cuando la sesión ya no se puede continuar.
+ */
+export function configurarSesionHttp({ renovar = null, alSesionTerminada = null } = {}) {
+  configuracionSesion = { renovar, alSesionTerminada };
+  renovando = null;
+}
+
+/** Varias solicitudes que vencen a la vez comparten una sola renovación. */
+function renovarUnaVez() {
+  renovando ??= Promise.resolve()
+    .then(() => configuracionSesion.renovar())
+    .finally(() => {
+      renovando = null;
+    });
+  return renovando;
+}
+
+const terminaLaSesion = (error) =>
+  error instanceof ErrorApi && (CODIGOS_FIN_SESION.has(error.codigo) || error.estado === 401);
+
+/**
+ * @param {string} ruta
+ * @param {object} [opciones]  `sinRenovar: true` evita el ciclo de renovación (login, refresh, logout).
+ * @returns {Promise<{ data: any, meta: object | null }>}
+ * @throws {ErrorApi}
+ */
+export async function solicitar(ruta, opciones = {}) {
+  const { sinRenovar, ...paraEjecutar } = opciones;
+  try {
+    return await ejecutar(ruta, paraEjecutar);
+  } catch (error) {
+    if (sinRenovar || !(error instanceof ErrorApi)) throw error;
+
+    if (error.codigo === 'TOKEN_EXPIRED' && configuracionSesion.renovar) {
+      try {
+        await renovarUnaVez();
+      } catch (falla) {
+        if (terminaLaSesion(falla)) configuracionSesion.alSesionTerminada?.(falla);
+        throw falla instanceof ErrorApi ? falla : error;
+      }
+      try {
+        return await ejecutar(ruta, paraEjecutar); // un solo reintento: nunca hay bucle
+      } catch (segundo) {
+        if (segundo instanceof ErrorApi && CODIGOS_FIN_SESION.has(segundo.codigo)) {
+          configuracionSesion.alSesionTerminada?.(segundo);
+        }
+        throw segundo;
+      }
+    }
+
+    if (CODIGOS_FIN_SESION.has(error.codigo)) configuracionSesion.alSesionTerminada?.(error);
+    throw error;
+  }
 }
 
 export const api = {
