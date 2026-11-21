@@ -12,7 +12,7 @@ import { iniciarReplicaSet } from './baseDatos.js';
 export const CLAVE = 'Clave1234';
 
 /** Levanta la API con reloj manual y un transporte de correo que guarda lo que "envía". */
-export async function iniciarEntorno() {
+export async function iniciarEntorno({ extras } = {}) {
   const replica = await iniciarReplicaSet();
   await conectar(replica.getUri());
   const config = configPrueba();
@@ -24,7 +24,7 @@ export async function iniciarEntorno() {
     logger,
     transporte,
   });
-  const app = crearApp({ config, logger, reloj, correo, costoBcrypt: 4 });
+  const app = crearApp({ config, logger, reloj, correo, costoBcrypt: 4, extras });
 
   let contador = 0;
   const correoUnico = () => `persona${(contador += 1)}.${Date.now()}@correo.com`;

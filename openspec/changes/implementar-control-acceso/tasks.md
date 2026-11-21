@@ -4,19 +4,19 @@
 
 ## 1. Preparación [RT-01]
 
-- [ ] 1.1 Crear la rama `feature/implementar-control-acceso` desde un `dev` actualizado y verificar con `git branch --show-current`
-- [ ] 1.2 Agregar a `shared/` el esquema `esquemaCambiarRol` (rol entre `ROLES`), `esquemaConsultaUsuarios` (paginación y `q`) y el mensaje "Debe existir al menos un administrador"; verificar con pruebas de `shared`
+- [x] 1.1 Crear la rama `feature/implementar-control-acceso` desde un `dev` actualizado y verificar con `git branch --show-current`
+- [x] 1.2 Agregar a `shared/` el esquema `esquemaCambiarRol` (rol entre `ROLES`), `esquemaConsultaUsuarios` (paginación y `q`) y el mensaje "Debe existir al menos un administrador"; verificar con pruebas de `shared`
 
 ## 2. Servidor: autorización [HU-04]
 
-- [ ] 2.1 Crear el middleware `requerirRol` y `autorizacion.service.js` (`exigirAdmin`) con registro en el log de cada denegación (usuario, ruta, motivo); verificar "Restricción de acceso para usuario estándar" (403 "Acceso no autorizado" por URL directa) y "Operación rechazada por falta de permisos" (el servicio rechaza y se registra el intento)
-- [ ] 2.2 Verificar "Denegación tras degradación de rol durante una sesión": un administrador degradado recibe 403 en su siguiente solicitud con el mismo token, y uno promovido obtiene acceso en la siguiente
+- [x] 2.1 Crear el middleware `requerirRol` y `autorizacion.service.js` (`exigirAdmin`) con registro en el log de cada denegación (usuario, ruta, motivo); verificar "Restricción de acceso para usuario estándar" (403 "Acceso no autorizado" por URL directa) y "Operación rechazada por falta de permisos" (el servicio rechaza y se registra el intento)
+- [x] 2.2 Verificar "Denegación tras degradación de rol durante una sesión": un administrador degradado recibe 403 en su siguiente solicitud con el mismo token, y uno promovido obtiene acceso en la siguiente
 
 ## 3. Servidor: usuarios y roles [HU-22, HU-23]
 
-- [ ] 3.1 Agregar `listarUsuarios` (búsqueda por nombre o correo con la cadena escapada, paginación, orden) y `buscarPorId` administrativo a `usuarioRepository`, y el servicio, controlador, vista y rutas `GET /admin/usuarios` y `GET /admin/usuarios/:id`; verificar "Búsqueda de usuarios" (listado paginado, sin hash en la respuesta) y que un usuario estándar recibe 403
-- [ ] 3.2 Implementar `PATCH /admin/usuarios/:id/rol` con transacción y documento centinela; verificar "Promoción de un usuario a administrador", "Degradación de otro administrador" (pierde el acceso de inmediato) y "Degradación del último administrador rechazada" (409 con el mensaje exacto), y que dos degradaciones simultáneas entre dos administradores no dejan al sistema sin administradores
-- [ ] 3.3 Agregar `RepositorioLectura` (sin métodos de escritura) y probarlo con un recurso de prueba: el administrador lee los datos de otra persona, no hay forma de escribirlos y el intento de modificarlos por las rutas normales responde 404 con "El recurso solicitado no existe o no tienes permiso para acceder a él" y no cambia nada
+- [x] 3.1 Agregar `listarUsuarios` (búsqueda por nombre o correo con la cadena escapada, paginación, orden) y `buscarPorId` administrativo a `usuarioRepository`, y el servicio, controlador, vista y rutas `GET /admin/usuarios` y `GET /admin/usuarios/:id`; verificar "Búsqueda de usuarios" (listado paginado, sin hash en la respuesta) y que un usuario estándar recibe 403
+- [x] 3.2 Implementar `PATCH /admin/usuarios/:id/rol` con transacción y documento centinela; verificar "Promoción de un usuario a administrador", "Degradación de otro administrador" (pierde el acceso de inmediato) y "Degradación del último administrador rechazada" (409 con el mensaje exacto), y que dos degradaciones simultáneas entre dos administradores no dejan al sistema sin administradores
+- [x] 3.3 Agregar `RepositorioLectura` (sin métodos de escritura) y probarlo con un recurso de prueba: el administrador lee los datos de otra persona, no hay forma de escribirlos y el intento de modificarlos por las rutas normales responde 404 con "El recurso solicitado no existe o no tienes permiso para acceder a él" y no cambia nada
 
 ## 4. Cliente [HU-04, HU-22, HU-23]
 
