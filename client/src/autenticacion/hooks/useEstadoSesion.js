@@ -70,6 +70,15 @@ export function useEstadoSesion() {
   /** Sustituye los datos de la persona (p. ej. tras guardar su perfil) sin volver a iniciar sesión. */
   const reemplazarUsuario = useCallback((actual) => setUsuario(actual), []);
 
+  /** Vuelve a leer la sesión del servidor (p. ej. tras un 403, por si el rol cambió durante la sesión). */
+  const refrescarSesion = useCallback(async () => {
+    try {
+      setUsuario(await servicio.obtenerSesion());
+    } catch {
+      // Si la sesión terminó, el cliente HTTP ya avisó y el estado pasó a anónimo.
+    }
+  }, []);
+
   return useMemo(
     () => ({
       estado,
@@ -80,7 +89,8 @@ export function useEstadoSesion() {
       cerrarSesion,
       limpiarAviso,
       reemplazarUsuario,
+      refrescarSesion,
     }),
-    [estado, usuario, aviso, iniciarSesion, cerrarSesion, limpiarAviso, reemplazarUsuario],
+    [estado, usuario, aviso, iniciarSesion, cerrarSesion, limpiarAviso, reemplazarUsuario, refrescarSesion],
   );
 }

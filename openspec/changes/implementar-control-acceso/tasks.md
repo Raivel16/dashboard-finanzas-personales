@@ -20,16 +20,16 @@
 
 ## 4. Cliente [HU-04, HU-22, HU-23]
 
-- [ ] 4.1 Crear `RutaAdmin` en `autenticacion/` y el dominio `administracion/` (servicio, `useUsuarios`, componentes y página con búsqueda y paginación); verificar con pruebas "Búsqueda de usuarios" y que un usuario estándar no ve la opción y recibe "Acceso no autorizado" por URL directa
-- [ ] 4.2 Agregar el cambio de rol con confirmación (`useCambioRol`); verificar con pruebas la promoción, la degradación, "Cambio de rol sin confirmar" (no llama a la API y el selector conserva el valor) y el rechazo del último administrador con el mensaje del servidor
-- [ ] 4.3 Crear el detalle de usuario en solo lectura con las secciones de categorías, cuentas, movimientos y presupuestos en estado vacío ("Este usuario aún no tiene movimientos"), sin opciones de crear, editar ni eliminar; refrescar la sesión al recibir un 403 para ocultar el menú; verificar con pruebas
-- [ ] 4.4 Registrar las rutas `/administracion` y `/administracion/usuarios/:id` y el destino `soloAdmin` "Administración" en `router/`; verificar con el router de memoria y que `npm run lint` no reporta fronteras rotas
+- [x] 4.1 Crear `RutaAdmin` en `autenticacion/` y el dominio `administracion/` (servicio, `useUsuarios`, componentes y página con búsqueda y paginación); verificar con pruebas "Búsqueda de usuarios" y que un usuario estándar no ve la opción y recibe "Acceso no autorizado" por URL directa
+- [x] 4.2 Agregar el cambio de rol con confirmación (`useCambioRol`); verificar con pruebas la promoción, la degradación, "Cambio de rol sin confirmar" (no llama a la API y el selector conserva el valor) y el rechazo del último administrador con el mensaje del servidor
+- [x] 4.3 Crear el detalle de usuario en solo lectura con las secciones de categorías, cuentas, movimientos y presupuestos en estado vacío ("Este usuario aún no tiene movimientos"), sin opciones de crear, editar ni eliminar; refrescar la sesión al recibir un 403 para ocultar el menú; verificar con pruebas
+- [x] 4.4 Registrar las rutas `/administracion` y `/administracion/usuarios/:id` y el destino `soloAdmin` "Administración" en `router/`; verificar con el router de memoria y que `npm run lint` no reporta fronteras rotas
 
 ## 5. Documentación e integración [RT-01]
 
-- [ ] 5.1 Documentar en el README las rutas de administración y la regla del último administrador, y anotar en `docs/trazabilidad.md` que las épicas de datos deben agregar la lectura de administrador y las pruebas de HU-04, HU-05 y HU-22; verificar que cada comando documentado se ejecuta
-- [ ] 5.2 Ejecutar `npm run lint`, `npm test` y `npm run build`, y probar a mano contra el servidor real con el administrador del seed: listar, buscar, promover, degradar y el rechazo del último administrador
-- [ ] 5.3 Ejecutar `openspec validate implementar-control-acceso --strict` y verificar que el cambio es válido
+- [x] 5.1 Documentar en el README las rutas de administración y la regla del último administrador, y anotar en `docs/trazabilidad.md` que las épicas de datos deben agregar la lectura de administrador y las pruebas de HU-04, HU-05 y HU-22; verificar que cada comando documentado se ejecuta
+- [x] 5.2 Ejecutar `npm run lint`, `npm test` y `npm run build`, y probar a mano contra el servidor real con el administrador del seed: listar, buscar, promover, degradar y el rechazo del último administrador
+- [x] 5.3 Ejecutar `openspec validate implementar-control-acceso --strict` y verificar que el cambio es válido
 
 ## Workflow follow-up
 
