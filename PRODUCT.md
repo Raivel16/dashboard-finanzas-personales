@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-MERN con JavaScript: React + Vite + Tailwind CSS en el cliente, Express + MongoDB en el servidor. Detalle en `openspec/changes/definir-arquitectura-base/design.md`.
+MERN con JavaScript: React + Vite + Tailwind CSS en el cliente, Express + MongoDB en el servidor. Detalle en `openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md`.
 
 ## Users
 
