@@ -1,6 +1,7 @@
 // Repositorio base de datos de un inquilino. Es el único código que toca los modelos y
 // SIEMPRE agrega el tenantId del usuario autenticado: no existen métodos sin ese filtro.
 import mongoose from 'mongoose';
+import { sinCamposProtegidos } from '../models/plugins/tenant.plugin.js';
 
 export class RepositorioBase {
   constructor(modelo, tenantId) {
@@ -46,7 +47,8 @@ export class RepositorioBase {
 
   async actualizarPorId(id, cambios, { session } = {}) {
     if (!mongoose.isValidObjectId(id)) return null;
-    return this.modelo.findOneAndUpdate(this._filtro({ _id: id }), cambios, {
+    // tenantId, usuarioId e _id nunca se modifican: se descartan antes de llegar al modelo.
+    return this.modelo.findOneAndUpdate(this._filtro({ _id: id }), sinCamposProtegidos(cambios), {
       returnDocument: 'after',
       runValidators: true,
       session,

@@ -9,9 +9,9 @@ const correo = {
 };
 
 describe('servicio de correo (Nodemailer)', () => {
-  it('sin SMTP_HOST escribe el correo en el log y no envía nada', async () => {
+  it('en desarrollo sin SMTP_HOST escribe el correo, con su texto, en el log y no envía nada', async () => {
     const logger = { info: jest.fn() };
-    const servicio = crearServicioCorreo({ config: configPrueba(), logger });
+    const servicio = crearServicioCorreo({ config: configPrueba({ NODE_ENV: 'development' }), logger });
 
     const resultado = await servicio.enviar(correo);
 
@@ -22,6 +22,25 @@ describe('servicio de correo (Nodemailer)', () => {
       asunto: correo.asunto,
       texto: correo.texto,
     });
+  });
+
+  it('en pruebas sin SMTP_HOST registra el envío pero nunca el contenido del correo', async () => {
+    const logger = { info: jest.fn() };
+    const servicio = crearServicioCorreo({ config: configPrueba(), logger });
+
+    await servicio.enviar(correo);
+
+    expect(logger.info.mock.calls[0][0]).toEqual({ para: correo.para, asunto: correo.asunto });
+    expect(JSON.stringify(logger.info.mock.calls)).not.toContain(correo.texto);
+  });
+
+  it('en producción sin SMTP no envía ni registra el contenido', async () => {
+    const logger = { info: jest.fn() };
+    const config = { ...configPrueba(), entorno: 'production', esProduccion: true, smtp: null };
+    const servicio = crearServicioCorreo({ config, logger });
+
+    await expect(servicio.enviar(correo)).rejects.toThrow('SMTP no está configurado');
+    expect(logger.info).not.toHaveBeenCalled();
   });
 
   it('con un transporte simulado envía con el remitente configurado', async () => {

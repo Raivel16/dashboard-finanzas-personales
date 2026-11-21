@@ -1,4 +1,5 @@
-// Correo con Nodemailer. Sin SMTP configurado (desarrollo sin cuenta) los correos se escriben en el log.
+// Correo con Nodemailer. Sin SMTP configurado (solo desarrollo y pruebas) los correos se escriben en el log.
+// En producción SMTP_HOST es obligatorio (ver config/entorno.js): nunca se registra el contenido de un correo.
 import nodemailer from 'nodemailer';
 
 /**
@@ -24,8 +25,10 @@ export function crearServicioCorreo({ config, logger, transporte }) {
     /** @returns {Promise<{ enviado: boolean, modo: 'smtp' | 'log' }>} */
     async enviar({ para, asunto, texto, html }) {
       if (!usaSmtp) {
-        // Solo desarrollo: el contenido (p. ej. el enlace de recuperación) queda en el log.
-        logger.info({ para, asunto, texto }, 'correo simulado (SMTP_HOST no está definido)');
+        if (config.esProduccion) throw new Error('No se puede enviar correo: SMTP no está configurado');
+        // El texto (p. ej. el enlace de recuperación) solo se escribe en desarrollo, para probar sin cuenta SMTP.
+        const registro = config.entorno === 'development' ? { para, asunto, texto } : { para, asunto };
+        logger.info(registro, 'correo simulado (SMTP_HOST no está definido)');
         return { enviado: false, modo: 'log' };
       }
       await canal.sendMail({ from: config.correoRemitente, to: para, subject: asunto, text: texto, html });

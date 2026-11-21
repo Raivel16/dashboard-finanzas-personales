@@ -57,6 +57,13 @@ describe('configuración del entorno (RT-01)', () => {
     expect(() => leerEntorno({ ...base, APP_TIMEZONE: 'Marte/Olimpo' })).toThrow(/APP_TIMEZONE/);
   });
 
+  it('exige SMTP_HOST en producción para no registrar correos en el log', () => {
+    expect(() => leerEntorno({ ...base, NODE_ENV: 'production' })).toThrow(
+      /SMTP_HOST \(obligatoria en producción\)/,
+    );
+    expect(leerEntorno({ ...base, NODE_ENV: 'development' }).smtp).toBeNull();
+  });
+
   it('exige usuario, clave y remitente cuando se define SMTP_HOST', () => {
     expect(() => leerEntorno({ ...base, SMTP_HOST: 'smtp.ejemplo.com' })).toThrow(
       /SMTP_USER[\s\S]*SMTP_PASS[\s\S]*MAIL_FROM/,

@@ -89,6 +89,10 @@ export function leerEntorno(env = process.env) {
   const problemas = r.errores.map((e) => e.mensaje);
   const d = r.datos;
 
+  if (d.NODE_ENV === 'production' && !d.SMTP_HOST) {
+    problemas.push('Falta la variable de entorno SMTP_HOST (obligatoria en producción)');
+  }
+
   if (d.SMTP_HOST) {
     for (const nombre of ['SMTP_USER', 'SMTP_PASS', 'MAIL_FROM']) {
       if (!d[nombre])

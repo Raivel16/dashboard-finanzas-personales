@@ -50,6 +50,48 @@ describe('aislamiento por tenantId (RT-02)', () => {
     expect(intacto.nombre).toBe('secreto de A');
   });
 
+  it('actualizarPorId descarta tenantId, usuarioId e _id: un documento no cambia de inquilino', async () => {
+    const otroUsuario = new mongoose.Types.ObjectId();
+    const doc = await repoA.crear({ nombre: 'original', usuarioId: USUARIO });
+
+    // En el nivel superior y dentro de los operadores de actualización.
+    await repoA.actualizarPorId(doc._id, { nombre: 'uno', tenantId: TENANT_B, usuarioId: otroUsuario });
+    await repoA.actualizarPorId(doc._id, { $set: { nombre: 'dos', tenantId: TENANT_B, _id: otroUsuario } });
+
+    const guardado = await Elemento.collection.findOne({ _id: doc._id });
+    expect(guardado).toMatchObject({ nombre: 'dos', tenantId: TENANT_A });
+    expect(guardado.usuarioId.equals(USUARIO)).toBe(true);
+    expect(await repoB.contar()).toBe(0);
+  });
+
+  it('el plugin bloquea actualizaciones directas al modelo que toquen tenantId o usuarioId', async () => {
+    const doc = await repoA.crear({ nombre: 'protegido', usuarioId: USUARIO });
+    const filtro = { _id: doc._id, tenantId: TENANT_A };
+
+    for (const cambio of [
+      { tenantId: TENANT_B },
+      { $set: { tenantId: TENANT_B } },
+      { $set: { usuarioId: new mongoose.Types.ObjectId() } },
+      { $setOnInsert: { tenantId: TENANT_B } },
+    ]) {
+      await expect(Elemento.updateOne(filtro, cambio)).rejects.toThrow(
+        /tenantId y usuarioId no se pueden modificar/,
+      );
+      await expect(Elemento.findOneAndUpdate(filtro, cambio)).rejects.toBeInstanceOf(TenantGuardError);
+      await expect(Elemento.updateMany({ tenantId: TENANT_A }, cambio)).rejects.toBeInstanceOf(
+        TenantGuardError,
+      );
+    }
+    // Incluso con pipeline de actualización (Mongoose exige activarlo de forma explícita).
+    await expect(
+      Elemento.updateOne(filtro, [{ $set: { tenantId: TENANT_B } }], { updatePipeline: true }),
+    ).rejects.toBeInstanceOf(TenantGuardError);
+
+    // Las actualizaciones legítimas siguen funcionando.
+    await Elemento.updateOne(filtro, { $set: { nombre: 'permitido' } });
+    expect((await Elemento.collection.findOne({ _id: doc._id })).nombre).toBe('permitido');
+  });
+
   it('no permite saltarse el aislamiento pasando otro tenantId en el filtro', async () => {
     await repoA.crear({ nombre: 'de A', usuarioId: USUARIO });
     const { items } = await repoB.listar({ tenantId: TENANT_A });
