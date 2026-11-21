@@ -60,9 +60,9 @@
 
 ## 9. Configuración y documentación [RT-01]
 
-- [ ] 9.1 Crear `server/.env.example` y `client/.env.example`; verificar que el servidor arranca copiando el ejemplo y completando los secretos
+- [x] 9.1 Crear `server/.env.example` y `client/.env.example`; verificar que el servidor arranca copiando el ejemplo y completando los secretos
 - [ ] 9.2 Escribir `README.md` con requisitos, instalación, replica set, Atlas, comandos, datos demo y flujo de ramas; verificar los escenarios "Proyecto levantado desde un clon limpio" y "Cambio a MongoDB Atlas"
-- [ ] 9.3 Actualizar `CLAUDE.md` con los comandos reales, incluida la ejecución de una sola prueba; verificar que cada comando funciona
+- [x] 9.3 Actualizar `CLAUDE.md` con los comandos reales, incluida la ejecución de una sola prueba; verificar que cada comando funciona
 
 ## 10. Verificación integral [RT-01 a RT-07]
 
