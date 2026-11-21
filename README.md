@@ -97,7 +97,7 @@ export MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 
 ## Autenticación
 
-Rutas de `/api/v1/auth` (diseño completo en `openspec/changes/implementar-autenticacion/design.md`):
+Rutas de `/api/v1/auth` (diseño completo en `openspec/changes/archive/2026-11-21-implementar-autenticacion/design.md`):
 
 | Método y ruta | Qué hace |
 |---|---|
