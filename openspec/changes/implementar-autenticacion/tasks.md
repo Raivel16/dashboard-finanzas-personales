@@ -54,9 +54,9 @@
 
 ## 9. Documentación e integración [RT-01]
 
-- [ ] 9.1 Documentar en el README los endpoints de autenticación, las cookies, los tiempos y el aviso de Gmail/spam, y actualizar `docs/trazabilidad.md`; verificar que cada comando documentado se ejecuta
-- [ ] 9.2 Ejecutar `npm run lint`, `npm test` y `npm run build`, y probar a mano con `npm run dev` y los usuarios demo: registro, inicio de sesión, bloqueo, recuperación (enlace en el log) y cierre de sesión; verificar que los 20 escenarios tienen una prueba que pasa
-- [ ] 9.3 Ejecutar `openspec validate implementar-autenticacion --strict` y verificar que el cambio es válido
+- [x] 9.1 Documentar en el README los endpoints de autenticación, las cookies, los tiempos y el aviso de Gmail/spam, y actualizar `docs/trazabilidad.md`; verificar que cada comando documentado se ejecuta
+- [x] 9.2 Ejecutar `npm run lint`, `npm test` y `npm run build`, y probar a mano con `npm run dev` y los usuarios demo: registro, inicio de sesión, bloqueo, recuperación (enlace en el log) y cierre de sesión; verificar que los 20 escenarios tienen una prueba que pasa
+- [x] 9.3 Ejecutar `openspec validate implementar-autenticacion --strict` y verificar que el cambio es válido
 
 ## Workflow follow-up
 
