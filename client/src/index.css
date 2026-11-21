@@ -1,0 +1,147 @@
+@import 'tailwindcss';
+
+/* Tokens de DESIGN.md ("La libreta de ahorros"). Los mismos valores viven en
+   shared/utils/tokens.js para Chart.js y SweetAlert2; tests/tokens.test.js comprueba que coinciden. */
+@theme {
+  --color-tapa: #123f4a;
+  --color-tapa-texto: #f4f8f6;
+  --color-tapa-texto-suave: #b9d0cf;
+  --color-sello: #54399e;
+  --color-sello-oscuro: #43297f;
+  --color-papel: #edf3f0;
+  --color-hoja: #f9fbfa;
+  --color-tinta: #14262e;
+  --color-tinta-suave: #4f626b;
+  --color-filete: #c9d6d2;
+  --color-borde: #7a8c86; /* 3,41:1 sobre la hoja: borde de campos */
+  --color-ingreso: #0a6b55;
+  --color-ingreso-fondo: #ddf1ea;
+  --color-gasto: #a62e26;
+  --color-gasto-fondo: #fbe6e2;
+  --color-atencion: #7a4f00;
+  --color-atencion-fondo: #fbefcb;
+
+  --font-sans: 'Public Sans Variable', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-control: 4px;
+  --radius-superficie: 8px;
+  --shadow-flota: 0 2px 8px rgb(20 38 46 / 0.18);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-tinta);
+    background: var(--color-papel);
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-papel);
+    line-height: 1.5;
+  }
+  /* Foco siempre visible: contorno violeta de 2 px. */
+  :focus-visible {
+    outline: 2px solid var(--color-sello);
+    outline-offset: 2px;
+  }
+  /* Sobre la tapa azul el contorno violeta no se vería: se usa el texto claro. */
+  .sobre-tapa :focus-visible {
+    outline-color: var(--color-tapa-texto);
+  }
+}
+
+/* El sello "Asentado" entra con un movimiento corto (120–200 ms); sin él si se prefiere menos movimiento. */
+@keyframes sello-entra {
+  from {
+    opacity: 0;
+    transform: scale(1.35) rotate(-6deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-3deg);
+  }
+}
+.sello-animado {
+  animation: sello-entra 160ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Notificaciones (react-toastify) con los colores del sistema. Los íconos propios de cada tipo
+   evitan que el estado dependa solo del color. */
+.Toastify {
+  --toastify-color-light: var(--color-hoja);
+  --toastify-text-color-light: var(--color-tinta);
+  --toastify-color-success: var(--color-ingreso);
+  --toastify-color-error: var(--color-gasto);
+  --toastify-color-warning: var(--color-atencion);
+  --toastify-color-info: var(--color-tapa);
+  --toastify-font-family: var(--font-sans);
+}
+.Toastify__toast {
+  border-radius: var(--radius-superficie);
+  box-shadow: var(--shadow-flota);
+  border: 1px solid var(--color-filete);
+}
+
+/* Diálogos (SweetAlert2) */
+.swal2-popup.swal-finanzas {
+  background: var(--color-hoja);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  border-radius: var(--radius-superficie);
+  box-shadow: var(--shadow-flota);
+}
+.swal2-popup.swal-finanzas .swal2-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+.swal2-popup.swal-finanzas .swal2-html-container {
+  color: var(--color-tinta-suave);
+}
+.swal-finanzas__confirmar,
+.swal-finanzas__cancelar {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 1rem;
+  border-radius: var(--radius-control);
+  font-weight: 600;
+  cursor: pointer;
+}
+.swal-finanzas__confirmar {
+  background: var(--color-sello);
+  color: var(--color-hoja);
+  border: 1px solid var(--color-sello);
+}
+.swal-finanzas__confirmar:hover {
+  background: var(--color-sello-oscuro);
+}
+.swal-finanzas__confirmar--peligro {
+  background: var(--color-gasto);
+  border-color: var(--color-gasto);
+}
+.swal-finanzas__cancelar {
+  background: var(--color-hoja);
+  color: var(--color-tinta);
+  border: 1px solid var(--color-borde);
+}
+.swal2-popup.swal-finanzas .swal2-actions {
+  gap: 0.75rem;
+}
+
+/* Doble raya contable: cierre de totales en tablas de movimientos. */
+.doble-raya > * {
+  border-top: 3px double var(--color-tinta);
+}

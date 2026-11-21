@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+package-lock.json
+docs
+openspec
+.claude
+.agents
+.impeccable
+*.md
+*.docx

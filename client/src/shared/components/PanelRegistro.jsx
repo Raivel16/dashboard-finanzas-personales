@@ -1,0 +1,57 @@
+import { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
+import { useEsEscritorio } from '../hooks/useMediaQuery.js';
+
+/**
+ * Contenedor del formulario de registro.
+ * - Celular: pantalla completa y modal (el monto va primero y se abre el teclado numérico).
+ * - Escritorio: panel lateral que no tapa el historial ni lo bloquea.
+ * Escape lo cierra y el foco vuelve al botón que lo abrió.
+ */
+export function PanelRegistro({ abierto, titulo, alCerrar, children }) {
+  const esEscritorio = useEsEscritorio();
+  const origenFoco = useRef(null);
+
+  useEffect(() => {
+    if (!abierto) return undefined;
+    origenFoco.current = document.activeElement;
+    const alTeclear = (evento) => evento.key === 'Escape' && alCerrar();
+    document.addEventListener('keydown', alTeclear);
+    return () => {
+      document.removeEventListener('keydown', alTeclear);
+      origenFoco.current?.focus?.();
+    };
+  }, [abierto, alCerrar]);
+
+  if (!abierto) return null;
+
+  const variante = esEscritorio ? 'panel-lateral' : 'pantalla-completa';
+  const posicion = esEscritorio
+    ? 'inset-y-0 right-0 z-40 w-[420px] border-l border-filete shadow-flota'
+    : 'inset-0 z-50';
+
+  return (
+    <section
+      role="dialog"
+      aria-modal={esEscritorio ? 'false' : 'true'}
+      aria-labelledby="titulo-panel-registro"
+      data-variante={variante}
+      className={`fixed ${posicion} flex flex-col overflow-y-auto bg-hoja`}
+    >
+      <header className="flex items-center justify-between border-b border-filete px-4 py-3">
+        <h2 id="titulo-panel-registro" className="text-lg font-semibold leading-[1.35]">
+          {titulo}
+        </h2>
+        <button
+          type="button"
+          onClick={alCerrar}
+          aria-label="Cerrar"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control text-tinta-suave hover:bg-papel"
+        >
+          <X aria-hidden="true" size={22} />
+        </button>
+      </header>
+      <div className="p-4">{children}</div>
+    </section>
+  );
+}
