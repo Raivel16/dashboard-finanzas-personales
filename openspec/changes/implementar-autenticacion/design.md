@@ -49,6 +49,7 @@ Con esto "pausa corta de 20 minutos" y "actividad con intervalos menores a 30 mi
 Se usa el diseño 8 (`intentosFallidos`, `bloqueadoHasta` en el usuario). Precisiones:
 
 - Correo inexistente y contraseña incorrecta responden igual (401 "Credenciales inválidas"); con correo inexistente se compara contra un hash falso para igualar el tiempo de respuesta y no revelar la cuenta.
+- El intento se **reserva de forma atómica antes de comprobar la contraseña** (`reservarIntento`: una sola actualización condicionada a que no haya bloqueo vigente). Así, peticiones simultáneas no pueden pasar todas el control de bloqueo: de N intentos paralelos solo `maximo` comprueban la contraseña y el resto recibe 429. Un inicio correcto reinicia el contador.
 - El tercer fallo consecutivo bloquea 5 minutos y responde 429; mientras dura el bloqueo, incluso la contraseña correcta recibe 429 con los minutos restantes.
 - El contador se actualiza con una operación atómica de MongoDB (`$inc` y, al llegar a 3, `$set` de `bloqueadoHasta`), no leyendo y escribiendo, para que solicitudes simultáneas no burlen el límite. El inicio de sesión correcto lo reinicia.
 - Un usuario con `activo: false` recibe el mismo "Credenciales inválidas".

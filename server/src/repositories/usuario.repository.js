@@ -19,15 +19,18 @@ export const usuarioRepository = {
   },
 
   /**
-   * Suma un intento fallido de forma atómica (sin leer y escribir) y bloquea al llegar al máximo.
+   * Reserva un intento de inicio de sesión de forma atómica ANTES de comprobar la contraseña: así los intentos
+   * simultáneos no pueden burlar el límite. Bloquea al llegar al máximo y devuelve null si ya hay un bloqueo
+   * vigente. Un inicio correcto lo devuelve a cero con reiniciarIntentos.
    * Si un bloqueo anterior ya venció, el conteo vuelve a empezar en 1.
    */
-  async registrarFallo(id, { maximo, bloqueoHasta, ahora }) {
+  async reservarIntento(id, { maximo, bloqueoHasta, ahora }) {
     const bloqueoVencido = {
       $and: [{ $ne: ['$bloqueadoHasta', null] }, { $lte: ['$bloqueadoHasta', ahora] }],
     };
-    return Usuario.findByIdAndUpdate(
-      id,
+    if (!valido(id)) return null;
+    return Usuario.findOneAndUpdate(
+      { _id: id, $or: [{ bloqueadoHasta: null }, { bloqueadoHasta: { $lte: ahora } }] },
       [
         {
           $set: {
@@ -40,7 +43,7 @@ export const usuarioRepository = {
           },
         },
       ],
-      { new: true, updatePipeline: true },
+      { returnDocument: 'after', updatePipeline: true },
     ).lean();
   },
 

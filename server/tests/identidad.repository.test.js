@@ -88,39 +88,43 @@ describe('identidad: modelos y repositorios', () => {
 
     it('bloquea 5 minutos al tercer fallo y no antes', async () => {
       const u = await usuarioRepository.crear(datosUsuario());
-      expect((await usuarioRepository.registrarFallo(u._id, opciones())).bloqueadoHasta).toBeNull();
-      expect((await usuarioRepository.registrarFallo(u._id, opciones())).bloqueadoHasta).toBeNull();
-      const tercero = await usuarioRepository.registrarFallo(u._id, opciones());
+      expect((await usuarioRepository.reservarIntento(u._id, opciones())).bloqueadoHasta).toBeNull();
+      expect((await usuarioRepository.reservarIntento(u._id, opciones())).bloqueadoHasta).toBeNull();
+      const tercero = await usuarioRepository.reservarIntento(u._id, opciones());
       expect(tercero.intentosFallidos).toBe(3);
       expect(tercero.bloqueadoHasta).toEqual(enMinutos(5));
     });
 
     it('seis solicitudes simultáneas no burlan el contador: cuenta todas y queda bloqueado', async () => {
       const u = await usuarioRepository.crear(datosUsuario());
-      await Promise.all(Array.from({ length: 6 }, () => usuarioRepository.registrarFallo(u._id, opciones())));
+      const resultados = await Promise.all(
+        Array.from({ length: 6 }, () => usuarioRepository.reservarIntento(u._id, opciones())),
+      );
+      expect(resultados.filter(Boolean)).toHaveLength(3);
       const despues = await usuarioRepository.buscarPorId(u._id);
-      expect(despues.intentosFallidos).toBe(6);
+      expect(despues.intentosFallidos).toBe(3);
       expect(despues.bloqueadoHasta).toEqual(enMinutos(5));
     });
 
     it('si el bloqueo ya venció, el conteo vuelve a empezar en 1 y se levanta el bloqueo', async () => {
       const u = await usuarioRepository.crear(datosUsuario());
-      for (let i = 0; i < 3; i += 1) await usuarioRepository.registrarFallo(u._id, opciones());
-      const luego = await usuarioRepository.registrarFallo(u._id, opciones(enMinutos(6)));
+      for (let i = 0; i < 3; i += 1) await usuarioRepository.reservarIntento(u._id, opciones());
+      expect(await usuarioRepository.reservarIntento(u._id, opciones())).toBeNull();
+      const luego = await usuarioRepository.reservarIntento(u._id, opciones(enMinutos(6)));
       expect(luego.intentosFallidos).toBe(1);
       expect(luego.bloqueadoHasta).toBeNull();
     });
 
     it('reiniciarIntentos y actualizarPassword levantan el bloqueo', async () => {
       const u = await usuarioRepository.crear(datosUsuario());
-      for (let i = 0; i < 3; i += 1) await usuarioRepository.registrarFallo(u._id, opciones());
+      for (let i = 0; i < 3; i += 1) await usuarioRepository.reservarIntento(u._id, opciones());
       await usuarioRepository.reiniciarIntentos(u._id);
       expect(await usuarioRepository.buscarPorId(u._id)).toMatchObject({
         intentosFallidos: 0,
         bloqueadoHasta: null,
       });
 
-      for (let i = 0; i < 3; i += 1) await usuarioRepository.registrarFallo(u._id, opciones());
+      for (let i = 0; i < 3; i += 1) await usuarioRepository.reservarIntento(u._id, opciones());
       await usuarioRepository.actualizarPassword(u._id, 'nuevo-hash');
       expect(await usuarioRepository.buscarPorId(u._id)).toMatchObject({
         passwordHash: 'nuevo-hash',

@@ -35,7 +35,7 @@ export const sesionRepository = {
           expiraInactividad,
         },
       },
-      { new: true },
+      { returnDocument: 'after' },
     ).lean();
   },
 

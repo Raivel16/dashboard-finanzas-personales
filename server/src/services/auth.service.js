@@ -57,31 +57,36 @@ export function crearAuthService({ config, reloj, correo, logger, sesiones, cost
       }
 
       const ahora = reloj.ahora();
-      // Con el bloqueo vigente ni siquiera se comprueba la contraseÃ±a: no hay forma de adivinarla.
-      if (usuario.bloqueadoHasta && usuario.bloqueadoHasta > ahora) {
-        const minutos = Math.ceil((usuario.bloqueadoHasta - ahora) / 60_000);
-        throw new TooManyRequestsError(MENSAJES.auth.bloqueado(minutos), {
-          bloqueadoHasta: usuario.bloqueadoHasta,
-        });
+      const bloqueado = (hasta) => {
+        const minutos = Math.ceil((hasta - ahora) / 60_000);
+        return new TooManyRequestsError(MENSAJES.auth.bloqueado(minutos), { bloqueadoHasta: hasta });
+      };
+      // Con el bloqueo vigente ni siquiera se comprueba la contraseña: no hay forma de adivinarla.
+      if (usuario.bloqueadoHasta && usuario.bloqueadoHasta > ahora) throw bloqueado(usuario.bloqueadoHasta);
+
+      // El intento se reserva de forma atómica ANTES de comprobar la contraseña: así, peticiones
+      // simultáneas no pueden pasar todas el control de bloqueo y burlar el límite de intentos.
+      const reservado = await usuarioRepository.reservarIntento(usuario._id, {
+        maximo: MAX_INTENTOS,
+        bloqueoHasta: sumarMinutos(ahora, BLOQUEO_MIN),
+        ahora,
+      });
+      if (!reservado) {
+        const actual = await usuarioRepository.buscarPorId(usuario._id);
+        throw bloqueado(actual?.bloqueadoHasta ?? sumarMinutos(ahora, BLOQUEO_MIN));
       }
 
       if (!(await bcrypt.compare(password, usuario.passwordHash))) {
-        const actualizado = await usuarioRepository.registrarFallo(usuario._id, {
-          maximo: MAX_INTENTOS,
-          bloqueoHasta: sumarMinutos(ahora, BLOQUEO_MIN),
-          ahora,
-        });
-        if (actualizado?.bloqueadoHasta) {
-          // El tercer fallo responde "Credenciales invÃ¡lidas" y avisa del bloqueo que empieza.
+        if (reservado.bloqueadoHasta) {
+          // El tercer fallo responde "Credenciales inválidas" y avisa del bloqueo que empieza.
           throw new TooManyRequestsError(MENSAJES.auth.credencialesInvalidas, {
-            bloqueadoHasta: actualizado.bloqueadoHasta,
+            bloqueadoHasta: reservado.bloqueadoHasta,
           });
         }
         throw credencialesInvalidas();
       }
 
-      if (usuario.intentosFallidos > 0 || usuario.bloqueadoHasta)
-        await usuarioRepository.reiniciarIntentos(usuario._id);
+      await usuarioRepository.reiniciarIntentos(usuario._id);
       return { usuario, ...(await sesiones.iniciar(usuario)) };
     },
   };

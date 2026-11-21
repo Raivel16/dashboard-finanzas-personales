@@ -26,7 +26,7 @@ export const tokenRecuperacionRepository = {
     return TokenRecuperacion.findOneAndUpdate(
       { _id: id, usadoEn: null },
       { $set: { usadoEn: ahora } },
-      { new: true },
+      { returnDocument: 'after' },
     ).lean();
   },
 
