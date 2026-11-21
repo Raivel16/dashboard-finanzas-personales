@@ -21,8 +21,8 @@
 
 ## 4. Paquete `shared` [RT-02, RT-03]
 
-- [ ] 4.1 Crear constantes compartidas (roles, tipos de movimiento, tipos de cuenta, monedas `PEN`/`USD`/`EUR`, categorías predeterminadas) y mensajes en español; verificar con pruebas unitarias
-- [ ] 4.2 Crear `validar(esquema, datos)` sobre Validator.js y los esquemas de "Reglas de validación comunes" (diseño, sección 25), paginación y ordenamiento; verificar con pruebas de casos válidos e inválidos
+- [x] 4.1 Crear constantes compartidas (roles, tipos de movimiento, tipos de cuenta, monedas `PEN`/`USD`/`EUR`, categorías predeterminadas) y mensajes en español; verificar con pruebas unitarias
+- [x] 4.2 Crear `validar(esquema, datos)` sobre Validator.js y los esquemas de "Reglas de validación comunes" (diseño, sección 25), paginación y ordenamiento; verificar con pruebas de casos válidos e inválidos
 
 ## 5. Servidor base [RT-01, RT-02, RT-03]
 
