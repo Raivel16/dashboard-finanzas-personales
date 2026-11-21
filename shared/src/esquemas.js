@@ -4,6 +4,7 @@ import {
   LIMITES,
   MONEDAS,
   PAGINACION,
+  ROLES,
   TIPOS_CUENTA,
   TIPOS_MOVIMIENTO,
   ZONA_HORARIA_POR_DEFECTO,
@@ -274,4 +275,27 @@ export const esquemaConsultaMovimientos = {
   categoriaId: idRegla('La categoría', false),
   cuentaId: idRegla('La cuenta', false),
   moneda: monedaRegla(false),
+};
+
+// ---- Administración (HU-22, HU-23) ----
+
+export const esquemaCambiarRol = {
+  rol: {
+    requerido: true,
+    etiqueta: 'El rol',
+    mensajeRequerido: MENSAJES.admin.rolInvalido,
+    sanear: recortar,
+    reglas: [{ ok: (t) => Object.values(ROLES).includes(t), mensaje: MENSAJES.admin.rolInvalido }],
+  },
+};
+
+/** Listado de usuarios: paginación, orden y búsqueda por nombre o correo. */
+export const esquemaConsultaUsuarios = {
+  ...esquemaPaginacion,
+  ...crearEsquemaOrden(['nombre', 'email', 'createdAt'], 'nombre'),
+  q: {
+    etiqueta: 'La búsqueda',
+    sanear: recortar,
+    reglas: [{ ok: (t) => t.length <= 100, mensaje: MENSAJES.admin.busquedaLarga }],
+  },
 };

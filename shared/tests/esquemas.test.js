@@ -3,6 +3,8 @@ import {
   crearEsquemaMovimiento,
   esquemaActualizarPerfil,
   esquemaCambiarContrasena,
+  esquemaCambiarRol,
+  esquemaConsultaUsuarios,
   esquemaCategoria,
   esquemaConsultaMovimientos,
   esquemaCuenta,
@@ -295,5 +297,21 @@ describe('esquemas de perfil (HU-20, HU-21)', () => {
     ).toBe(true);
     const r = validar(esquemaCambiarContrasena, { passwordActual: '', passwordNueva: 'floja' });
     expect(r.errores.map((e) => e.campo)).toEqual(['passwordActual', 'passwordNueva']);
+  });
+});
+
+describe('esquemas de administración (HU-22, HU-23)', () => {
+  it('el rol solo admite los roles del sistema', () => {
+    expect(validar(esquemaCambiarRol, { rol: 'admin' }).datos).toEqual({ rol: 'admin' });
+    expect(validar(esquemaCambiarRol, { rol: 'usuario' }).valido).toBe(true);
+    expect(validar(esquemaCambiarRol, { rol: 'root' }).valido).toBe(false);
+    expect(validar(esquemaCambiarRol, {}).errores[0].mensaje).toBe('Selecciona un rol válido');
+  });
+
+  it('la consulta de usuarios pagina, ordena y limita la búsqueda', () => {
+    const ok = validar(esquemaConsultaUsuarios, { q: ' ana ' });
+    expect(ok.datos).toMatchObject({ q: 'ana', page: 1, sort: 'nombre' });
+    expect(validar(esquemaConsultaUsuarios, { q: 'x'.repeat(101) }).valido).toBe(false);
+    expect(validar(esquemaConsultaUsuarios, { sort: 'passwordHash' }).valido).toBe(false);
   });
 });

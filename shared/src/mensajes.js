@@ -32,6 +32,11 @@ export const MENSAJES = Object.freeze({
     contrasenaNuevaIgual: 'La nueva contraseña debe ser distinta de la actual',
     contrasenaCambiada: 'Tu contraseña se actualizó. Las demás sesiones se cerraron.',
   },
+  admin: {
+    ultimoAdministrador: 'Debe existir al menos un administrador',
+    rolInvalido: 'Selecciona un rol válido',
+    busquedaLarga: 'La búsqueda admite hasta 100 caracteres',
+  },
   perfil: {
     actualizado: 'Tu perfil se actualizó',
     correoSoloLectura: 'El correo no se puede cambiar',

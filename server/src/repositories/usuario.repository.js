@@ -1,5 +1,7 @@
 // Único acceso al modelo Usuario. No filtra por tenantId porque se usa para autenticar (ver el diseño).
 import mongoose from 'mongoose';
+import { ROLES } from '@finanzas/shared';
+import { Bloqueo } from '../models/bloqueo.model.js';
 import { Usuario } from '../models/usuario.model.js';
 
 const valido = (id) => mongoose.isValidObjectId(id);
@@ -63,5 +65,69 @@ export const usuarioRepository = {
       { _id: id },
       { $set: { passwordHash, intentosFallidos: 0, bloqueadoHasta: null } },
     );
+  },
+
+  /** Listado para administración: búsqueda por nombre o correo (texto literal), paginado y ordenado. */
+  async listarParaAdmin({ q, page, limit, sort }) {
+    const filtro = {};
+    if (q) {
+      const texto = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      filtro.$or = [{ nombre: texto }, { email: texto }];
+    }
+    const [items, total] = await Promise.all([
+      Usuario.find(filtro)
+        .sort(`${sort} _id`)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Usuario.countDocuments(filtro),
+    ]);
+    return { items, total };
+  },
+
+  /**
+   * Cambia el rol dentro de una transacción que primero escribe un documento centinela: dos cambios
+   * simultáneos chocan y se serializan, así nunca se degrada al último administrador.
+   * @returns {Promise<{ estado: 'ok' | 'sin_cambios' | 'no_existe' | 'ultimo_administrador', usuario?: object }>}
+   */
+  async cambiarRolGarantizandoAdministrador(id, rol) {
+    if (!valido(id)) return { estado: 'no_existe' };
+    const sesion = await mongoose.startSession();
+    try {
+      let resultado;
+      await sesion.withTransaction(async () => {
+        await Bloqueo.updateOne(
+          { _id: 'roles' },
+          { $inc: { version: 1 } },
+          { upsert: true, session: sesion },
+        );
+        const usuario = await Usuario.findById(id).session(sesion);
+        if (!usuario) {
+          resultado = { estado: 'no_existe' };
+          return;
+        }
+        if (usuario.rol === rol) {
+          resultado = { estado: 'sin_cambios', usuario: usuario.toObject() };
+          return;
+        }
+        if (rol !== ROLES.ADMIN) {
+          const otros = await Usuario.countDocuments({
+            rol: ROLES.ADMIN,
+            activo: true,
+            _id: { $ne: id },
+          }).session(sesion);
+          if (otros === 0) {
+            resultado = { estado: 'ultimo_administrador' };
+            return;
+          }
+        }
+        usuario.rol = rol;
+        await usuario.save({ session: sesion });
+        resultado = { estado: 'ok', usuario: usuario.toObject() };
+      });
+      return resultado;
+    } finally {
+      await sesion.endSession();
+    }
   },
 };
