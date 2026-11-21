@@ -10,8 +10,8 @@
 
 ## 2. Modelos y repositorios de identidad [HU-01, HU-02, HU-19]
 
-- [ ] 2.1 Crear los modelos `usuario`, `sesion` y `token-recuperacion` con los campos e índices del diseño (`email` y `tenantId` únicos, TTL en `expiraAbsoluta` y `expiraEn`, `tokenHashAnterior` y `rotadoEn`); verificar con una prueba que comprueba que los índices existen y que un correo duplicado se rechaza
-- [ ] 2.2 Crear `usuario.repository.js`, `sesion.repository.js` y `token-recuperacion.repository.js` (únicos accesos a esos modelos), incluidas las operaciones atómicas de intentos fallidos y de rotación; verificar con pruebas contra `MongoMemoryReplSet`, incluidas dos solicitudes simultáneas que no burlan el contador
+- [x] 2.1 Crear los modelos `usuario`, `sesion` y `token-recuperacion` con los campos e índices del diseño (`email` y `tenantId` únicos, TTL en `expiraAbsoluta` y `expiraEn`, `tokenHashAnterior` y `rotadoEn`); verificar con una prueba que comprueba que los índices existen y que un correo duplicado se rechaza
+- [x] 2.2 Crear `usuario.repository.js`, `sesion.repository.js` y `token-recuperacion.repository.js` (únicos accesos a esos modelos), incluidas las operaciones atómicas de intentos fallidos y de rotación; verificar con pruebas contra `MongoMemoryReplSet`, incluidas dos solicitudes simultáneas que no burlan el contador
 
 ## 3. Registro [HU-01]
 
