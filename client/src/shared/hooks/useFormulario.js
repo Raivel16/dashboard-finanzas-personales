@@ -44,6 +44,12 @@ export function useFormulario({ esquema, valoresIniciales, alEnviar }) {
     }
   };
 
+  /** Muestra errores que vienen del servidor ({ campo: mensaje }) y lleva el foco al primer campo inválido. */
+  const fijarErrores = (porCampo) => {
+    setErrores(porCampo);
+    setIntentosFallidos((n) => n + 1);
+  };
+
   const reiniciar = () => {
     setValores(valoresIniciales);
     setErrores({});
@@ -58,5 +64,5 @@ export function useFormulario({ esquema, valoresIniciales, alEnviar }) {
     alCambiar: (evento) => cambiar(campo, evento.target.value),
   });
 
-  return { valores, errores, enviando, formularioRef, cambiar, enviar, reiniciar, propsCampo };
+  return { valores, errores, enviando, formularioRef, cambiar, enviar, reiniciar, fijarErrores, propsCampo };
 }

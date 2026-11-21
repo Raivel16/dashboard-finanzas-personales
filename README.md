@@ -95,6 +95,27 @@ export MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 
 `npm run seed:admin -w server` crea el primer administrador con `ADMIN_EMAIL` y `ADMIN_PASSWORD`. Si el correo ya es de un usuario estándar, falla en lugar de promoverlo; si el administrador ya existe, informa que no hay cambios.
 
+## Autenticación
+
+Rutas de `/api/v1/auth` (diseño completo en `openspec/changes/implementar-autenticacion/design.md`):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `POST /registro` | Crea la cuenta (rol `usuario`) y envía el correo de bienvenida. |
+| `POST /login` | Inicia sesión y fija las cookies. Tres fallos seguidos bloquean la cuenta 5 minutos (429). |
+| `GET /me` | Devuelve la persona con la sesión actual. |
+| `POST /refresh` | Renueva el token de acceso (rota el token de renovación). |
+| `POST /logout` | Cierra solo la sesión de este dispositivo; responde 204 aunque ya haya expirado. |
+| `POST /olvide-contrasena` | Responde siempre igual, exista o no el correo. Un enlace cada 60 segundos. |
+| `POST /restablecer-contrasena` | Cambia la contraseña con el enlace (un solo uso) y cierra todas las sesiones. |
+
+- **Cookies** `httpOnly` con `sameSite=lax` (`secure` en producción): `access_token` (JWT de 15 minutos) y `refresh_token` (opaco, solo en `/api/v1/auth`). Solo el hash de este último se guarda en la base.
+- **Tiempos:** la sesión caduca tras 30 minutos sin actividad (`REFRESH_INACTIVITY_MIN`) y, en todo caso, a los 7 días (`REFRESH_ABSOLUTE_DAYS`). El enlace de recuperación vence a los 30 minutos (`RESET_TOKEN_TTL_MIN`).
+- **Errores de sesión:** `TOKEN_EXPIRED` (el cliente renueva solo), `SESSION_EXPIRED` y `SESSION_REVOKED` (hay que iniciar sesión de nuevo).
+- **Sin SMTP configurado** los correos se escriben en el log del servidor, con el enlace de recuperación incluido: sirve para probar el flujo en local.
+- **Correo real (Brevo u otro):** define `SMTP_*` y `MAIL_FROM` en `server/.env`. Gmail y otros proveedores pueden enviar estos mensajes a la carpeta de spam la primera vez; pide a quien pruebe que revise esa carpeta o marque el remitente como seguro.
+- **Límites conocidos:** no hay límite por IP (solo el bloqueo por cuenta y el enfriamiento de los correos); es una mejora futura que no cambia el contrato.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).

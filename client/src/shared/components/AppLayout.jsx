@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useMatches } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { useEsEscritorio } from '../hooks/useMediaQuery.js';
 import { usePanelRegistro } from '../hooks/usePanelRegistro.js';
 import { PanelRegistro } from './PanelRegistro.jsx';
 
@@ -30,11 +31,17 @@ function EnlaceDestino({ destino, clase, conIcono = true }) {
  * - Desde 1024 px: barra lateral fija de 232 px.
  * - Por debajo: barra superior con la página actual y navegación inferior con "Registrar" al centro.
  *
- * @param {{ ruta: string, etiqueta: string, icono?: Function }[]} destinos
+ * Los destinos con `soloAdmin` solo se muestran si `esAdmin` es true (el servidor vuelve a validar el rol).
+ * `menuUsuario(compacto)` pinta los datos de la persona y "Cerrar sesión": en la barra lateral (escritorio)
+ * o en la barra superior (celular, `compacto = true`).
+ *
+ * @param {{ ruta: string, etiqueta: string, icono?: Function, soloAdmin?: boolean }[]} destinos
  * @param {{ etiqueta: string, titulo: string, contenido: (cerrar: () => void) => React.ReactNode } | undefined} registrar
  */
-export function AppLayout({ destinos, registrar }) {
+export function AppLayout({ destinos: todos, registrar, esAdmin = false, menuUsuario }) {
   const panel = usePanelRegistro();
+  const escritorio = useEsEscritorio();
+  const destinos = todos.filter((d) => !d.soloAdmin || esAdmin);
   const coincidencias = useMatches();
   const titulo =
     [...coincidencias].reverse().find((m) => m.handle?.titulo)?.handle.titulo ?? 'Finanzas personales';
@@ -70,11 +77,13 @@ export function AppLayout({ destinos, registrar }) {
             {registrar.etiqueta}
           </button>
         )}
+        {escritorio && menuUsuario && <div className={registrar ? '' : 'mt-auto'}>{menuUsuario(false)}</div>}
       </aside>
 
       {/* Barra superior (celular) */}
       <header className="sobre-tapa sticky top-0 z-30 flex min-h-14 items-center bg-tapa px-4 lg:hidden">
         <p className="text-lg font-semibold text-tapa-texto">{titulo}</p>
+        {!escritorio && menuUsuario && <div className="ml-auto">{menuUsuario(true)}</div>}
       </header>
 
       <main id="contenido" className="mx-auto max-w-[1280px] p-4 pb-24 sm:p-6 lg:p-8">

@@ -15,7 +15,7 @@ const botonesRegistrar = () => screen.getAllByRole('button', { name: /Registrar/
 
 describe('RT-05 · interfaz consistente y responsiva', () => {
   it('Registro rápido en celular: abre a pantalla completa con el monto primero y teclado numérico', async () => {
-    montarApp({ escritorio: false });
+    await montarApp({ escritorio: false });
     const navegacionInferior = screen.getAllByRole('navigation', { name: 'Principal' }).at(-1);
     await userEvent.click(within(navegacionInferior).getByRole('button', { name: /Registrar/ }));
 
@@ -28,7 +28,7 @@ describe('RT-05 · interfaz consistente y responsiva', () => {
   });
 
   it('Trabajo en escritorio: el formulario va en un panel lateral y el historial sigue visible', async () => {
-    montarApp({ escritorio: true });
+    await montarApp({ escritorio: true });
     await userEvent.click(botonesRegistrar()[0]);
 
     const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
@@ -39,7 +39,7 @@ describe('RT-05 · interfaz consistente y responsiva', () => {
   });
 
   it('Error comprensible: marca el campo con ícono y texto y lleva el foco al primer error', async () => {
-    montarApp({ escritorio: true });
+    await montarApp({ escritorio: true });
     await userEvent.click(botonesRegistrar()[0]);
     const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
 
@@ -56,7 +56,7 @@ describe('RT-05 · interfaz consistente y responsiva', () => {
   });
 
   it('Movimiento reducido y teclado: Escape cierra el panel, el foco vuelve y el sello no se anima', async () => {
-    montarApp({ escritorio: true, movimientoReducido: true });
+    await montarApp({ escritorio: true, movimientoReducido: true });
     const abrir = botonesRegistrar()[0];
     abrir.focus();
     await userEvent.keyboard('{Enter}');
@@ -77,7 +77,7 @@ describe('RT-05 · interfaz consistente y responsiva', () => {
   });
 
   it('anima el sello cuando no se pidió menos movimiento', async () => {
-    montarApp({ escritorio: true, movimientoReducido: false });
+    await montarApp({ escritorio: true, movimientoReducido: false });
     await userEvent.click(botonesRegistrar()[0]);
     const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
     await userEvent.type(within(panel).getByLabelText('Monto'), '10');
