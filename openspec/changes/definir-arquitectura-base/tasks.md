@@ -67,7 +67,7 @@
 ## 10. Verificación integral [RT-01 a RT-07]
 
 - [ ] 10.1 Ejecutar `npm run lint`, `npm test` y `npm run build`, levantar `npm run dev` y comprobar el estado de `/api/v1/health` desde el cliente
-- [ ] 10.2 Ejecutar `openspec validate definir-arquitectura-base --strict` y verificar que el cambio es válido
+- [x] 10.2 Ejecutar `openspec validate definir-arquitectura-base --strict` y verificar que el cambio es válido
 
 ## Workflow follow-up
 
