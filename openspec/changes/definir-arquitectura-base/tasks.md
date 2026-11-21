@@ -26,17 +26,17 @@
 
 ## 5. Servidor base [RT-01, RT-02, RT-03]
 
-- [ ] 5.1 Crear `server/` con Express 5, la estructura MVC del diseño, `app.js`/`server.js` y configuración validada; verificar el escenario "Configuración incompleta" de RT-01
-- [ ] 5.2 Implementar la conexión a MongoDB con comprobación de replica set; verificar el escenario "Base de datos sin replica set"
-- [ ] 5.3 Agregar helmet, cors, cookie-parser, parseo JSON y pino; verificar con Supertest cabeceras de seguridad y CORS
-- [ ] 5.4 Implementar errores de dominio y manejadores central y 404; verificar "Error interno sin filtrar detalles" y "Recurso inexistente o de otro usuario" de RT-02
-- [ ] 5.5 Implementar el middleware de validación; verificar "Error de validación con detalle por campo" de RT-02 y "Límite superior de página" y "Fecha con formato inválido" de RT-03
-- [ ] 5.6 Implementar la vista base `{ data }` / `{ data, meta }`, paginación, filtros y orden; verificar "Respuesta exitosa con formato estándar" de RT-02 y "Listado paginado con valores por defecto" y "Filtros combinados y orden" de RT-03
-- [ ] 5.7 Implementar utilidades de dinero (`Decimal128`, decimal.js) y fechas (Day.js, `APP_TIMEZONE`); verificar con pruebas de redondeo y límites de mes
-- [ ] 5.8 Implementar el repositorio base por `tenantId` y el plugin de guardia; verificar con `MongoMemoryReplSet` que un inquilino no accede a datos de otro y que una consulta sin `tenantId` falla
-- [ ] 5.9 Implementar el servicio de correo con Nodemailer, registro en log sin SMTP y transporte simulado en pruebas; verificar el modo sin SMTP
-- [ ] 5.10 Exponer `GET /api/v1/health` con el estado de la base de datos; verificar con Supertest
-- [ ] 5.11 Configurar Jest en modo ES Modules con Supertest y `mongodb-memory-server`; verificar que `npm test -w server` pasa
+- [x] 5.1 Crear `server/` con Express 5, la estructura MVC del diseño, `app.js`/`server.js` y configuración validada; verificar el escenario "Configuración incompleta" de RT-01
+- [x] 5.2 Implementar la conexión a MongoDB con comprobación de replica set; verificar el escenario "Base de datos sin replica set"
+- [x] 5.3 Agregar helmet, cors, cookie-parser, parseo JSON y pino; verificar con Supertest cabeceras de seguridad y CORS
+- [x] 5.4 Implementar errores de dominio y manejadores central y 404; verificar "Error interno sin filtrar detalles" y "Recurso inexistente o de otro usuario" de RT-02
+- [x] 5.5 Implementar el middleware de validación; verificar "Error de validación con detalle por campo" de RT-02 y "Límite superior de página" y "Fecha con formato inválido" de RT-03
+- [x] 5.6 Implementar la vista base `{ data }` / `{ data, meta }`, paginación, filtros y orden; verificar "Respuesta exitosa con formato estándar" de RT-02 y "Listado paginado con valores por defecto" y "Filtros combinados y orden" de RT-03
+- [x] 5.7 Implementar utilidades de dinero (`Decimal128`, decimal.js) y fechas (Day.js, `APP_TIMEZONE`); verificar con pruebas de redondeo y límites de mes
+- [x] 5.8 Implementar el repositorio base por `tenantId` y el plugin de guardia; verificar con `MongoMemoryReplSet` que un inquilino no accede a datos de otro y que una consulta sin `tenantId` falla
+- [x] 5.9 Implementar el servicio de correo con Nodemailer, registro en log sin SMTP y transporte simulado en pruebas; verificar el modo sin SMTP
+- [x] 5.10 Exponer `GET /api/v1/health` con el estado de la base de datos; verificar con Supertest
+- [x] 5.11 Configurar Jest en modo ES Modules con Supertest y `mongodb-memory-server`; verificar que `npm test -w server` pasa
 
 ## 6. Cliente base e interfaz [RT-01, RT-05]
 
