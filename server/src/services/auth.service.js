@@ -61,11 +61,11 @@ export function crearAuthService({ config, reloj, correo, logger, sesiones, cost
         const minutos = Math.ceil((hasta - ahora) / 60_000);
         return new TooManyRequestsError(MENSAJES.auth.bloqueado(minutos), { bloqueadoHasta: hasta });
       };
-      // Con el bloqueo vigente ni siquiera se comprueba la contraseña: no hay forma de adivinarla.
+      // Con el bloqueo vigente ni siquiera se comprueba la contraseï¿½a: no hay forma de adivinarla.
       if (usuario.bloqueadoHasta && usuario.bloqueadoHasta > ahora) throw bloqueado(usuario.bloqueadoHasta);
 
-      // El intento se reserva de forma atómica ANTES de comprobar la contraseña: así, peticiones
-      // simultáneas no pueden pasar todas el control de bloqueo y burlar el límite de intentos.
+      // El intento se reserva de forma atï¿½mica ANTES de comprobar la contraseï¿½a: asï¿½, peticiones
+      // simultï¿½neas no pueden pasar todas el control de bloqueo y burlar el lï¿½mite de intentos.
       const reservado = await usuarioRepository.reservarIntento(usuario._id, {
         maximo: MAX_INTENTOS,
         bloqueoHasta: sumarMinutos(ahora, BLOQUEO_MIN),
@@ -78,7 +78,7 @@ export function crearAuthService({ config, reloj, correo, logger, sesiones, cost
 
       if (!(await bcrypt.compare(password, usuario.passwordHash))) {
         if (reservado.bloqueadoHasta) {
-          // El tercer fallo responde "Credenciales inválidas" y avisa del bloqueo que empieza.
+          // El tercer fallo responde "Credenciales invï¿½lidas" y avisa del bloqueo que empieza.
           throw new TooManyRequestsError(MENSAJES.auth.credencialesInvalidas, {
             bloqueadoHasta: reservado.bloqueadoHasta,
           });

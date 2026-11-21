@@ -50,6 +50,14 @@ export const sesionRepository = {
     await Sesion.updateOne({ _id: id, revocadaEn: null }, { $set: { revocadaEn: ahora } });
   },
 
+  /** Revoca todas las sesiones del usuario salvo la indicada (la desde la que cambió su contraseña). */
+  async revocarOtras(usuarioId, sesionId, ahora) {
+    await Sesion.updateMany(
+      { usuarioId, _id: { $ne: sesionId }, revocadaEn: null },
+      { $set: { revocadaEn: ahora } },
+    );
+  },
+
   async revocarTodasDeUsuario(usuarioId, ahora) {
     await Sesion.updateMany({ usuarioId, revocadaEn: null }, { $set: { revocadaEn: ahora } });
   },

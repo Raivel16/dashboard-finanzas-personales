@@ -4,18 +4,18 @@
 
 ## 1. Preparación [RT-01]
 
-- [ ] 1.1 Crear la rama `feature/implementar-perfil` desde un `dev` actualizado y verificar con `git branch --show-current`
-- [ ] 1.2 Agregar a `shared/` los esquemas `esquemaActualizarPerfil` (nombre obligatorio, moneda opcional) y `esquemaCambiarContrasena` (actual obligatoria, nueva segura) y los mensajes de contraseña actual incorrecta y nueva igual a la actual; verificar con pruebas de `shared` (incluido "El nombre es obligatorio" con el nombre vacío)
+- [x] 1.1 Crear la rama `feature/implementar-perfil` desde un `dev` actualizado y verificar con `git branch --show-current`
+- [x] 1.2 Agregar a `shared/` los esquemas `esquemaActualizarPerfil` (nombre obligatorio, moneda opcional) y `esquemaCambiarContrasena` (actual obligatoria, nueva segura) y los mensajes de contraseña actual incorrecta y nueva igual a la actual; verificar con pruebas de `shared` (incluido "El nombre es obligatorio" con el nombre vacío)
 
 ## 2. Servidor: perfil [HU-20]
 
-- [ ] 2.1 Agregar `actualizarPerfil(id, datos)` a `usuarioRepository` y el servicio, controlador, vista y ruta `PATCH /api/v1/perfil` protegida por `autenticar`, que ignora el correo; verificar "Actualización exitosa del nombre", "Cambio de moneda principal" (se guarda y `/auth/me` la devuelve) y "Nombre inválido rechazado" con pruebas de API
-- [ ] 2.2 Verificar "Correo no editable" en la API: enviar `email` no cambia el correo guardado; y que sin sesión la ruta responde 401
+- [x] 2.1 Agregar `actualizarPerfil(id, datos)` a `usuarioRepository` y el servicio, controlador, vista y ruta `PATCH /api/v1/perfil` protegida por `autenticar`, que ignora el correo; verificar "Actualización exitosa del nombre", "Cambio de moneda principal" (se guarda y `/auth/me` la devuelve) y "Nombre inválido rechazado" con pruebas de API
+- [x] 2.2 Verificar "Correo no editable" en la API: enviar `email` no cambia el correo guardado; y que sin sesión la ruta responde 401
 
 ## 3. Servidor: cambio de contraseña [HU-21]
 
-- [ ] 3.1 Agregar `revocarOtras(usuarioId, sesionId, ahora)` a `sesionRepository` y `PUT /api/v1/perfil/contrasena` con reserva de intento, comparación de la actual, rechazo de la igual y guardado del hash; verificar "Cambio exitoso de contraseña", "Contraseña actual incorrecta" y "Nueva contraseña igual a la actual" con los mensajes exactos
-- [ ] 3.2 Revocar las demás sesiones conservando la actual y enviar el aviso por correo sin bloquear la respuesta; verificar "Cierre de las demás sesiones" con dos dispositivos, y que cinco intentos con la actual incorrecta terminan en 429
+- [x] 3.1 Agregar `revocarOtras(usuarioId, sesionId, ahora)` a `sesionRepository` y `PUT /api/v1/perfil/contrasena` con reserva de intento, comparación de la actual, rechazo de la igual y guardado del hash; verificar "Cambio exitoso de contraseña", "Contraseña actual incorrecta" y "Nueva contraseña igual a la actual" con los mensajes exactos
+- [x] 3.2 Revocar las demás sesiones conservando la actual y enviar el aviso por correo sin bloquear la respuesta; verificar "Cierre de las demás sesiones" con dos dispositivos, y que cinco intentos con la actual incorrecta terminan en 429
 
 ## 4. Cliente [HU-20, HU-21]
 

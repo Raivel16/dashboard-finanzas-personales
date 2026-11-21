@@ -28,6 +28,13 @@ export const MENSAJES = Object.freeze({
     enlaceExpirado: 'El enlace ha expirado',
     contrasenaRestablecida: 'Tu contraseña se actualizó. Ya puedes iniciar sesión.',
     registroExitoso: 'Tu cuenta se creó correctamente. Ya puedes iniciar sesión.',
+    contrasenaActualIncorrecta: 'La contraseña actual es incorrecta',
+    contrasenaNuevaIgual: 'La nueva contraseña debe ser distinta de la actual',
+    contrasenaCambiada: 'Tu contraseña se actualizó. Las demás sesiones se cerraron.',
+  },
+  perfil: {
+    actualizado: 'Tu perfil se actualizó',
+    correoSoloLectura: 'El correo no se puede cambiar',
   },
   nombreCuentaCategoria: `El nombre debe tener entre ${LIMITES.NOMBRE_CUENTA_CATEGORIA.min} y ${LIMITES.NOMBRE_CUENTA_CATEGORIA.max} caracteres`,
   monto: {

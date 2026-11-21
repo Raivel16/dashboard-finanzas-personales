@@ -5,6 +5,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { pinoHttp } from 'pino-http';
 import healthRoutes from './routes/health.routes.js';
+import { crearPerfilService } from './services/perfil.service.js';
+import { crearPerfilController } from './controllers/perfil.controller.js';
+import { crearPerfilRoutes } from './routes/perfil.routes.js';
 import { crearAuthRoutes } from './routes/auth.routes.js';
 import { crearAuthController } from './controllers/auth.controller.js';
 import { crearAuthService } from './services/auth.service.js';
@@ -52,8 +55,9 @@ export function crearApp({
   const sesiones = crearSesionService({ config, reloj });
   const auth = crearAuthService({ config, reloj, correo, logger, sesiones, costoBcrypt });
   const recuperacion = crearRecuperacionService({ config, reloj, correo, logger, sesiones, costoBcrypt });
+  const perfil = crearPerfilService({ reloj, correo, logger, sesiones, costoBcrypt });
   const autenticar = crearAutenticar(sesiones);
-  app.locals.servicios = { sesiones, auth, recuperacion };
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil };
 
   const api = express.Router();
   api.use(sinCache);
@@ -65,6 +69,7 @@ export function crearApp({
       autenticar,
     }),
   );
+  api.use('/perfil', crearPerfilRoutes({ controlador: crearPerfilController({ perfil }), autenticar }));
   extras?.(api, { autenticar });
   app.use('/api/v1', api);
 
