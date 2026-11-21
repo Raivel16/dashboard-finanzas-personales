@@ -6,7 +6,7 @@
 
 - [x] 1.1 Actualizar `docs/historias-de-usuario.md` y su versión Word agregando las historias funcionales HU-18 a HU-31 sin modificar HU-01 a HU-17; verificar que ambas contienen 31 historias y 124 escenarios
 - [x] 1.2 Crear `.gitignore` raíz y verificar con `git status` que ningún `.env` aparece como archivo a versionar
-- [ ] 1.3 Proteger `main` y `dev` en GitHub (pull request obligatorio con 0 aprobaciones, comprobación `verificar`, sin force push ni borrado) después de que exista la integración continua; verificar leyendo la protección de cada rama
+- [x] 1.3 Proteger `main` y `dev` en GitHub (pull request obligatorio con 0 aprobaciones, comprobación `verificar`, sin force push ni borrado) después de que exista la integración continua; verificar leyendo la protección de cada rama
 - [x] 1.4 Actualizar `CLAUDE.md` y `openspec/config.yaml` con el flujo de ramas, la trazabilidad y el aislamiento por `tenantId`; verificar con `openspec validate --all`
 
 ## 2. MongoDB local como replica set [RT-01]
