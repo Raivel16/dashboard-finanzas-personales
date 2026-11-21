@@ -55,13 +55,13 @@
 
 ## 8. Integración continua [RT-04]
 
-- [ ] 8.1 Crear `.github/workflows/ci.yml` con el job `verificar` (`npm ci`, lint, pruebas y compilación con Node.js 22) para pull requests hacia `dev` y `main`; verificar con un pull request real
-- [ ] 8.2 Comprobar que el job falla ante una prueba rota y que corre sin `.env`; verificar en el historial de GitHub Actions
+- [x] 8.1 Crear `.github/workflows/ci.yml` con el job `verificar` (`npm ci`, lint, pruebas y compilación con Node.js 22) para pull requests hacia `dev` y `main`; verificar con un pull request real
+- [x] 8.2 Comprobar que el job falla ante una prueba rota y que corre sin `.env`; verificar en el historial de GitHub Actions
 
 ## 9. Configuración y documentación [RT-01]
 
 - [x] 9.1 Crear `server/.env.example` y `client/.env.example`; verificar que el servidor arranca copiando el ejemplo y completando los secretos
-- [ ] 9.2 Escribir `README.md` con requisitos, instalación, replica set, Atlas, comandos, datos demo y flujo de ramas; verificar los escenarios "Proyecto levantado desde un clon limpio" y "Cambio a MongoDB Atlas"
+- [x] 9.2 Escribir `README.md` con requisitos, instalación, replica set, Atlas, comandos, datos demo y flujo de ramas; verificar los escenarios "Proyecto levantado desde un clon limpio" y "Cambio a MongoDB Atlas"
 - [x] 9.3 Actualizar `CLAUDE.md` con los comandos reales, incluida la ejecución de una sola prueba; verificar que cada comando funciona
 
 ## 10. Verificación integral [RT-01 a RT-07]
