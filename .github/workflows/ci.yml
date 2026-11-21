@@ -1,0 +1,40 @@
+name: CI
+
+# Verifica cada pull request hacia dev y main. No usa secretos: las pruebas del servidor levantan
+# MongoDB en memoria (replica set) y un correo simulado, sin archivos .env ni servicios externos.
+on:
+  pull_request:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: verificar
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # mongodb-memory-server descarga mongod la primera vez; se reutiliza entre ejecuciones.
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/mongodb-memory-server
+          key: mongodb-memory-server-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: mongodb-memory-server-${{ runner.os }}-
+
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
