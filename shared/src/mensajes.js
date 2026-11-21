@@ -9,6 +9,7 @@ export const MENSAJES = Object.freeze({
     errorInterno: 'Ocurrió un error inesperado. Inténtalo nuevamente.',
     noAutorizado: 'Acceso no autorizado',
     sesionExpirada: 'Tu sesión ha expirado, por favor inicia sesión nuevamente',
+    sesionCerrada: 'Tu sesión se cerró, por favor inicia sesión nuevamente',
     demasiadosIntentos: 'Demasiados intentos. Inténtalo más tarde.',
   },
   usuario: {

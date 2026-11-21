@@ -21,11 +21,11 @@
 
 ## 4. Inicio de sesión y autenticación [HU-02, HU-19]
 
-- [ ] 4.1 Implementar `iniciarSesion` con bcrypt, bloqueo atómico de 3 intentos y 5 minutos, mensaje único "Credenciales inválidas" y comparación con hash falso para correo inexistente; verificar los escenarios "Inicio de sesión exitoso", "Bloqueo temporal por credenciales incorrectas" (con reloj movido 5 minutos) y que usuario inexistente e inactivo responden igual
-- [ ] 4.2 Crear la sesión al iniciar y emitir las cookies `access_token` y `refresh_token` con las opciones del diseño; verificar atributos `httpOnly`, `sameSite`, `path` y que en BD solo hay el hash del token de renovación
-- [ ] 4.3 Crear el middleware `autenticar` (verificación del JWT de la cookie con `jsonwebtoken` y el reloj inyectado, carga del usuario y de la sesión en paralelo, rol vigente, extensión de actividad limitada a una escritura por minuto) y `GET /api/v1/auth/me`; verificar 401 `TOKEN_EXPIRED`, `SESSION_EXPIRED`, `SESSION_REVOKED` y que un administrador devuelve `rol: admin` (parte del escenario "Acceso ampliado para un administrador")
-- [ ] 4.4 Agregar `Cache-Control: no-store` a las rutas de autenticación y autenticadas; verificar la cabecera en pruebas
-- [ ] 4.5 Implementar `POST /api/v1/auth/refresh` con rotación, ventana de gracia de 10 segundos, detección de reutilización y tope absoluto de 7 días; verificar "Sesión renovada mientras el usuario está activo", "Regreso después de una pausa corta" (20 minutos), "Límite máximo de la sesión" (7 días) y "Sesión invalidada por expiración del token" (31 minutos), todos con reloj movido
+- [x] 4.1 Implementar `iniciarSesion` con bcrypt, bloqueo atómico de 3 intentos y 5 minutos, mensaje único "Credenciales inválidas" y comparación con hash falso para correo inexistente; verificar los escenarios "Inicio de sesión exitoso", "Bloqueo temporal por credenciales incorrectas" (con reloj movido 5 minutos) y que usuario inexistente e inactivo responden igual
+- [x] 4.2 Crear la sesión al iniciar y emitir las cookies `access_token` y `refresh_token` con las opciones del diseño; verificar atributos `httpOnly`, `sameSite`, `path` y que en BD solo hay el hash del token de renovación
+- [x] 4.3 Crear el middleware `autenticar` (verificación del JWT de la cookie con `jsonwebtoken` y el reloj inyectado, carga del usuario y de la sesión en paralelo, rol vigente, extensión de actividad limitada a una escritura por minuto) y `GET /api/v1/auth/me`; verificar 401 `TOKEN_EXPIRED`, `SESSION_EXPIRED`, `SESSION_REVOKED` y que un administrador devuelve `rol: admin` (parte del escenario "Acceso ampliado para un administrador")
+- [x] 4.4 Agregar `Cache-Control: no-store` a las rutas de autenticación y autenticadas; verificar la cabecera en pruebas
+- [x] 4.5 Implementar `POST /api/v1/auth/refresh` con rotación, ventana de gracia de 10 segundos, detección de reutilización y tope absoluto de 7 días; verificar "Sesión renovada mientras el usuario está activo", "Regreso después de una pausa corta" (20 minutos), "Límite máximo de la sesión" (7 días) y "Sesión invalidada por expiración del token" (31 minutos), todos con reloj movido
 
 ## 5. Cierre de sesión [HU-18]
 

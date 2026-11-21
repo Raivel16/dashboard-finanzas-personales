@@ -42,4 +42,28 @@ describe('constantes compartidas', () => {
     expect(MENSAJES.generales.noExiste).toContain('no existe');
     expect(MENSAJES.generales.requerido('El monto')).toBe('El monto es obligatorio');
   });
+
+  it('define los códigos y mensajes de autenticación que usan la API y el cliente', () => {
+    for (const codigo of [
+      'UNAUTHORIZED',
+      'TOKEN_EXPIRED',
+      'SESSION_EXPIRED',
+      'SESSION_REVOKED',
+      'TOKEN_INVALID',
+    ]) {
+      expect(CODIGOS_ERROR[codigo]).toBe(codigo);
+    }
+    expect(MENSAJES.generales.sesionExpirada).toBe(
+      'Tu sesión ha expirado, por favor inicia sesión nuevamente',
+    );
+    expect(MENSAJES.generales.sesionCerrada).toBe('Tu sesión se cerró, por favor inicia sesión nuevamente');
+    expect(MENSAJES.auth.credencialesInvalidas).toBe('Credenciales inválidas');
+    expect(MENSAJES.auth.correoRegistrado).toBe('Este correo ya se encuentra registrado');
+    expect(MENSAJES.auth.recuperacionSolicitada).toBe(
+      'Si el correo existe, recibirás un enlace de recuperación',
+    );
+    expect(MENSAJES.auth.enlaceExpirado).toBe('El enlace ha expirado');
+    expect(MENSAJES.auth.bloqueado(5)).toContain('5 minutos');
+    expect(MENSAJES.auth.bloqueado(1)).toContain('1 minuto.');
+  });
 });
