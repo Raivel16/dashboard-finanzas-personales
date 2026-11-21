@@ -19,15 +19,15 @@
 
 ## 4. Cliente [HU-20, HU-21]
 
-- [ ] 4.1 Exponer `reemplazarUsuario` en el contexto de sesión de `autenticacion/` y crear el dominio `perfil/` (servicio, `usePerfil`, componentes y página "Mi perfil" con correo de solo lectura y la nota "El correo no se puede cambiar"); verificar con pruebas "Actualización exitosa del nombre" (el menú cambia y se notifica), "Cambio de moneda principal", "Nombre inválido" (no llama a la API) y "Correo no editable"
-- [ ] 4.2 Agregar el formulario de cambio de contraseña con confirmación (`useCambiarContrasena`); verificar con pruebas el éxito, la contraseña actual incorrecta marcada en su campo, la nueva igual a la actual y la confirmación distinta sin llamar a la API
-- [ ] 4.3 Registrar la ruta `/perfil` y el destino "Mi perfil" en `router/`; verificar con el router de memoria y que `npm run lint` no reporta fronteras rotas
+- [x] 4.1 Exponer `reemplazarUsuario` en el contexto de sesión de `autenticacion/` y crear el dominio `perfil/` (servicio, `usePerfil`, componentes y página "Mi perfil" con correo de solo lectura y la nota "El correo no se puede cambiar"); verificar con pruebas "Actualización exitosa del nombre" (el menú cambia y se notifica), "Cambio de moneda principal", "Nombre inválido" (no llama a la API) y "Correo no editable"
+- [x] 4.2 Agregar el formulario de cambio de contraseña con confirmación (`useCambiarContrasena`); verificar con pruebas el éxito, la contraseña actual incorrecta marcada en su campo, la nueva igual a la actual y la confirmación distinta sin llamar a la API
+- [x] 4.3 Registrar la ruta `/perfil` y el destino "Mi perfil" en `router/`; verificar con el router de memoria y que `npm run lint` no reporta fronteras rotas
 
 ## 5. Documentación e integración [RT-01]
 
-- [ ] 5.1 Documentar en el README las rutas de perfil y actualizar `docs/trazabilidad.md` si corresponde; verificar que cada comando documentado se ejecuta
-- [ ] 5.2 Ejecutar `npm run lint`, `npm test` y `npm run build`, y probar a mano contra el servidor real el cambio de nombre, de moneda y de contraseña con dos sesiones; verificar que los 8 escenarios tienen una prueba que pasa
-- [ ] 5.3 Ejecutar `openspec validate implementar-perfil --strict` y verificar que el cambio es válido
+- [x] 5.1 Documentar en el README las rutas de perfil y actualizar `docs/trazabilidad.md` si corresponde; verificar que cada comando documentado se ejecuta
+- [x] 5.2 Ejecutar `npm run lint`, `npm test` y `npm run build`, y probar a mano contra el servidor real el cambio de nombre, de moneda y de contraseña con dos sesiones; verificar que los 8 escenarios tienen una prueba que pasa
+- [x] 5.3 Ejecutar `openspec validate implementar-perfil --strict` y verificar que el cambio es válido
 
 ## Workflow follow-up
 

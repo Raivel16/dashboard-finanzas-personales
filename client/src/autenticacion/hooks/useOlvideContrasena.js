@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { esquemaOlvideContrasena } from '@finanzas/shared';
 import { useFormulario } from '../../shared/hooks/useFormulario.js';
 import { solicitarRecuperacion } from '../services/autenticacion.service.js';
-import { erroresPorCampo } from './erroresApi.js';
+import { erroresPorCampo } from '../../shared/utils/erroresApi.js';
 
 export function useOlvideContrasena() {
   const [confirmacion, setConfirmacion] = useState('');

@@ -1,6 +1,6 @@
 // Único lugar donde se declaran las rutas. Cada dominio expone su página por su index.js.
 import { createBrowserRouter, createMemoryRouter, Outlet } from 'react-router-dom';
-import { Home, LayoutGrid } from 'lucide-react';
+import { Home, LayoutGrid, UserRound } from 'lucide-react';
 import { InicioPage } from '../inicio/index.js';
 import { CatalogoPage, FormularioDemo, useFormularioDemo } from '../catalogo/index.js';
 import {
@@ -14,6 +14,7 @@ import {
   RutaProtegida,
   RutaPublica,
 } from '../autenticacion/index.js';
+import { PerfilPage } from '../perfil/index.js';
 import { PaginaNoEncontrada } from '../shared/components/PaginaNoEncontrada.jsx';
 
 function FormularioRegistroDemo({ cerrar }) {
@@ -38,6 +39,9 @@ const RaizSesion = () => (
 export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
   const destinos = [{ ruta: '/', etiqueta: 'Inicio', icono: Home }];
   const hijas = [{ index: true, element: <InicioPage />, handle: { titulo: 'Inicio' } }];
+
+  destinos.push({ ruta: '/perfil', etiqueta: 'Mi perfil', icono: UserRound });
+  hijas.push({ path: 'perfil', element: <PerfilPage />, handle: { titulo: 'Mi perfil' } });
 
   if (desarrollo) {
     destinos.push({ ruta: '/catalogo', etiqueta: 'Catálogo', icono: LayoutGrid });

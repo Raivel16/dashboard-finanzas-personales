@@ -67,6 +67,9 @@ export function useEstadoSesion() {
 
   const limpiarAviso = useCallback(() => setAviso(null), []);
 
+  /** Sustituye los datos de la persona (p. ej. tras guardar su perfil) sin volver a iniciar sesión. */
+  const reemplazarUsuario = useCallback((actual) => setUsuario(actual), []);
+
   return useMemo(
     () => ({
       estado,
@@ -76,7 +79,8 @@ export function useEstadoSesion() {
       iniciarSesion,
       cerrarSesion,
       limpiarAviso,
+      reemplazarUsuario,
     }),
-    [estado, usuario, aviso, iniciarSesion, cerrarSesion, limpiarAviso],
+    [estado, usuario, aviso, iniciarSesion, cerrarSesion, limpiarAviso, reemplazarUsuario],
   );
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MENSAJES, esquemaRegistro } from '@finanzas/shared';
 import { useFormulario } from '../../shared/hooks/useFormulario.js';
 import { registrar } from '../services/autenticacion.service.js';
-import { erroresPorCampo } from './erroresApi.js';
+import { erroresPorCampo } from '../../shared/utils/erroresApi.js';
 
 const VALORES_INICIALES = { nombre: '', email: '', password: '' };
 

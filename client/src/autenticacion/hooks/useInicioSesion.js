@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { CODIGOS_ERROR, MENSAJES, esquemaInicioSesion } from '@finanzas/shared';
 import { useFormulario } from '../../shared/hooks/useFormulario.js';
 import { useSesion } from './contextoSesion.js';
-import { erroresPorCampo } from './erroresApi.js';
+import { erroresPorCampo } from '../../shared/utils/erroresApi.js';
 
 const VALORES_INICIALES = { email: '', password: '' };
 
