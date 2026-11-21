@@ -17,7 +17,7 @@
 
 - [x] 3.1 Crear `package.json` raíz con workspaces `client`, `server`, `shared`, `"type": "module"`, `engines.node >= 22` y `.nvmrc`; verificar que `npm install` instala los tres workspaces
 - [x] 3.2 Configurar ESLint (flat config, reglas de React para `client/`) y Prettier con scripts `lint` y `format`; verificar que `npm run lint` termina sin errores
-- [ ] 3.3 Agregar scripts raíz `dev`, `test` y `build`; verificar que cada uno se ejecuta
+- [x] 3.3 Agregar scripts raíz `dev`, `test` y `build`; verificar que cada uno se ejecuta
 
 ## 4. Paquete `shared` [RT-02, RT-03]
 
@@ -50,8 +50,8 @@
 
 ## 7. Datos de demostración y primer administrador [RT-06, RT-07]
 
-- [ ] 7.1 Agregar a `server/package.json` las dependencias y los scripts `seed` (`node scripts/seed.js`) y `seed:admin` (`node scripts/seed.js --solo-admin`); verificar los 4 escenarios de RT-06 y de RT-07 contra MongoDB local
-- [ ] 7.2 Agregar pruebas automatizadas de `server/scripts/seed.js` con `MongoMemoryReplSet`, incluida la coincidencia de saldos y la protección de entornos; verificar con `npm test -w server`
+- [x] 7.1 Agregar a `server/package.json` las dependencias y los scripts `seed` (`node scripts/seed.js`) y `seed:admin` (`node scripts/seed.js --solo-admin`); verificar los 4 escenarios de RT-06 y de RT-07 contra MongoDB local
+- [x] 7.2 Agregar pruebas automatizadas de `server/scripts/seed.js` con `MongoMemoryReplSet`, incluida la coincidencia de saldos y la protección de entornos; verificar con `npm test -w server`
 
 ## 8. Integración continua [RT-04]
 
