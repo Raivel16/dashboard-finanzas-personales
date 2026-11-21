@@ -29,14 +29,14 @@
 
 ## 5. Cierre de sesión [HU-18]
 
-- [ ] 5.1 Implementar `POST /api/v1/auth/logout` que revoca solo la sesión actual y borra las cookies, y responde sin error aunque la sesión ya haya expirado; verificar "Cierre de sesión exitoso", "Otras sesiones permanecen activas" y "Cierre de sesión con la sesión ya expirada"
-- [ ] 5.2 Verificar "Regreso a una página tras cerrar sesión": con el token de acceso anterior la API responde 401 `SESSION_REVOKED` y no entrega datos
+- [x] 5.1 Implementar `POST /api/v1/auth/logout` que revoca solo la sesión actual y borra las cookies, y responde sin error aunque la sesión ya haya expirado; verificar "Cierre de sesión exitoso", "Otras sesiones permanecen activas" y "Cierre de sesión con la sesión ya expirada"
+- [x] 5.2 Verificar "Regreso a una página tras cerrar sesión": con el token de acceso anterior la API responde 401 `SESSION_REVOKED` y no entrega datos
 
 ## 6. Recuperación de contraseña [HU-03, HU-19]
 
-- [ ] 6.1 Implementar `POST /api/v1/auth/olvide-contrasena` con respuesta genérica, envío sin esperar, límite de 60 segundos y token de 32 bytes con su hash y vencimiento de 30 minutos; verificar "Solicitud exitosa de recuperación de contraseña" y "Solicitud procesada sin revelar existencia de la cuenta" (mismo cuerpo y código para correo existente y no existente)
-- [ ] 6.2 Implementar `POST /api/v1/auth/restablecer-contrasena` (token de un solo uso, nueva contraseña cifrada, revocación de todas las sesiones, reinicio del bloqueo, aviso por correo); verificar "Restablecimiento exitoso mediante enlace válido", "Enlace de recuperación expirado" (reloj +31 minutos) y que un token reutilizado se rechaza
-- [ ] 6.3 Verificar "Sesión cerrada desde otro dispositivo": tras restablecer, la sesión previa recibe 401 `SESSION_REVOKED` con el mensaje "Tu sesión se cerró, por favor inicia sesión nuevamente"
+- [x] 6.1 Implementar `POST /api/v1/auth/olvide-contrasena` con respuesta genérica, envío sin esperar, límite de 60 segundos y token de 32 bytes con su hash y vencimiento de 30 minutos; verificar "Solicitud exitosa de recuperación de contraseña" y "Solicitud procesada sin revelar existencia de la cuenta" (mismo cuerpo y código para correo existente y no existente)
+- [x] 6.2 Implementar `POST /api/v1/auth/restablecer-contrasena` (token de un solo uso, nueva contraseña cifrada, revocación de todas las sesiones, reinicio del bloqueo, aviso por correo); verificar "Restablecimiento exitoso mediante enlace válido", "Enlace de recuperación expirado" (reloj +31 minutos) y que un token reutilizado se rechaza
+- [x] 6.3 Verificar "Sesión cerrada desde otro dispositivo": tras restablecer, la sesión previa recibe 401 `SESSION_REVOKED` con el mensaje "Tu sesión se cerró, por favor inicia sesión nuevamente"
 
 ## 7. Cliente: sesión y cliente HTTP [HU-02, HU-18, HU-19]
 
