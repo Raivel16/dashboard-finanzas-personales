@@ -25,7 +25,7 @@ La libreta presta solo cuatro cosas: tipografía, color, densidad y un gesto pro
 
 ## Colors
 
-Estrategia con color comprometido en el armazón: la tapa y el papel dan identidad, y el resto del color cumple una función concreta. Los valores son la dirección aprobada; pasarán al frontmatter cuando existan tokens reales en el código. Contrastes de texto comprobados en AA.
+Estrategia con color comprometido en el armazón: la tapa y el papel dan identidad, y el resto del color cumple una función concreta. Los valores están implementados como tokens de Tailwind (`@theme` en `client/src/index.css`) y espejados para Chart.js y SweetAlert2 en `client/src/shared/utils/tokens.js`; una prueba comprueba que coinciden. Contrastes de texto comprobados en AA.
 
 ### Primary
 - **Azul petróleo de tapa** (#123F4A): barra lateral, navegación inferior móvil y encabezados de sección fuertes.
@@ -39,7 +39,9 @@ Estrategia con color comprometido en el armazón: la tapa y el papel dan identid
 - **Hoja** (#F9FBFA): superficies de tablas, formularios y gráficos.
 - **Tinta** (#14262E): texto principal y cifras.
 - **Tinta suave** (#4F626B): etiquetas, ayudas y encabezados de columna.
-- **Filete** (#C9D6D2): divisiones entre filas y bordes de controles decorativos. Los bordes de inputs usan un tono con contraste 3:1 frente a la hoja, a resolver en la implementación.
+- **Filete** (#C9D6D2): divisiones entre filas y bordes de controles decorativos. 
+- **Borde de campo** (#7A8C86): borde de inputs, con contraste 3,41:1 frente a la hoja.
+- **Violeta de sello oscuro** (#43297F): estado hover del botón principal.
 
 ### Estados
 - **Ingreso** (#0A6B55, fondo #DDF1EA): montos positivos, siempre con signo `+`.

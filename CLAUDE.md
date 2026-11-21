@@ -4,9 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-"Dashboard de Finanzas Personales" is a university project (UC) that is currently **requirements-only**: there is no application code, package manifest, build, lint or test setup yet. The repo holds user stories and OpenSpec specs that will drive implementation. When code is added, update this file with the real commands and architecture.
+"Dashboard de Finanzas Personales" is a university project (UC). The requirements (user stories and OpenSpec specs) are complete and the **base project** (change `definir-arquitectura-base`, RT-01…RT-07) is implemented: npm-workspaces monorepo, Express server base, React client base with the visual system, seed script and CI. Feature work (HU-xx) follows the epic order in [docs/trazabilidad.md](docs/trazabilidad.md).
 
 **Tech stack: MERN** — MongoDB (database), Express (REST API), React (frontend), Node.js (runtime). Use it for every proposal, design and implementation; don't introduce other backend frameworks, databases or frontend libraries that replace these.
+
+## Commands
+
+Run from the repo root (Node 22; MongoDB must be a replica set, see [README.md](README.md)). Server config lives in `server/.env` (template: `server/.env.example`).
+
+```sh
+npm install                       # installs all workspaces
+npm run dev                       # server :3000 + client :5173 (Vite proxies /api)
+npm run lint                      # ESLint, also enforces client domain boundaries
+npm test                          # shared + server + client
+npm run build                     # builds client/dist
+npm run format                    # Prettier (format:check only verifies)
+npm run seed -w server            # demo data (RT-06); refuses production / non-local DB
+npm run seed:admin -w server      # first admin from ADMIN_EMAIL / ADMIN_PASSWORD (RT-07)
+
+# One package / one file / one test
+npm test -w shared
+npm test -w client -- tests/rt05.test.jsx
+npm test -w server -- seed                       # Jest: filter by file name
+npm test -w server -- -t "primer administrador"  # Jest: filter by test name
+```
+
+Server tests use an in-memory MongoDB replica set (no `.env`, no external services). To use the locally installed `mongod` instead of downloading one, set `MONGOMS_SYSTEM_BINARY` to its path. In Git Bash use `builtin cd` if the `fnm` `cd` hook fails because of `.nvmrc`.
+
+CI (`.github/workflows/ci.yml`, job `verificar`) runs `npm ci`, lint, test and build on Node 22 for pull requests to `dev` and `main`.
 
 The specs also fix these technical points, which the implementation must respect:
 
@@ -15,7 +40,7 @@ The specs also fix these technical points, which the implementation must respect
 - React frontend uses Chart.js for dashboard charts and SweetAlert2 for confirmation dialogs.
 - Reports exportable to PDF and Excel, generated on the server.
 - UI follows [DESIGN.md](DESIGN.md) (visual system, "La libreta de ahorros") and [PRODUCT.md](PRODUCT.md) (users, voice, principles). Read both before building any screen.
-- `server/scripts/seed.js` already exists (RT-07, RT-06); its npm scripts and dependencies are added with the base project.
+- `server/scripts/seed.js` provides the demo data (RT-06) and the first admin (RT-07); its tests are in `server/tests/seed.test.js`.
 
 ## Architecture (mandatory)
 
