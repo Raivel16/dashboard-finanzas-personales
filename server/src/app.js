@@ -5,6 +5,14 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { pinoHttp } from 'pino-http';
 import healthRoutes from './routes/health.routes.js';
+import { crearAuthRoutes } from './routes/auth.routes.js';
+import { crearAuthController } from './controllers/auth.controller.js';
+import { crearAuthService } from './services/auth.service.js';
+import { crearRecuperacionService } from './services/recuperacion.service.js';
+import { crearSesionService } from './services/sesion.service.js';
+import { crearServicioCorreo } from './services/correo.service.js';
+import { crearAutenticar, sinCache } from './middlewares/autenticacion.middleware.js';
+import { relojSistema } from './utils/reloj.js';
 import { manejadorErrores, rutaNoEncontrada } from './middlewares/errores.middleware.js';
 import { crearLogger } from './utils/logger.js';
 
@@ -12,9 +20,19 @@ import { crearLogger } from './utils/logger.js';
  * @param {object} opciones
  * @param {object} opciones.config  configuración validada (ver config/entorno.js)
  * @param {object} [opciones.logger]
+ * @param {{ ahora: () => Date }} [opciones.reloj]  reloj inyectable (pruebas de expiración)
+ * @param {{ enviar: Function }} [opciones.correo]  servicio de correo (pruebas inyectan uno simulado)
+ * @param {number} [opciones.costoBcrypt]  12 en producción; las pruebas usan un costo menor
  * @param {(api: import('express').Router) => void} [opciones.extras]  rutas adicionales (pruebas)
  */
-export function crearApp({ config, logger = crearLogger(config), extras } = {}) {
+export function crearApp({
+  config,
+  logger = crearLogger(config),
+  reloj = relojSistema,
+  correo = crearServicioCorreo({ config, logger }),
+  costoBcrypt = 12,
+  extras,
+} = {}) {
   const app = express();
   app.disable('x-powered-by');
 
@@ -30,9 +48,24 @@ export function crearApp({ config, logger = crearLogger(config), extras } = {}) 
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
+  // Servicios y controladores se arman aquí una sola vez y se comparten con las rutas.
+  const sesiones = crearSesionService({ config, reloj });
+  const auth = crearAuthService({ config, reloj, correo, logger, sesiones, costoBcrypt });
+  const recuperacion = crearRecuperacionService({ config, reloj, correo, logger, sesiones, costoBcrypt });
+  const autenticar = crearAutenticar(sesiones);
+  app.locals.servicios = { sesiones, auth, recuperacion };
+
   const api = express.Router();
+  api.use(sinCache);
   api.use('/health', healthRoutes);
-  extras?.(api);
+  api.use(
+    '/auth',
+    crearAuthRoutes({
+      controlador: crearAuthController({ config, reloj, auth, sesiones, recuperacion }),
+      autenticar,
+    }),
+  );
+  extras?.(api, { autenticar });
   app.use('/api/v1', api);
 
   app.use(rutaNoEncontrada);

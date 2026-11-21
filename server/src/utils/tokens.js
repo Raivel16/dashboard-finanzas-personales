@@ -39,3 +39,12 @@ export function verificarTokenAcceso(token, { secreto }, ahora) {
     throw new UnauthorizedError(MENSAJES.generales.noAutorizado);
   }
 }
+
+const UNIDADES_MS = { s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 };
+
+/** "15m" -> 900000. Acepta s, m, h y d (el mismo formato que JWT_ACCESS_TTL). */
+export function duracionAMs(texto) {
+  const coincidencia = /^(\d+)([smhd])$/.exec(String(texto));
+  if (!coincidencia) throw new Error(`Duración no válida: ${texto}`);
+  return Number(coincidencia[1]) * UNIDADES_MS[coincidencia[2]];
+}

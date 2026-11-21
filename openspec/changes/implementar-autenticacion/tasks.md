@@ -15,9 +15,9 @@
 
 ## 3. Registro [HU-01]
 
-- [ ] 3.1 Implementar `auth.service` (registrar), el controlador, la vista que no expone `passwordHash` y `POST /api/v1/auth/registro` con validación por `esquemaRegistro`; verificar el escenario "Registro exitoso con datos válidos" (rol `usuario`, contraseña cifrada con bcrypt, `tenantId` generado)
-- [ ] 3.2 Enviar el correo de bienvenida tras guardar sin que un fallo de SMTP deshaga el registro; verificar el escenario "Creación exitosa de identificadores y aislamiento de datos" con el transporte simulado y una prueba donde el transporte falla
-- [ ] 3.3 Traducir el correo duplicado (incluido el caso simultáneo) a 409 "Este correo ya se encuentra registrado" y verificar los escenarios "Registro rechazado por correo ya registrado" y "Registro rechazado por contraseña insegura"
+- [x] 3.1 Implementar `auth.service` (registrar), el controlador, la vista que no expone `passwordHash` y `POST /api/v1/auth/registro` con validación por `esquemaRegistro`; verificar el escenario "Registro exitoso con datos válidos" (rol `usuario`, contraseña cifrada con bcrypt, `tenantId` generado)
+- [x] 3.2 Enviar el correo de bienvenida tras guardar sin que un fallo de SMTP deshaga el registro; verificar el escenario "Creación exitosa de identificadores y aislamiento de datos" con el transporte simulado y una prueba donde el transporte falla
+- [x] 3.3 Traducir el correo duplicado (incluido el caso simultáneo) a 409 "Este correo ya se encuentra registrado" y verificar los escenarios "Registro rechazado por correo ya registrado" y "Registro rechazado por contraseña insegura"
 
 ## 4. Inicio de sesión y autenticación [HU-02, HU-19]
 
