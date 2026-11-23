@@ -137,6 +137,21 @@ Rutas de `/api/v1/admin` (solo rol `admin`; el rol se lee de la base en cada sol
 - Para leer datos financieros de otra persona, las rutas `GET` de administración usan `RepositorioLectura` (sin métodos de escritura). Las rutas de escritura siempre usan el `tenantId` de quien llama, por lo que editar un recurso ajeno responde 404.
 - Los administradores adicionales se promueven desde "Administración"; el primero se crea con `npm run seed:admin -w server`.
 
+## Categorías
+
+Rutas de `/api/v1/categorias` (sesión obligatoria; cada persona solo ve y modifica las suyas, y una ajena responde 404):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `GET /categorias?tipo=&page=&limit=&sort=` | Lista paginada; por defecto ordena por tipo y nombre (sin distinguir tildes ni mayúsculas). La pantalla pide `limit=100`. |
+| `POST /categorias` | Crea una categoría (`nombre` de 2 a 50 caracteres, `tipo` `gasto` o `ingreso`, `icono` de la lista cerrada de `@finanzas/shared`). 409 "Ya existe una categoría con ese nombre" si se repite el nombre en el mismo tipo; la unicidad la impone un índice único de MongoDB. |
+| `PATCH /categorias/:id` | Cambia `nombre` o `icono`. El tipo no se puede cambiar. |
+| `DELETE /categorias/:id` | Elimina la categoría; 409 si tiene movimientos asociados (se comprueba contra la colección `movimientos`). |
+
+- Al registrarse, cada usuario recibe 10 categorías propias (7 de gasto y 3 de ingreso) creadas en la **misma transacción** que la cuenta: si falla algo no queda una cuenta a medias. Iniciar sesión nunca las repone.
+- Las cuentas registradas **antes** de este cambio (solo datos de desarrollo) no tienen categorías: se obtienen registrándose de nuevo o con `npm run seed -w server`.
+- Administración las lee con `GET /admin/usuarios/:id/categorias` (solo lectura) y las muestra en el detalle de cada usuario.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).

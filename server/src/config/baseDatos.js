@@ -25,6 +25,8 @@ export async function conectar(uri, { comprobar = true } = {}) {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
   try {
     if (comprobar) await comprobarReplicaSet();
+    // Los índices únicos (p. ej. nombre de categoría) deben existir antes de atender solicitudes.
+    await Promise.all(Object.values(mongoose.models).map((modelo) => modelo.init()));
   } catch (error) {
     await mongoose.disconnect();
     throw error;

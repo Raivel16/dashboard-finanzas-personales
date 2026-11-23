@@ -111,9 +111,10 @@ describe('HU-22 · usuarios en solo lectura', () => {
   it('Consulta de los datos de un usuario: solo lectura y estado vacío "Este usuario aún no tiene movimientos"', async () => {
     await abrir({
       ruta: '/administracion/usuarios/u2',
-      rutas: { '/admin/usuarios/u2': () => exito(ANA) },
+      rutas: { '/admin/usuarios/u2': () => exito(ANA), '/admin/usuarios/u2/categorias': () => lista([]) },
     });
     expect(await screen.findByRole('heading', { name: 'Ana Torres' })).toBeInTheDocument();
+    expect(await screen.findByText('Este usuario aún no tiene categorías')).toBeInTheDocument();
     expect(screen.getByText('Este usuario aún no tiene movimientos')).toBeInTheDocument();
     for (const seccion of ['Categorías', 'Cuentas', 'Movimientos', 'Presupuestos']) {
       expect(screen.getByRole('heading', { name: seccion })).toBeInTheDocument();
@@ -121,6 +122,25 @@ describe('HU-22 · usuarios en solo lectura', () => {
     const contenido = screen.getByRole('main');
     expect(within(contenido).queryByRole('button')).not.toBeInTheDocument();
     expect(screen.getByText(/no puedes crear, editar ni eliminar/)).toBeInTheDocument();
+  });
+
+  it('Consulta de las categorías de un usuario: las muestra en solo lectura, sin botones de acción', async () => {
+    await abrir({
+      ruta: '/administracion/usuarios/u2',
+      rutas: {
+        '/admin/usuarios/u2': () => exito(ANA),
+        '/admin/usuarios/u2/categorias': () =>
+          lista([
+            { id: 'c1', nombre: 'Transporte', tipo: 'gasto', icono: 'bus' },
+            { id: 'c2', nombre: 'Sueldo', tipo: 'ingreso', icono: 'wallet' },
+          ]),
+      },
+    });
+    const seccion = await screen.findByRole('region', { name: 'Categorías' });
+    expect(await within(seccion).findByText('Transporte')).toBeInTheDocument();
+    expect(within(seccion).getByText('Sueldo')).toBeInTheDocument();
+    expect(within(seccion).queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Editar|Eliminar|Nueva categoría/ })).not.toBeInTheDocument();
   });
 
   it('un usuario inexistente muestra el mensaje de la API', async () => {

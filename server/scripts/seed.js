@@ -12,6 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import { v4 as uuid } from 'uuid';
+import { CATEGORIAS_PREDETERMINADAS } from '@finanzas/shared';
 
 const { Decimal128, ObjectId } = mongoose.mongo;
 
@@ -20,19 +21,6 @@ const URI_LOCAL = 'mongodb://127.0.0.1:27017/finanzas?directConnection=true';
 const ZONA_HORARIA = process.env.APP_TIMEZONE || 'America/Lima';
 const COSTO_BCRYPT = 12;
 const MESES_DE_HISTORIA = 8;
-
-const CATEGORIAS = [
-  ['gasto', 'Alimentación', 'utensils'],
-  ['gasto', 'Transporte', 'bus'],
-  ['gasto', 'Vivienda', 'house'],
-  ['gasto', 'Salud', 'heart-pulse'],
-  ['gasto', 'Entretenimiento', 'ticket'],
-  ['gasto', 'Educación', 'book-open'],
-  ['gasto', 'Otros gastos', 'circle-ellipsis'],
-  ['ingreso', 'Sueldo', 'wallet'],
-  ['ingreso', 'Ventas', 'store'],
-  ['ingreso', 'Otros ingresos', 'circle-plus'],
-];
 
 const PERFILES = [
   {
@@ -193,7 +181,7 @@ function crearUsuario({ nombre, email, passwordHash, rol = 'usuario' }) {
 }
 
 function crearCategorias(usuario) {
-  return CATEGORIAS.map(([tipo, nombre, icono]) =>
+  return CATEGORIAS_PREDETERMINADAS.map(({ tipo, nombre, icono }) =>
     conTiempos({
       _id: new ObjectId(),
       tenantId: usuario.tenantId,
