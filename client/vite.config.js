@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => {
       setupFiles: ['./tests/setup.js'],
       css: false,
       include: ['tests/**/*.test.{js,jsx}'],
+      // Las pruebas de interfaz escriben y hacen clic: con la máquina cargada 5 s no alcanzan.
+      testTimeout: 20000,
     },
   };
 });

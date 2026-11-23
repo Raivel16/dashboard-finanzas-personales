@@ -29,7 +29,7 @@ Estado del código del que se parte:
 
 ### 1. Modelo y unicidad sin distinguir mayúsculas
 
-`categoria.model.js` guarda `tenantId`, `usuarioId`, `nombre` (recortado), `tipo` (`ingreso`/`gasto`) e `icono`, con `timestamps` y el plugin de tenant. El índice único `{ tenantId, tipo, nombre }` se declara con intercalación `{ locale: 'es', strength: 2 }`, que ignora mayúsculas y tildes ("Educación" y "educacion" chocan). El servicio no consulta antes de insertar: intenta crear y traduce el error de clave duplicada (código 11000) a `ConflictError` con "Ya existe una categoría con ese nombre", igual que ya hace el registro con el correo. Así dos creaciones simultáneas no pueden ganar ambas.
+`categoria.model.js` guarda `tenantId`, `usuarioId`, `nombre` (recortado), `tipo` (`ingreso`/`gasto`) e `icono`, con `timestamps` y el plugin de tenant. El índice único `{ tenantId, tipo, nombre }` se declara con intercalación `{ locale: 'es', strength: 1 }`, que ignora mayúsculas y tildes ("Educación" y "educacion" chocan). El servicio no consulta antes de insertar: intenta crear y traduce el error de clave duplicada (código 11000) a `ConflictError` con "Ya existe una categoría con ese nombre", igual que ya hace el registro con el correo. Así dos creaciones simultáneas no pueden ganar ambas.
 
 ### 2. Rutas bajo `/api/v1/categorias`
 

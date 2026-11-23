@@ -7,8 +7,8 @@ import { Usuario } from '../models/usuario.model.js';
 const valido = (id) => mongoose.isValidObjectId(id);
 
 export const usuarioRepository = {
-  async crear(datos) {
-    const [usuario] = await Usuario.create([datos]);
+  async crear(datos, { session } = {}) {
+    const [usuario] = await Usuario.create([datos], { session });
     return usuario.toObject();
   },
 

@@ -10,6 +10,9 @@ import { crearAdminService } from './services/admin.service.js';
 import { crearAdminController } from './controllers/admin.controller.js';
 import { crearAdminRoutes } from './routes/admin.routes.js';
 import { crearRequerirRol } from './middlewares/autorizacion.middleware.js';
+import { crearCategoriaService } from './services/categoria.service.js';
+import { crearCategoriaController } from './controllers/categoria.controller.js';
+import { crearCategoriasRoutes } from './routes/categorias.routes.js';
 import { crearPerfilService } from './services/perfil.service.js';
 import { crearPerfilController } from './controllers/perfil.controller.js';
 import { crearPerfilRoutes } from './routes/perfil.routes.js';
@@ -31,6 +34,7 @@ import { crearLogger } from './utils/logger.js';
  * @param {{ ahora: () => Date }} [opciones.reloj]  reloj inyectable (pruebas de expiración)
  * @param {{ enviar: Function }} [opciones.correo]  servicio de correo (pruebas inyectan uno simulado)
  * @param {number} [opciones.costoBcrypt]  12 en producción; las pruebas usan un costo menor
+ * @param {Function} [opciones.crearCategoriasIniciales]  reemplaza la creación de categorías del registro (pruebas)
  * @param {(api: import('express').Router) => void} [opciones.extras]  rutas adicionales (pruebas)
  */
 export function crearApp({
@@ -39,6 +43,7 @@ export function crearApp({
   reloj = relojSistema,
   correo = crearServicioCorreo({ config, logger }),
   costoBcrypt = 12,
+  crearCategoriasIniciales,
   extras,
 } = {}) {
   const app = express();
@@ -58,14 +63,24 @@ export function crearApp({
 
   // Servicios y controladores se arman aquí una sola vez y se comparten con las rutas.
   const sesiones = crearSesionService({ config, reloj });
-  const auth = crearAuthService({ config, reloj, correo, logger, sesiones, costoBcrypt });
+  const auth = crearAuthService({
+    config,
+    reloj,
+    correo,
+    logger,
+    sesiones,
+    costoBcrypt,
+    crearCategoriasIniciales,
+  });
   const recuperacion = crearRecuperacionService({ config, reloj, correo, logger, sesiones, costoBcrypt });
   const perfil = crearPerfilService({ reloj, correo, logger, sesiones, costoBcrypt });
   const autorizacion = crearAutorizacion({ logger });
   const admin = crearAdminService({ autorizacion, logger });
+  const categorias = crearCategoriaService({ admin, logger });
+  const categoriaController = crearCategoriaController({ categorias });
   const autenticar = crearAutenticar(sesiones);
   const requerirRol = crearRequerirRol(autorizacion);
-  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin };
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias };
 
   const api = express.Router();
   api.use(sinCache);
@@ -78,9 +93,15 @@ export function crearApp({
     }),
   );
   api.use('/perfil', crearPerfilRoutes({ controlador: crearPerfilController({ perfil }), autenticar }));
+  api.use('/categorias', crearCategoriasRoutes({ controlador: categoriaController, autenticar }));
   api.use(
     '/admin',
-    crearAdminRoutes({ controlador: crearAdminController({ admin }), autenticar, requerirRol }),
+    crearAdminRoutes({
+      controlador: crearAdminController({ admin }),
+      categorias: categoriaController,
+      autenticar,
+      requerirRol,
+    }),
   );
   extras?.(api, { autenticar, requerirRol, admin });
   app.use('/api/v1', api);

@@ -1,6 +1,8 @@
 // Esquemas de validación comunes ("Reglas de validación comunes", diseño sección 25).
 import validator from 'validator';
 import {
+  ICONO_CATEGORIA_POR_DEFECTO,
+  ICONOS_CATEGORIA,
   LIMITES,
   MONEDAS,
   PAGINACION,
@@ -183,7 +185,18 @@ export const esquemaCategoria = {
   tipo: { ...tipoMovimientoRegla, etiqueta: 'El tipo' },
   icono: {
     sanear: recortar,
-    reglas: [{ ok: (t) => t.length <= 40, mensaje: MENSAJES.generales.invalido('El ícono') }],
+    porDefecto: ICONO_CATEGORIA_POR_DEFECTO,
+    reglas: [{ ok: (t) => ICONOS_CATEGORIA.includes(t), mensaje: MENSAJES.categoria.icono }],
+  },
+};
+
+/** Edición: solo nombre e ícono; el tipo no cambia (un movimiento no puede quedar en una categoría del otro tipo). */
+export const esquemaActualizarCategoria = {
+  nombre: { ...nombreCuentaCategoria, requerido: false },
+  icono: { ...esquemaCategoria.icono, porDefecto: undefined },
+  tipo: {
+    sanear: recortar,
+    reglas: [{ ok: () => false, mensaje: MENSAJES.categoria.tipoNoEditable }],
   },
 };
 
@@ -297,5 +310,15 @@ export const esquemaConsultaUsuarios = {
     etiqueta: 'La búsqueda',
     sanear: recortar,
     reglas: [{ ok: (t) => t.length <= 100, mensaje: MENSAJES.admin.busquedaLarga }],
+  },
+};
+
+/** Listado de categorías: paginación, orden y filtro opcional por tipo. */
+export const esquemaConsultaCategorias = {
+  ...esquemaPaginacion,
+  ...crearEsquemaOrden(['nombre', 'tipo'], 'tipo'),
+  tipo: {
+    sanear: recortar,
+    reglas: [{ ok: (t) => Object.values(TIPOS_MOVIMIENTO).includes(t), mensaje: MENSAJES.tipoMovimiento }],
   },
 };

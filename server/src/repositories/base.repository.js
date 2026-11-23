@@ -26,15 +26,17 @@ export class RepositorioLectura {
     return this.modelo.findOne(this._filtro({ _id: id })).session(session ?? null);
   }
 
-  async listar(filtro = {}, { page = 1, limit = 20, sort = '-createdAt', session } = {}) {
+  async listar(filtro = {}, { page = 1, limit = 20, sort = '-createdAt', session, collation } = {}) {
     const consulta = this._filtro(filtro);
+    const busqueda = this.modelo
+      .find(consulta)
+      .sort(`${sort} _id`)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .session(session ?? null);
+    if (collation) busqueda.collation(collation);
     const [items, total] = await Promise.all([
-      this.modelo
-        .find(consulta)
-        .sort(`${sort} _id`)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .session(session ?? null),
+      busqueda,
       this.modelo.countDocuments(consulta).session(session ?? null),
     ]);
     return { items, total };

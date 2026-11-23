@@ -2,15 +2,25 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { MENSAJES, ROLES } from '@finanzas/shared';
-import { ConflictError, TooManyRequestsError, UnauthorizedError } from '../utils/errores.js';
+import mongoose from 'mongoose';
+import { AppError, ConflictError, TooManyRequestsError, UnauthorizedError } from '../utils/errores.js';
 import { sumarMinutos } from '../utils/reloj.js';
 import { usuarioRepository } from '../repositories/usuario.repository.js';
+import { crearPredeterminadas } from '../repositories/categoria.repository.js';
 import { correoBienvenida } from '../views/correo.view.js';
 
 export const MAX_INTENTOS = 3;
 export const BLOQUEO_MIN = 5;
 
-export function crearAuthService({ config, reloj, correo, logger, sesiones, costoBcrypt = 12 }) {
+export function crearAuthService({
+  config,
+  reloj,
+  correo,
+  logger,
+  sesiones,
+  costoBcrypt = 12,
+  crearCategoriasIniciales = crearPredeterminadas, // se inyecta otra en las pruebas de fallo (HU-24)
+}) {
   // Se compara contra un hash falso cuando el correo no existe, para que el tiempo no delate la cuenta.
   const hashFalso = bcrypt.hashSync('contraseña-que-nadie-usa', costoBcrypt);
   const credencialesInvalidas = () => new UnauthorizedError(MENSAJES.auth.credencialesInvalidas);
@@ -21,19 +31,25 @@ export function crearAuthService({ config, reloj, correo, logger, sesiones, cost
         throw new ConflictError(MENSAJES.auth.correoRegistrado);
 
       const passwordHash = await bcrypt.hash(password, costoBcrypt);
+      // El usuario y sus categorías predeterminadas se crean juntos o no se crea nada (HU-24).
+      const tenantId = uuid();
       let usuario;
+      const sesionBd = await mongoose.startSession();
       try {
-        usuario = await usuarioRepository.crear({
-          tenantId: uuid(),
-          nombre,
-          email,
-          passwordHash,
-          rol: ROLES.USUARIO,
+        await sesionBd.withTransaction(async () => {
+          usuario = await usuarioRepository.crear(
+            { tenantId, nombre, email, passwordHash, rol: ROLES.USUARIO },
+            { session: sesionBd },
+          );
+          await crearCategoriasIniciales({ tenantId, usuarioId: usuario._id }, { session: sesionBd });
         });
       } catch (error) {
         // Dos registros simultáneos con el mismo correo: el índice único decide.
         if (error?.code === 11000) throw new ConflictError(MENSAJES.auth.correoRegistrado);
-        throw error;
+        logger.error({ err: error }, 'no se pudo completar el registro');
+        throw new AppError(MENSAJES.auth.registroFallido);
+      } finally {
+        await sesionBd.endSession();
       }
 
       // Un fallo de SMTP no deshace el registro: la cuenta ya existe.
