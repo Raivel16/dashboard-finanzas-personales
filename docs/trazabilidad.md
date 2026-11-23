@@ -29,6 +29,17 @@ Presupuestos va antes que el Dashboard porque el indicador de presupuesto utiliz
 - sus secciones en el detalle de usuario de "Administración";
 - las pruebas de los escenarios de HU-04 (administrador consulta datos de todos), HU-05 (aislamiento) y HU-22 (consulta, estado vacío y modificación ajena rechazada) sobre sus datos reales.
 
+Estado de las obligaciones por recurso:
+
+| Recurso | Ruta de lectura de administrador | Sección en el detalle de usuario | Pruebas de HU-04, HU-05 y HU-22 |
+|---|---|---|---|
+| Categorías (`implementar-categorias`) | `GET /admin/usuarios/:id/categorias` | Sí | Sí (`server/tests/categorias.test.js`, `client/tests/administracion.test.jsx`) |
+| Cuentas (`implementar-cuentas`) | Pendiente | Pendiente | Pendiente |
+| Movimientos (`implementar-movimientos`) | Pendiente | Pendiente | Pendiente |
+| Presupuestos (`implementar-presupuestos`) | Pendiente | Pendiente | Pendiente |
+
+Además, `implementar-movimientos` debe: reemplazar el puerto `contarMovimientos` de `categoria.repository.js` (hoy lee la colección `movimientos`) por su propio repositorio, probar de extremo a extremo "Eliminación impedida por movimientos asociados" con movimientos reales, y validar que la categoría exista dentro de la transacción que crea un movimiento. `implementar-presupuestos` decidirá qué ocurre al eliminar una categoría con presupuesto.
+
 ## Matriz
 
 | Historia | Título | Épica | Spec | Cambio de OpenSpec | Rama |

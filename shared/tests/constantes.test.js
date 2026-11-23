@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CATEGORIAS_PREDETERMINADAS,
+  ICONOS_CATEGORIA,
   CODIGOS_ERROR,
   MONEDAS,
   ROLES,
@@ -66,4 +67,8 @@ describe('constantes compartidas', () => {
     expect(MENSAJES.auth.bloqueado(5)).toContain('5 minutos');
     expect(MENSAJES.auth.bloqueado(1)).toContain('1 minuto.');
   });
+});
+
+it('todas las categorías predeterminadas usan íconos de la lista cerrada', () => {
+  for (const c of CATEGORIAS_PREDETERMINADAS) expect(ICONOS_CATEGORIA).toContain(c.icono);
 });

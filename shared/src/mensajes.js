@@ -27,6 +27,7 @@ export const MENSAJES = Object.freeze({
     recuperacionSolicitada: 'Si el correo existe, recibirás un enlace de recuperación',
     enlaceExpirado: 'El enlace ha expirado',
     contrasenaRestablecida: 'Tu contraseña se actualizó. Ya puedes iniciar sesión.',
+    registroFallido: 'No pudimos completar tu registro. Inténtalo nuevamente',
     registroExitoso: 'Tu cuenta se creó correctamente. Ya puedes iniciar sesión.',
     contrasenaActualIncorrecta: 'La contraseña actual es incorrecta',
     contrasenaNuevaIgual: 'La nueva contraseña debe ser distinta de la actual',
@@ -36,6 +37,16 @@ export const MENSAJES = Object.freeze({
     ultimoAdministrador: 'Debe existir al menos un administrador',
     rolInvalido: 'Selecciona un rol válido',
     busquedaLarga: 'La búsqueda admite hasta 100 caracteres',
+  },
+  categoria: {
+    nombreDuplicado: 'Ya existe una categoría con ese nombre',
+    conMovimientos:
+      'No se puede eliminar una categoría con movimientos asociados. Reasigna o elimina los movimientos primero',
+    icono: 'Selecciona un ícono válido',
+    tipoNoEditable: 'El tipo de una categoría no se puede cambiar',
+    eliminada: 'La categoría se eliminó',
+    creada: 'La categoría se creó',
+    actualizada: 'La categoría se actualizó',
   },
   perfil: {
     actualizado: 'Tu perfil se actualizó',

@@ -1,16 +1,17 @@
 import { Link } from 'react-router-dom';
+import { ListaCategoriasSoloLectura } from '../../categorias/index.js';
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { ETIQUETAS_ROL } from '../etiquetas.js';
 
-// Cada épica de datos llenará su sección; mientras tanto se muestra el estado vacío. Solo lectura: sin acciones.
+// Las categorías ya se muestran; cada épica de datos llenará su sección y mientras tanto se muestra el estado vacío.
+// Solo lectura: sin acciones.
 const SECCIONES = [
-  { clave: 'categorias', titulo: 'Categorías', vacio: 'Este usuario aún no tiene categorías' },
   { clave: 'cuentas', titulo: 'Cuentas', vacio: 'Este usuario aún no tiene cuentas' },
   { clave: 'movimientos', titulo: 'Movimientos', vacio: 'Este usuario aún no tiene movimientos' },
   { clave: 'presupuestos', titulo: 'Presupuestos', vacio: 'Este usuario aún no tiene presupuestos' },
 ];
 
-export function DetalleUsuario({ estado, usuario, mensaje }) {
+export function DetalleUsuario({ estado, usuario, mensaje, categorias }) {
   if (estado === 'cargando') {
     return (
       <p role="status" className="text-tinta-suave">
@@ -32,6 +33,12 @@ export function DetalleUsuario({ estado, usuario, mensaje }) {
       <p className="text-sm text-tinta-suave">
         Vista de solo lectura: no puedes crear, editar ni eliminar sus datos.
       </p>
+      <section aria-labelledby="seccion-categorias" className="flex flex-col gap-2">
+        <h3 id="seccion-categorias" className="text-lg font-semibold">
+          Categorías
+        </h3>
+        <ListaCategoriasSoloLectura {...categorias} />
+      </section>
       {SECCIONES.map((seccion) => (
         <section
           key={seccion.clave}

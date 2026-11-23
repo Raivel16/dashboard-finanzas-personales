@@ -26,6 +26,15 @@ export const LIMITES = Object.freeze({
   MONTO_MAX: 999999999.99,
 });
 
+// Íconos permitidos para una categoría (HU-06): lista cerrada compartida por el servidor (valida) y el cliente (dibuja).
+export const ICONOS_CATEGORIA = Object.freeze([
+  'utensils', 'bus', 'house', 'heart-pulse', 'ticket', 'book-open', 'circle-ellipsis', 'wallet', 'store',
+  'circle-plus', 'shopping-cart', 'car', 'plane', 'gift', 'shirt', 'smartphone', 'wifi', 'zap', 'droplet',
+  'fuel', 'baby', 'dog', 'dumbbell', 'graduation-cap', 'briefcase', 'banknote', 'piggy-bank',
+  'trending-up', 'coffee', 'gamepad-2', 'music', 'film',
+]);
+export const ICONO_CATEGORIA_POR_DEFECTO = 'circle-ellipsis';
+
 // Categorías que recibe cada usuario al registrarse (HU-24). Son copias propias y editables.
 export const CATEGORIAS_PREDETERMINADAS = Object.freeze([
   { tipo: 'gasto', nombre: 'Alimentación', icono: 'utensils' },

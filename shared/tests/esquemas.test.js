@@ -5,7 +5,9 @@ import {
   esquemaCambiarContrasena,
   esquemaCambiarRol,
   esquemaConsultaUsuarios,
+  esquemaActualizarCategoria,
   esquemaCategoria,
+  esquemaConsultaCategorias,
   esquemaConsultaMovimientos,
   esquemaCuenta,
   esquemaInicioSesion,
@@ -313,5 +315,31 @@ describe('esquemas de administración (HU-22, HU-23)', () => {
     expect(ok.datos).toMatchObject({ q: 'ana', page: 1, sort: 'nombre' });
     expect(validar(esquemaConsultaUsuarios, { q: 'x'.repeat(101) }).valido).toBe(false);
     expect(validar(esquemaConsultaUsuarios, { sort: 'passwordHash' }).valido).toBe(false);
+  });
+});
+
+describe('categorías (HU-06)', () => {
+  it('el ícono se valida contra la lista cerrada y se completa si falta', () => {
+    expect(validar(esquemaCategoria, { nombre: 'Café', tipo: 'gasto', icono: 'coffee' }).valido).toBe(true);
+    expect(validar(esquemaCategoria, { nombre: 'Café', tipo: 'gasto', icono: 'no-existe' }).valido).toBe(false);
+    expect(validar(esquemaCategoria, { nombre: 'Café', tipo: 'gasto' }).datos.icono).toBe('circle-ellipsis');
+  });
+
+  it('la edición acepta nombre e ícono, no completa el ícono y rechaza el tipo', () => {
+    const solo = validar(esquemaActualizarCategoria, { nombre: ' Movilidad ' });
+    expect(solo.valido).toBe(true);
+    expect(solo.datos).toEqual({ nombre: 'Movilidad' });
+    expect(validar(esquemaActualizarCategoria, { nombre: 'x' }).valido).toBe(false);
+    expect(validar(esquemaActualizarCategoria, { icono: 'zap' }).datos).toEqual({ icono: 'zap' });
+    const conTipo = validar(esquemaActualizarCategoria, { nombre: 'Movilidad', tipo: 'ingreso' });
+    expect(conTipo.valido).toBe(false);
+    expect(conTipo.errores[0].mensaje).toBe('El tipo de una categoría no se puede cambiar');
+  });
+
+  it('el listado filtra por tipo y ordena por tipo y nombre por defecto', () => {
+    expect(validar(esquemaConsultaCategorias, {}).datos).toMatchObject({ page: 1, sort: 'tipo' });
+    expect(validar(esquemaConsultaCategorias, { tipo: 'gasto' }).valido).toBe(true);
+    expect(validar(esquemaConsultaCategorias, { tipo: 'otro' }).valido).toBe(false);
+    expect(validar(esquemaConsultaCategorias, { sort: 'passwordHash' }).valido).toBe(false);
   });
 });
