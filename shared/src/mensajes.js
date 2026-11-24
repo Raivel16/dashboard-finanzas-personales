@@ -49,6 +49,17 @@ export const MENSAJES = Object.freeze({
     actualizada: 'La cuenta se actualizó',
     eliminada: 'La cuenta se eliminó',
   },
+  movimiento: {
+    creado: 'El movimiento se registró',
+    actualizado: 'El movimiento se actualizó',
+    eliminado: 'El movimiento se eliminó',
+    sinCambios: 'Indica al menos un dato para actualizar',
+    saldoInsuficiente: 'El monto excede el saldo disponible de la cuenta',
+    cuentaNoExiste: 'La cuenta seleccionada no existe',
+    categoriaNoExiste: 'La categoría seleccionada no existe',
+    categoriaIngreso: 'Selecciona una categoría de ingreso',
+    categoriaGasto: 'Selecciona una categoría de gasto',
+  },
   categoria: {
     nombreDuplicado: 'Ya existe una categoría con ese nombre',
     conMovimientos:
@@ -71,6 +82,7 @@ export const MENSAJES = Object.freeze({
   },
   fecha: {
     formato: 'La fecha debe tener el formato AAAA-MM-DD',
+    obligatoria: 'La fecha es obligatoria',
     futura: 'La fecha no puede ser futura',
     rango: 'La fecha inicial no puede ser posterior a la final',
   },

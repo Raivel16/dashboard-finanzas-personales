@@ -229,6 +229,7 @@ export function crearEsquemaMovimiento({ hoy = fechaHoy() } = {}) {
     fecha: {
       requerido: true,
       etiqueta: 'La fecha',
+      mensajeRequerido: MENSAJES.fecha.obligatoria,
       sanear: recortar,
       reglas: [fechaFormato, { ok: (t) => t <= hoy, mensaje: MENSAJES.fecha.futura }],
     },
