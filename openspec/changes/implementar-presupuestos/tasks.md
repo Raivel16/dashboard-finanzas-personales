@@ -20,10 +20,10 @@
 
 ## 4. Cliente [HU-14, HU-15, HU-29, HU-30]
 
-- [ ] 4.1 Crear el dominio `presupuestos/` con servicio, `usePresupuestos`, la pantalla "Presupuestos" (mes, moneda y lista con barras de progreso) y el destino en el router y la navegación; verificar con pruebas "Visualización del avance", "Presupuesto excedido" y "Sin presupuesto definido" con acceso directo
-- [ ] 4.2 Crear `useFormularioPresupuesto` y el formulario (general o por categoría) con la confirmación para reemplazar y el mensaje de monto inválido; verificar con pruebas "Definición exitosa", "Monto inválido", "Confirmación para reemplazar", "Mes pasado rechazado" y "Suma superior al general"
-- [ ] 4.3 Mostrar el monto sin asignar y las alertas al registrar o editar un gasto en `movimientos`; mostrar los presupuestos en el detalle de usuario de administración; verificar con pruebas de notificación y de solo lectura
+- [x] 4.1 Crear el dominio `presupuestos/` con servicio, `usePresupuestos`, la pantalla "Presupuestos" (mes, moneda y lista con barras de progreso) y el destino en el router y la navegación; verificar con pruebas "Visualización del avance", "Presupuesto excedido" y "Sin presupuesto definido" con acceso directo
+- [x] 4.2 Crear `useFormularioPresupuesto` y el formulario (general o por categoría) con la confirmación para reemplazar y el mensaje de monto inválido; verificar con pruebas "Definición exitosa", "Monto inválido", "Confirmación para reemplazar", "Mes pasado rechazado" y "Suma superior al general"
+- [x] 4.3 Mostrar el monto sin asignar y las alertas al registrar o editar un gasto en `movimientos`; mostrar los presupuestos en el detalle de usuario de administración; verificar con pruebas de notificación y de solo lectura
 
 ## 5. Documentación e integración [RT-01]
 
-- [ ] 5.1 Documentar en el README las rutas de presupuestos y actualizar la tabla de obligaciones de `docs/trazabilidad.md`; verificar que `npm run lint`, `npm test` y `npm run build` pasan
+- [x] 5.1 Documentar en el README las rutas de presupuestos y actualizar la tabla de obligaciones de `docs/trazabilidad.md`; verificar que `npm run lint`, `npm test` y `npm run build` pasan

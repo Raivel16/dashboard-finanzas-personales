@@ -186,6 +186,23 @@ Rutas de `/api/v1/movimientos` (sesión obligatoria; cada persona solo ve y modi
 - El historial del cliente (HU-10, HU-11) abre el detalle de cada movimiento y se filtra por rango de fechas, tipo, categoría y cuenta con "Aplicar filtros" y "Limpiar filtros". Un rango con la fecha inicial mayor que la final se avisa y no se aplica; los filtros se envían como parámetros de `GET /movimientos` y el saldo resultante no cambia al filtrar.
 - `npm run verificar-saldos -w server` compara el saldo guardado de cada cuenta con la fórmula, lista las que difieren y termina con código 1 si hay alguna. Solo lee.
 
+## Presupuestos
+
+Rutas de `/api/v1/presupuestos` (sesión obligatoria; cada persona solo ve y modifica los suyos, y uno ajeno responde 404):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `GET /presupuestos?periodo=&moneda=&sort=&page=&limit=` | Lista los presupuestos (también los de meses pasados). |
+| `GET /presupuestos/seguimiento?periodo=&moneda=` | Cada presupuesto del mes (por defecto el actual) con `gastado`, `restante`, `porcentaje`, `excedido`, `sobregiro` y, en el general, `sinAsignar`. |
+| `POST /presupuestos` | Define un presupuesto de `periodo` (`AAAA-MM`), `moneda`, `monto` y, opcional, `categoriaId` (sin categoría = general). 409 si ya existe uno para esa clave. |
+| `PUT /presupuestos/:id` | Reemplaza el monto (la pantalla pide confirmación antes). |
+| `DELETE /presupuestos/:id` | Elimina; un general con presupuestos por categoría responde 409. |
+
+- Hay un presupuesto por mes, moneda y categoría; solo se definen o cambian para el mes actual o futuros. El gasto se mide solo con movimientos de esa moneda y mes.
+- Un presupuesto por categoría exige el general del mismo mes y moneda, y la suma de las categorías no puede superarlo ("La suma por categorías supera el presupuesto general"). Un gasto sin presupuesto de categoría cuenta solo para el general.
+- Registrar o editar un gasto que cruza el 90 % o el 100 % de un presupuesto agrega `meta.alertas` a la respuesta (una sola vez por cruce, sin guardar estado) y la pantalla muestra el aviso.
+- Una categoría con presupuestos no se elimina (409). Administración los lee con `GET /admin/usuarios/:id/presupuestos` (solo lectura) y los muestra en el detalle de cada usuario.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).
