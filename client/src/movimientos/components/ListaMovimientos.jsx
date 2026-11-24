@@ -9,6 +9,28 @@ const BOTON_ICONO =
 
 const nombreDe = (lista, id) => lista.find((elemento) => elemento.id === id)?.nombre;
 
+function EstadoVacio({ hayFiltros, sinCuentas, alCrear, limpiarFiltros }) {
+  if (hayFiltros) {
+    return (
+      <>
+        <p>No se encontraron movimientos con los filtros seleccionados</p>
+        <Boton onClick={limpiarFiltros} className="mt-3">
+          Limpiar filtros
+        </Boton>
+      </>
+    );
+  }
+  if (sinCuentas) return <p>Para registrar movimientos primero crea una cuenta en &quot;Cuentas&quot;.</p>;
+  return (
+    <>
+      <p>Aún no tienes movimientos registrados</p>
+      <Boton variante="primario" onClick={alCrear} className="mt-3">
+        Registrar el primer movimiento
+      </Boton>
+    </>
+  );
+}
+
 /** Presentación del "Historial de movimientos": los datos y las acciones llegan por props. */
 export function ListaMovimientos({
   estado,
@@ -45,23 +67,8 @@ export function ListaMovimientos({
     );
   }
 
-  const sinCuentas = cuentas.length === 0;
-  const vacio = hayFiltros ? (
-    <>
-      <p>No se encontraron movimientos con los filtros seleccionados</p>
-      <Boton onClick={limpiarFiltros} className="mt-3">
-        Limpiar filtros
-      </Boton>
-    </>
-  ) : sinCuentas ? (
-    <p>Para registrar movimientos primero crea una cuenta en &quot;Cuentas&quot;.</p>
-  ) : (
-    <>
-      <p>Aún no tienes movimientos registrados</p>
-      <Boton variante="primario" onClick={alCrear} className="mt-3">
-        Registrar el primer movimiento
-      </Boton>
-    </>
+  const vacio = (
+    <EstadoVacio hayFiltros={hayFiltros} sinCuentas={cuentas.length === 0} alCrear={alCrear} limpiarFiltros={limpiarFiltros} />
   );
 
   return (

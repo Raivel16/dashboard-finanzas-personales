@@ -20,7 +20,7 @@ export function MovimientosPage() {
   const detalle = panel?.modo === 'detalle' ? panel.movimiento : null;
   const eliminarDesdeDetalle = () => {
     cerrarPanel();
-    movimientos.eliminar(detalle);
+    void movimientos.eliminar(detalle);
   };
 
   return (
