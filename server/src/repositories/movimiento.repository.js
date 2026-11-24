@@ -1,6 +1,7 @@
 // Único acceso al modelo Movimiento. Siempre se construye con el tenantId del usuario autenticado.
 import mongoose from 'mongoose';
 import { Movimiento } from '../models/movimiento.model.js';
+import { limitesDelMes } from '../utils/fechas.js';
 import { RepositorioBase } from './base.repository.js';
 
 /** Para la lectura de administrador (admin.repositorioLecturaDe recibe el modelo). */
@@ -29,6 +30,41 @@ export class MovimientoRepository extends RepositorioBase {
 
   contarPorCategoria(categoriaId, { session } = {}) {
     return this.contar({ categoriaId: id(categoriaId) }, { session });
+  }
+
+  /**
+   * Gasto de un mes agrupado por moneda y categoría (Decimal128), para medir los presupuestos: el de una categoría
+   * usa su fila y el general la suma de todas las de su moneda.
+   */
+  gastoDelMesPorCategoria(periodo, { session } = {}) {
+    const { inicio, finExclusivo } = limitesDelMes(periodo);
+    return this.agregar(
+      [
+        { $match: { tipo: 'gasto', fecha: { $gte: inicio, $lt: finExclusivo } } },
+        { $group: { _id: { moneda: '$moneda', categoriaId: '$categoriaId' }, total: { $sum: '$monto' } } },
+      ],
+      { session },
+    );
+  }
+
+  /** Gasto de un mes y moneda, de una categoría o de todas (Decimal128; cero si no hay). */
+  async gastoDelMes({ periodo, moneda, categoriaId }, { session } = {}) {
+    const { inicio, finExclusivo } = limitesDelMes(periodo);
+    const [fila] = await this.agregar(
+      [
+        {
+          $match: {
+            tipo: 'gasto',
+            moneda,
+            fecha: { $gte: inicio, $lt: finExclusivo },
+            ...(categoriaId && { categoriaId: id(categoriaId) }),
+          },
+        },
+        { $group: { _id: null, total: { $sum: '$monto' } } },
+      ],
+      { session },
+    );
+    return fila?.total ?? mongoose.Types.Decimal128.fromString('0');
   }
 
   /** Suma de ingresos menos gastos de una cuenta (Decimal128; cero si no tiene movimientos). */

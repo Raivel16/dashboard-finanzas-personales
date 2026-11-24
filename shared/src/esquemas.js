@@ -242,16 +242,34 @@ export function crearEsquemaMovimiento({ hoy = fechaHoy() } = {}) {
   };
 }
 
+const periodoRegla = (obligatorio = true) => ({
+  requerido: obligatorio,
+  etiqueta: 'El período',
+  sanear: recortar,
+  reglas: [{ ok: (t) => /^\d{4}-(0[1-9]|1[0-2])$/.test(t), mensaje: MENSAJES.periodo }],
+});
+
 export const esquemaPresupuesto = {
-  periodo: {
-    requerido: true,
-    etiqueta: 'El período',
-    sanear: recortar,
-    reglas: [{ ok: (t) => /^\d{4}-(0[1-9]|1[0-2])$/.test(t), mensaje: MENSAJES.periodo }],
-  },
+  periodo: periodoRegla(),
   moneda: monedaRegla(),
   categoriaId: idRegla('La categoría', false),
-  monto: montoPositivo,
+  monto: {
+    ...montoPositivo,
+    mensajeRequerido: MENSAJES.presupuesto.montoInvalido,
+    reglas: [
+      { ok: (t) => esDecimal(t) && Number(t) > 0, mensaje: MENSAJES.presupuesto.montoInvalido },
+      { ok: dentroDelMaximo, mensaje: MENSAJES.monto.maximo },
+    ],
+  },
+};
+
+/** Cuerpo de PUT /presupuestos/:id: solo cambia el monto. */
+export const esquemaReemplazarPresupuesto = { monto: esquemaPresupuesto.monto };
+
+/** Seguimiento de presupuestos: mes (por defecto el actual) y moneda opcionales. */
+export const esquemaSeguimientoPresupuestos = {
+  periodo: periodoRegla(false),
+  moneda: monedaRegla(false),
 };
 
 // ---- Consultas: paginación, orden y filtros (query string) ----
@@ -310,6 +328,13 @@ export const esquemaConsultaMovimientos = {
   categoriaId: idRegla('La categoría', false),
   cuentaId: idRegla('La cuenta', false),
   moneda: monedaRegla(false),
+};
+
+/** Listado de presupuestos: paginación, orden por mes y filtros por mes y moneda. */
+export const esquemaConsultaPresupuestos = {
+  ...esquemaPaginacion,
+  ...crearEsquemaOrden(['periodo', 'monto'], '-periodo'),
+  ...esquemaSeguimientoPresupuestos,
 };
 
 // ---- Administración (HU-22, HU-23) ----
