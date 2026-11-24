@@ -152,6 +152,21 @@ Rutas de `/api/v1/categorias` (sesión obligatoria; cada persona solo ve y modif
 - Las cuentas registradas **antes** de este cambio (solo datos de desarrollo) no tienen categorías: se obtienen registrándose de nuevo o con `npm run seed -w server`.
 - Administración las lee con `GET /admin/usuarios/:id/categorias` (solo lectura) y las muestra en el detalle de cada usuario.
 
+## Cuentas
+
+Rutas de `/api/v1/cuentas` (sesión obligatoria; cada persona solo ve y modifica las suyas, y una ajena responde 404):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `GET /cuentas?tipo=&moneda=&page=&limit=&sort=` | Lista paginada; por defecto ordena por nombre (sin distinguir tildes ni mayúsculas). La pantalla pide `limit=100`. |
+| `POST /cuentas` | Crea una cuenta (`nombre` de 2 a 50 caracteres, `tipo` efectivo, banco, tarjeta de crédito o billetera digital, `moneda` PEN, USD o EUR y `saldoInicial` opcional, que puede ser negativo). Su saldo actual empieza igual al inicial. 409 "Ya existe una cuenta con ese nombre" si se repite; la unicidad la impone un índice único de MongoDB. |
+| `GET /cuentas/:id` | Una cuenta propia. |
+| `PATCH /cuentas/:id` | Cambia `nombre`, `tipo`, `moneda` o `saldoInicial`. Corregir el saldo inicial mueve el saldo actual en la misma diferencia (100.00 a 120.00 con saldo actual 70.00 lo deja en 90.00) en una transacción. 409 si se cambia la moneda de una cuenta con movimientos. |
+| `DELETE /cuentas/:id` | Elimina la cuenta; 409 si tiene movimientos asociados (se comprueba contra la colección `movimientos`). |
+
+- Los saldos viajan como texto con dos decimales (`"1250.50"`), se guardan como `Decimal128` y se calculan con `decimal.js`.
+- Administración las lee con `GET /admin/usuarios/:id/cuentas` (solo lectura) y las muestra en el detalle de cada usuario.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).

@@ -1,6 +1,6 @@
 // Único lugar donde se declaran las rutas. Cada dominio expone su página por su index.js.
 import { createBrowserRouter, createMemoryRouter, Outlet } from 'react-router-dom';
-import { Home, LayoutGrid, ShieldCheck, Tags, UserRound } from 'lucide-react';
+import { Home, LayoutGrid, ShieldCheck, Tags, UserRound, Wallet } from 'lucide-react';
 import { InicioPage } from '../inicio/index.js';
 import { CatalogoPage, FormularioDemo, useFormularioDemo } from '../catalogo/index.js';
 import {
@@ -17,6 +17,7 @@ import {
 } from '../autenticacion/index.js';
 import { AdministracionPage, UsuarioDetallePage } from '../administracion/index.js';
 import { CategoriasPage } from '../categorias/index.js';
+import { CuentasPage } from '../cuentas/index.js';
 import { PerfilPage } from '../perfil/index.js';
 import { PaginaNoEncontrada } from '../shared/components/PaginaNoEncontrada.jsx';
 
@@ -42,6 +43,9 @@ const RaizSesion = () => (
 export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
   const destinos = [{ ruta: '/', etiqueta: 'Inicio', icono: Home }];
   const hijas = [{ index: true, element: <InicioPage />, handle: { titulo: 'Inicio' } }];
+
+  destinos.push({ ruta: '/cuentas', etiqueta: 'Cuentas', icono: Wallet });
+  hijas.push({ path: 'cuentas', element: <CuentasPage />, handle: { titulo: 'Cuentas' } });
 
   destinos.push({ ruta: '/categorias', etiqueta: 'Categorías', icono: Tags });
   hijas.push({ path: 'categorias', element: <CategoriasPage />, handle: { titulo: 'Categorías' } });

@@ -3,11 +3,12 @@ import {
   ROLES,
   esquemaCambiarRol,
   esquemaConsultaCategorias,
+  esquemaConsultaCuentas,
   esquemaConsultaUsuarios,
 } from '@finanzas/shared';
 import { validarConsulta, validarCuerpo } from '../middlewares/validacion.middleware.js';
 
-export function crearAdminRoutes({ controlador, categorias, autenticar, requerirRol }) {
+export function crearAdminRoutes({ controlador, categorias, cuentas, autenticar, requerirRol }) {
   const router = Router();
   router.use(autenticar, requerirRol(ROLES.ADMIN));
   router.get('/usuarios', validarConsulta(esquemaConsultaUsuarios), controlador.listarUsuarios);
@@ -19,5 +20,6 @@ export function crearAdminRoutes({ controlador, categorias, autenticar, requerir
     validarConsulta(esquemaConsultaCategorias),
     categorias.listarDeUsuario,
   );
+  router.get('/usuarios/:id/cuentas', validarConsulta(esquemaConsultaCuentas), cuentas.listarDeUsuario);
   return router;
 }

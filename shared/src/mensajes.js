@@ -38,6 +38,17 @@ export const MENSAJES = Object.freeze({
     rolInvalido: 'Selecciona un rol válido',
     busquedaLarga: 'La búsqueda admite hasta 100 caracteres',
   },
+  cuenta: {
+    nombreObligatorio: 'El nombre de la cuenta es obligatorio',
+    monedaObligatoria: 'La moneda es obligatoria',
+    nombreDuplicado: 'Ya existe una cuenta con ese nombre',
+    conMovimientos: 'No se puede eliminar una cuenta con movimientos asociados',
+    monedaConMovimientos: 'No se puede cambiar la moneda de una cuenta con movimientos asociados',
+    sinCambios: 'Indica al menos un dato para actualizar',
+    creada: 'La cuenta se creó',
+    actualizada: 'La cuenta se actualizó',
+    eliminada: 'La cuenta se eliminó',
+  },
   categoria: {
     nombreDuplicado: 'Ya existe una categoría con ese nombre',
     conMovimientos:
