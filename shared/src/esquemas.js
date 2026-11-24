@@ -233,8 +233,8 @@ export function crearEsquemaMovimiento({ hoy = fechaHoy() } = {}) {
       sanear: recortar,
       reglas: [fechaFormato, { ok: (t) => t <= hoy, mensaje: MENSAJES.fecha.futura }],
     },
-    categoriaId: idRegla('La categoría'),
-    cuentaId: idRegla('La cuenta'),
+    categoriaId: { ...idRegla('La categoría'), mensajeRequerido: MENSAJES.movimiento.categoriaObligatoria },
+    cuentaId: { ...idRegla('La cuenta'), mensajeRequerido: MENSAJES.movimiento.cuentaObligatoria },
     descripcion: {
       sanear: recortar,
       reglas: [{ ok: (t) => t.length <= LIMITES.DESCRIPCION_MAX, mensaje: MENSAJES.descripcion }],

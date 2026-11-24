@@ -55,6 +55,8 @@ export const MENSAJES = Object.freeze({
     eliminado: 'El movimiento se eliminó',
     sinCambios: 'Indica al menos un dato para actualizar',
     saldoInsuficiente: 'El monto excede el saldo disponible de la cuenta',
+    categoriaObligatoria: 'Selecciona una categoría',
+    cuentaObligatoria: 'Selecciona una cuenta',
     cuentaNoExiste: 'La cuenta seleccionada no existe',
     categoriaNoExiste: 'La categoría seleccionada no existe',
     categoriaIngreso: 'Selecciona una categoría de ingreso',

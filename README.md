@@ -67,6 +67,7 @@ Desde la raíz del repositorio:
 | `npm run format`               | Formatea con Prettier (`format:check` solo comprueba)            |
 | `npm run seed -w server`       | Carga datos de demostración (reemplaza solo los usuarios demo)   |
 | `npm run seed:admin -w server` | Crea el primer administrador desde `ADMIN_EMAIL` y `ADMIN_PASSWORD` |
+| `npm run verificar-saldos -w server` | Revisa que el saldo de cada cuenta sea saldo inicial + ingresos − gastos (solo lee) |
 
 Una sola prueba o un solo paquete:
 
@@ -166,6 +167,23 @@ Rutas de `/api/v1/cuentas` (sesión obligatoria; cada persona solo ve y modifica
 
 - Los saldos viajan como texto con dos decimales (`"1250.50"`), se guardan como `Decimal128` y se calculan con `decimal.js`.
 - Administración las lee con `GET /admin/usuarios/:id/cuentas` (solo lectura) y las muestra en el detalle de cada usuario.
+
+## Movimientos
+
+Rutas de `/api/v1/movimientos` (sesión obligatoria; cada persona solo ve y modifica los suyos, y uno ajeno responde 404):
+
+| Método y ruta | Qué hace |
+|---|---|
+| `GET /movimientos?desde=&hasta=&tipo=&categoriaId=&cuentaId=&moneda=&sort=&page=&limit=` | Historial paginado (por defecto `-fecha`; también `fecha`, `monto` y `-monto`). Cada movimiento trae `saldoResultante`, el saldo que dejó en su cuenta, calculado por fecha y orden de registro **antes** de aplicar los filtros. |
+| `POST /movimientos` | Registra un ingreso o gasto (`tipo`, `monto`, `fecha` AAAA-MM-DD sin fechas futuras, `categoriaId`, `cuentaId`, `descripcion` opcional). La moneda es la de la cuenta. Un gasto que supera el saldo se registra igual y la respuesta lleva `meta.advertencias`. |
+| `GET /movimientos/:id` | Un movimiento propio. |
+| `PATCH /movimientos/:id` | Cambia cualquier subconjunto de campos; se valida el resultado completo. Cambiar de cuenta mueve el saldo entre ambas y adopta la moneda de la nueva. |
+| `DELETE /movimientos/:id` | Elimina el movimiento y revierte su efecto en el saldo. |
+
+- Crear, editar y eliminar son **una transacción** que guarda el movimiento y ajusta `saldoActual`; si algo falla no queda nada a medias. El saldo siempre es `saldoInicial + ingresos − gastos`, y cada operación lo comprueba y lo corrige (con un aviso en el log) si no coincide.
+- La categoría debe ser del mismo tipo que el movimiento ("Selecciona una categoría de ingreso" o "de gasto") y la cuenta y la categoría deben ser propias.
+- Administración los lee con `GET /admin/usuarios/:id/movimientos` (solo lectura) y los muestra en el detalle de cada usuario.
+- `npm run verificar-saldos -w server` compara el saldo guardado de cada cuenta con la fórmula, lista las que difieren y termina con código 1 si hay alguna. Solo lee.
 
 ## Flujo de ramas y commits
 
