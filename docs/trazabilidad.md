@@ -34,11 +34,11 @@ Estado de las obligaciones por recurso:
 | Recurso | Ruta de lectura de administrador | Sección en el detalle de usuario | Pruebas de HU-04, HU-05 y HU-22 |
 |---|---|---|---|
 | Categorías (`implementar-categorias`) | `GET /admin/usuarios/:id/categorias` | Sí | Sí (`server/tests/categorias.test.js`, `client/tests/administracion.test.jsx`) |
-| Cuentas (`implementar-cuentas`) | Pendiente | Pendiente | Pendiente |
+| Cuentas (`implementar-cuentas`) | `GET /admin/usuarios/:id/cuentas` | Sí | Sí (`server/tests/cuentas.test.js`, `client/tests/administracion.test.jsx`) |
 | Movimientos (`implementar-movimientos`) | Pendiente | Pendiente | Pendiente |
 | Presupuestos (`implementar-presupuestos`) | Pendiente | Pendiente | Pendiente |
 
-Además, `implementar-movimientos` debe: reemplazar el puerto `contarMovimientos` de `categoria.repository.js` (hoy lee la colección `movimientos`) por su propio repositorio, probar de extremo a extremo "Eliminación impedida por movimientos asociados" con movimientos reales, y validar que la categoría exista dentro de la transacción que crea un movimiento. `implementar-presupuestos` decidirá qué ocurre al eliminar una categoría con presupuesto.
+Además, `implementar-movimientos` debe: reemplazar el puerto `contarMovimientos` de `categoria.repository.js` y de `cuenta.repository.js` (hoy leen la colección `movimientos`) por su propio repositorio, recalcular `saldoActual` de la cuenta dentro de la transacción de cada movimiento (el saldo inicial y la moneda ya los mantiene `implementar-cuentas`), probar de extremo a extremo "Eliminación impedida por movimientos asociados" con movimientos reales, y validar que la categoría exista dentro de la transacción que crea un movimiento. `implementar-presupuestos` decidirá qué ocurre al eliminar una categoría con presupuesto.
 
 ## Matriz
 
