@@ -14,14 +14,14 @@
 
 ## 3. Cliente: indicadores [HU-12, HU-28]
 
-- [ ] 3.1 Crear el dominio `dashboard/` con servicio, `useDashboard`, las tarjetas de indicadores, el selector de mes y de moneda y la integración en la pantalla de inicio; verificar con pruebas "Visualización de indicadores", "Actualización al cambiar el período", "Indicadores en cero con mensaje motivacional" y "Selector limitado a las monedas en uso"
-- [ ] 3.2 Mostrar el error controlado de los indicadores con reintento y conservar los datos anteriores al fallar un cambio de moneda ("No se pudieron cargar los indicadores en USD"); verificar con pruebas "Error controlado al cargar indicadores" y "Error al cambiar de moneda"
+- [x] 3.1 Crear el dominio `dashboard/` con servicio, `useDashboard`, las tarjetas de indicadores, el selector de mes y de moneda y la integración en la pantalla de inicio; verificar con pruebas "Visualización de indicadores", "Actualización al cambiar el período", "Indicadores en cero con mensaje motivacional" y "Selector limitado a las monedas en uso"
+- [x] 3.2 Mostrar el error controlado de los indicadores con reintento y conservar los datos anteriores al fallar un cambio de moneda ("No se pudieron cargar los indicadores en USD"); verificar con pruebas "Error controlado al cargar indicadores" y "Error al cambiar de moneda"
 
 ## 4. Cliente: gráficos [HU-13]
 
-- [ ] 4.1 Crear `GraficoEvolucion` y `GraficoDistribucion` con Chart.js, sus leyendas, el tooltip con nombre, monto y porcentaje y la vista de tabla; verificar con pruebas "Visualización de gráficos" y "Tooltip con nombre, monto y porcentaje"
-- [ ] 4.2 Mostrar el error propio de los gráficos y el estado vacío sin gastos; verificar con pruebas "Error al generar gráficos sin afectar las tarjetas" y "Estado vacío sin gastos registrados"
+- [x] 4.1 Crear `GraficoEvolucion` y `GraficoDistribucion` con Chart.js, sus leyendas, el tooltip con nombre, monto y porcentaje y la vista de tabla; verificar con pruebas "Visualización de gráficos" y "Tooltip con nombre, monto y porcentaje"
+- [x] 4.2 Mostrar el error propio de los gráficos y el estado vacío sin gastos; verificar con pruebas "Error al generar gráficos sin afectar las tarjetas" y "Estado vacío sin gastos registrados"
 
 ## 5. Documentación e integración [RT-01]
 
-- [ ] 5.1 Documentar en el README las rutas del dashboard; verificar que `npm run lint`, `npm test` y `npm run build` pasan
+- [x] 5.1 Documentar en el README las rutas del dashboard; verificar que `npm run lint`, `npm test` y `npm run build` pasan

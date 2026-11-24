@@ -203,6 +203,19 @@ Rutas de `/api/v1/presupuestos` (sesión obligatoria; cada persona solo ve y mod
 - Registrar o editar un gasto que cruza el 90 % o el 100 % de un presupuesto agrega `meta.alertas` a la respuesta (una sola vez por cruce, sin guardar estado) y la pantalla muestra el aviso.
 - Una categoría con presupuestos no se elimina (409). Administración los lee con `GET /admin/usuarios/:id/presupuestos` (solo lectura) y los muestra en el detalle de cada usuario.
 
+## Dashboard
+
+La pantalla de inicio muestra el resumen del mes y la moneda elegidos. Rutas de `/api/v1/dashboard` (solo lectura, sesión obligatoria, siempre sobre los datos propios):
+
+| Método y ruta | Qué devuelve |
+|---|---|
+| `GET /dashboard/monedas` | `principal` y las `monedas` de las cuentas de la persona (solo la principal si aún no tiene cuentas). |
+| `GET /dashboard/indicadores?periodo=&moneda=` | Ingresos, gastos, balance, `hayMovimientos` y el avance del presupuesto general del mes (o `null`). |
+| `GET /dashboard/graficos?periodo=&moneda=` | `evolucion` de los 6 meses que terminan en `periodo` y `distribucion` de los gastos del mes por categoría (las ocho mayores y "Otras"). |
+
+- `periodo` (`AAAA-MM`) es por defecto el mes actual y `moneda` la principal de la persona. No hay conversión entre monedas: cada consulta usa solo los movimientos de una moneda.
+- Los indicadores y los gráficos son consultas separadas: si una falla, la otra sigue visible. Cada gráfico (Chart.js) tiene su tabla equivalente.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).
