@@ -1,6 +1,7 @@
 // Categorías propias (HU-06). El inquilino y el creador salen siempre de la sesión, nunca del cuerpo.
-import mongoose from 'mongoose';
 import { MENSAJES } from '@finanzas/shared';
+import { enTransaccion } from '../utils/transaccion.js';
+import { movimientoRepository } from '../repositories/movimiento.repository.js';
 import { ConflictError, NotFoundError, ValidationError } from '../utils/errores.js';
 import {
   INTERCALACION,
@@ -51,19 +52,14 @@ export function crearCategoriaService({ admin, logger }) {
     /** No elimina una categoría con movimientos: la cuenta y el borrado van en la misma transacción. */
     async eliminar(actor, id) {
       const repositorio = categoriaRepository(actor.tenantId);
-      const sesion = await mongoose.startSession();
-      try {
-        await sesion.withTransaction(async () => {
-          const categoria = await repositorio.encontrarPorId(id, { session: sesion });
-          if (!categoria) throw new NotFoundError();
-          if ((await repositorio.contarMovimientos(categoria._id, { session: sesion })) > 0) {
-            throw new ConflictError(MENSAJES.categoria.conMovimientos);
-          }
-          await repositorio.eliminarPorId(categoria._id, { session: sesion });
-        });
-      } finally {
-        await sesion.endSession();
-      }
+      await enTransaccion(async (session) => {
+        const categoria = await repositorio.encontrarPorId(id, { session });
+        if (!categoria) throw new NotFoundError();
+        if ((await movimientoRepository(actor.tenantId).contarPorCategoria(categoria._id, { session })) > 0) {
+          throw new ConflictError(MENSAJES.categoria.conMovimientos);
+        }
+        await repositorio.eliminarPorId(categoria._id, { session });
+      });
       logger.info({ usuarioId: actor.id, categoriaId: id }, 'categoría eliminada');
     },
 

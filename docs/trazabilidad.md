@@ -35,10 +35,10 @@ Estado de las obligaciones por recurso:
 |---|---|---|---|
 | Categorías (`implementar-categorias`) | `GET /admin/usuarios/:id/categorias` | Sí | Sí (`server/tests/categorias.test.js`, `client/tests/administracion.test.jsx`) |
 | Cuentas (`implementar-cuentas`) | `GET /admin/usuarios/:id/cuentas` | Sí | Sí (`server/tests/cuentas.test.js`, `client/tests/administracion.test.jsx`) |
-| Movimientos (`implementar-movimientos`) | Pendiente | Pendiente | Pendiente |
+| Movimientos (`implementar-movimientos`) | `GET /admin/usuarios/:id/movimientos` | Sí | Sí (`server/tests/movimientos.test.js`, `client/tests/administracion.test.jsx`) |
 | Presupuestos (`implementar-presupuestos`) | Pendiente | Pendiente | Pendiente |
 
-Además, `implementar-movimientos` debe: reemplazar el puerto `contarMovimientos` de `categoria.repository.js` y de `cuenta.repository.js` (hoy leen la colección `movimientos`) por su propio repositorio, recalcular `saldoActual` de la cuenta dentro de la transacción de cada movimiento (el saldo inicial y la moneda ya los mantiene `implementar-cuentas`), probar de extremo a extremo "Eliminación impedida por movimientos asociados" con movimientos reales, y validar que la categoría exista dentro de la transacción que crea un movimiento. `implementar-presupuestos` decidirá qué ocurre al eliminar una categoría con presupuesto.
+`implementar-movimientos` ya reemplazó los puertos provisionales de conteo de movimientos de categorías y cuentas por su propio repositorio, recalcula `saldoActual` en cada transacción y valida la cuenta y la categoría dentro de ella; `npm run verificar-saldos -w server` revisa todas las cuentas. `implementar-presupuestos` decidirá qué ocurre al eliminar una categoría con presupuesto.
 
 ## Matriz
 

@@ -3,26 +3,14 @@ import Decimal from 'decimal.js';
 import mongoose from 'mongoose';
 import { MENSAJES } from '@finanzas/shared';
 import { ConflictError, NotFoundError, ValidationError } from '../utils/errores.js';
+import { enTransaccion } from '../utils/transaccion.js';
+import { movimientoRepository } from '../repositories/movimiento.repository.js';
 import { INTERCALACION, ModeloCuenta, cuentaRepository } from '../repositories/cuenta.repository.js';
 
 const esDuplicado = (error) => error?.code === 11000;
 const duplicada = () => new ConflictError(MENSAJES.cuenta.nombreDuplicado);
 const aDecimal128 = (decimal) => mongoose.Types.Decimal128.fromString(decimal.toFixed(2));
 const comoDecimal = (valor) => new Decimal(String(valor));
-
-/** Ejecuta `trabajo(sesion)` en una transacción (se reintenta ante conflictos de escritura). */
-async function enTransaccion(trabajo) {
-  const sesion = await mongoose.startSession();
-  try {
-    let resultado;
-    await sesion.withTransaction(async () => {
-      resultado = await trabajo(sesion);
-    });
-    return resultado;
-  } finally {
-    await sesion.endSession();
-  }
-}
 
 export function crearCuentaService({ admin, logger }) {
   return {
@@ -74,7 +62,7 @@ export function crearCuentaService({ admin, logger }) {
           if (cambios.tipo !== undefined) nuevos.tipo = cambios.tipo;
 
           if (cambios.moneda !== undefined && cambios.moneda !== cuenta.moneda) {
-            if ((await repositorio.contarMovimientos(cuenta._id, { session })) > 0) {
+            if ((await movimientoRepository(actor.tenantId).contarPorCuenta(cuenta._id, { session })) > 0) {
               throw new ConflictError(MENSAJES.cuenta.monedaConMovimientos);
             }
             nuevos.moneda = cambios.moneda;
@@ -100,7 +88,7 @@ export function crearCuentaService({ admin, logger }) {
       await enTransaccion(async (session) => {
         const cuenta = await repositorio.encontrarPorId(id, { session });
         if (!cuenta) throw new NotFoundError();
-        if ((await repositorio.contarMovimientos(cuenta._id, { session })) > 0) {
+        if ((await movimientoRepository(actor.tenantId).contarPorCuenta(cuenta._id, { session })) > 0) {
           throw new ConflictError(MENSAJES.cuenta.conMovimientos);
         }
         await repositorio.eliminarPorId(cuenta._id, { session });

@@ -16,6 +16,9 @@ import { crearCategoriasRoutes } from './routes/categorias.routes.js';
 import { crearCuentaService } from './services/cuenta.service.js';
 import { crearCuentaController } from './controllers/cuenta.controller.js';
 import { crearCuentasRoutes } from './routes/cuentas.routes.js';
+import { crearMovimientoService } from './services/movimiento.service.js';
+import { crearMovimientoController } from './controllers/movimiento.controller.js';
+import { crearMovimientosRoutes } from './routes/movimientos.routes.js';
 import { crearPerfilService } from './services/perfil.service.js';
 import { crearPerfilController } from './controllers/perfil.controller.js';
 import { crearPerfilRoutes } from './routes/perfil.routes.js';
@@ -83,9 +86,11 @@ export function crearApp({
   const categoriaController = crearCategoriaController({ categorias });
   const cuentas = crearCuentaService({ admin, logger });
   const cuentaController = crearCuentaController({ cuentas });
+  const movimientos = crearMovimientoService({ admin, logger, config, reloj });
+  const movimientoController = crearMovimientoController({ movimientos });
   const autenticar = crearAutenticar(sesiones);
   const requerirRol = crearRequerirRol(autorizacion);
-  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas };
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas, movimientos };
 
   const api = express.Router();
   api.use(sinCache);
@@ -100,12 +105,14 @@ export function crearApp({
   api.use('/perfil', crearPerfilRoutes({ controlador: crearPerfilController({ perfil }), autenticar }));
   api.use('/categorias', crearCategoriasRoutes({ controlador: categoriaController, autenticar }));
   api.use('/cuentas', crearCuentasRoutes({ controlador: cuentaController, autenticar }));
+  api.use('/movimientos', crearMovimientosRoutes({ controlador: movimientoController, autenticar }));
   api.use(
     '/admin',
     crearAdminRoutes({
       controlador: crearAdminController({ admin }),
       categorias: categoriaController,
       cuentas: cuentaController,
+      movimientos: movimientoController,
       autenticar,
       requerirRol,
     }),
