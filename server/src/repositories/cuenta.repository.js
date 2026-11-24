@@ -13,6 +13,12 @@ export class CuentaRepository extends RepositorioBase {
     super(Cuenta, tenantId);
   }
 
+  /** Monedas en las que la persona tiene cuentas, ordenadas. */
+  async monedasEnUso({ session } = {}) {
+    const filas = await this.agregar([{ $group: { _id: '$moneda' } }, { $sort: { _id: 1 } }], { session });
+    return filas.map((fila) => fila._id);
+  }
+
   listarOrdenadas(filtro, { page, limit, sort }) {
     return this.listar(filtro, { page, limit, sort, collation: INTERCALACION });
   }

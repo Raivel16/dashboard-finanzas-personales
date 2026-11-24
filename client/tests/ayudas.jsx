@@ -32,6 +32,19 @@ export const respuestaApi = (estado, cuerpo) => ({
 export const respuestaError = (estado, code, message, details) =>
   respuestaApi(estado, { error: { code, message, ...(details && { details }) } });
 
+/** Respuesta vacía del dashboard (sin movimientos) para las pruebas que no lo revisan. */
+function respuestaDashboard(ruta) {
+  if (ruta === '/dashboard/monedas') return respuestaApi(200, { data: { principal: 'PEN', monedas: ['PEN'] } });
+  if (ruta === '/dashboard/indicadores') {
+    return respuestaApi(200, {
+      data: { periodo: '2026-01', moneda: 'PEN', ingresos: '0.00', gastos: '0.00', balance: '0.00', hayMovimientos: false, presupuesto: null },
+    });
+  }
+  return respuestaApi(200, {
+    data: { periodo: '2026-01', moneda: 'PEN', evolucion: [], distribucion: { total: '0.00', items: [] } },
+  });
+}
+
 /**
  * Simula fetch. `respuesta` es lo que contesta a cualquier ruta; /auth/me contesta con la sesión:
  * una persona con sesión iniciada (por defecto), `null` para "sin sesión" o una respuesta propia.
@@ -47,6 +60,7 @@ export function simularFetch(respuesta = respuestaSalud(), { sesion = USUARIO_PR
         ? respuestaApi(200, { data: sesion })
         : respuestaError(401, 'UNAUTHORIZED', 'Acceso no autorizado');
     }
+    if (ruta.startsWith('/dashboard/')) return respuestaDashboard(ruta);
     return respuesta;
   });
   vi.stubGlobal('fetch', simulado);

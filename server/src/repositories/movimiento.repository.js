@@ -67,6 +67,43 @@ export class MovimientoRepository extends RepositorioBase {
     return fila?.total ?? mongoose.Types.Decimal128.fromString('0');
   }
 
+  /** Total de ingresos y de gastos de un mes y una moneda (Decimal128; cero si no hay). */
+  async totalesDelMes({ periodo, moneda }, { session } = {}) {
+    const { inicio, finExclusivo } = limitesDelMes(periodo);
+    const filas = await this.agregar(
+      [
+        { $match: { moneda, fecha: { $gte: inicio, $lt: finExclusivo } } },
+        { $group: { _id: '$tipo', total: { $sum: '$monto' }, cantidad: { $sum: 1 } } },
+      ],
+      { session },
+    );
+    const de = (tipo) => filas.find((f) => f._id === tipo);
+    const cero = mongoose.Types.Decimal128.fromString('0');
+    return {
+      ingresos: de('ingreso')?.total ?? cero,
+      gastos: de('gasto')?.total ?? cero,
+      cantidad: filas.reduce((suma, f) => suma + f.cantidad, 0),
+    };
+  }
+
+  /** Ingresos y gastos por mes entre dos períodos "AAAA-MM" (ambos incluidos) en una moneda. */
+  evolucionMensual({ desde, hasta, moneda }, { session } = {}) {
+    const { inicio } = limitesDelMes(desde);
+    const { finExclusivo } = limitesDelMes(hasta);
+    return this.agregar(
+      [
+        { $match: { moneda, fecha: { $gte: inicio, $lt: finExclusivo } } },
+        {
+          $group: {
+            _id: { mes: { $dateToString: { format: '%Y-%m', date: '$fecha' } }, tipo: '$tipo' },
+            total: { $sum: '$monto' },
+          },
+        },
+      ],
+      { session },
+    );
+  }
+
   /** Suma de ingresos menos gastos de una cuenta (Decimal128; cero si no tiene movimientos). */
   async netoPorCuenta(cuentaId, { session } = {}) {
     const [fila] = await this.agregar(

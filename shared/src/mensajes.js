@@ -63,6 +63,14 @@ export const MENSAJES = Object.freeze({
     categoriaIngreso: 'Selecciona una categoría de ingreso',
     categoriaGasto: 'Selecciona una categoría de gasto',
   },
+  dashboard: {
+    errorIndicadores: 'No se pudieron cargar los indicadores',
+    errorIndicadoresMoneda: (moneda) => `No se pudieron cargar los indicadores en ${moneda}`,
+    errorGraficos: 'No se pudieron generar los gráficos en este momento',
+    sinGastos: 'No hay gastos registrados en este período',
+    sinMovimientos: 'Aún no hay movimientos en este período. Registra el primero y verás aquí cómo van tus finanzas.',
+    sinPresupuesto: 'Sin presupuesto para este mes',
+  },
   presupuesto: {
     montoInvalido: 'El presupuesto debe ser un monto mayor a 0',
     mesPasado: 'Solo puedes definir presupuestos para el mes actual o meses futuros',
