@@ -146,6 +146,11 @@ describe('movimientos', () => {
     expect(validar(esquema, { ...valido, fecha: '2026-11-17' }).valido).toBe(true);
   });
 
+  it('una fecha vacía dice "La fecha es obligatoria"', () => {
+    const r = validar(esquema, { ...valido, fecha: '' });
+    expect(r.errores).toEqual([{ campo: 'fecha', mensaje: 'La fecha es obligatoria' }]);
+  });
+
   it('limita la descripción a 255 caracteres y valida los identificadores', () => {
     expect(validar(esquema, { ...valido, descripcion: 'x'.repeat(256) }).valido).toBe(false);
     expect(validar(esquema, { ...valido, descripcion: 'x'.repeat(255) }).valido).toBe(true);

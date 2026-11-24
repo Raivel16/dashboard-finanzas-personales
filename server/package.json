@@ -9,7 +9,8 @@
     "dev": "node --watch src/server.js",
     "test": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js",
     "seed": "node scripts/seed.js",
-    "seed:admin": "node scripts/seed.js --solo-admin"
+    "seed:admin": "node scripts/seed.js --solo-admin",
+    "verificar-saldos": "node scripts/verificar-saldos.js"
   },
   "dependencies": {
     "@finanzas/shared": "^0.1.0",

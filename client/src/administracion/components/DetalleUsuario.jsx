@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
 import { ListaCategoriasSoloLectura } from '../../categorias/index.js';
 import { ListaCuentasSoloLectura } from '../../cuentas/index.js';
+import { ListaMovimientosSoloLectura } from '../../movimientos/index.js';
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { ETIQUETAS_ROL } from '../etiquetas.js';
 
-// Categorías y cuentas ya se muestran; cada épica de datos llenará su sección y mientras tanto se muestra el estado vacío.
+// Categorías, cuentas y movimientos ya se muestran; cada épica de datos llenará su sección y mientras tanto se muestra el estado vacío.
 // Solo lectura: sin acciones.
 const SECCIONES = [
-  { clave: 'movimientos', titulo: 'Movimientos', vacio: 'Este usuario aún no tiene movimientos' },
   { clave: 'presupuestos', titulo: 'Presupuestos', vacio: 'Este usuario aún no tiene presupuestos' },
 ];
 
-export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas }) {
+export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas, movimientos }) {
   if (estado === 'cargando') {
     return (
       <p role="status" className="text-tinta-suave">
@@ -44,6 +44,16 @@ export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas }
           Cuentas
         </h3>
         <ListaCuentasSoloLectura {...cuentas} />
+      </section>
+      <section aria-labelledby="seccion-movimientos" className="flex flex-col gap-2">
+        <h3 id="seccion-movimientos" className="text-lg font-semibold">
+          Movimientos
+        </h3>
+        <ListaMovimientosSoloLectura
+          {...movimientos}
+          cuentas={cuentas.cuentas}
+          categorias={[...categorias.gastos, ...categorias.ingresos]}
+        />
       </section>
       {SECCIONES.map((seccion) => (
         <section

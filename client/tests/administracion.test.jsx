@@ -115,12 +115,13 @@ describe('HU-22 · usuarios en solo lectura', () => {
         '/admin/usuarios/u2': () => exito(ANA),
         '/admin/usuarios/u2/categorias': () => lista([]),
         '/admin/usuarios/u2/cuentas': () => lista([]),
+        '/admin/usuarios/u2/movimientos': () => lista([]),
       },
     });
     expect(await screen.findByRole('heading', { name: 'Ana Torres' })).toBeInTheDocument();
     expect(await screen.findByText('Este usuario aún no tiene categorías')).toBeInTheDocument();
     expect(await screen.findByText('Este usuario aún no tiene cuentas')).toBeInTheDocument();
-    expect(screen.getByText('Este usuario aún no tiene movimientos')).toBeInTheDocument();
+    expect(await screen.findByText('Este usuario aún no tiene movimientos')).toBeInTheDocument();
     for (const seccion of ['Categorías', 'Cuentas', 'Movimientos', 'Presupuestos']) {
       expect(screen.getByRole('heading', { name: seccion })).toBeInTheDocument();
     }
@@ -165,6 +166,36 @@ describe('HU-22 · usuarios en solo lectura', () => {
     expect(await within(seccion).findByText('Sueldo BCP')).toBeInTheDocument();
     expect(within(seccion).getByText('S/ 1,250.50')).toBeInTheDocument();
     expect(within(seccion).getByText('−$ 80.00')).toBeInTheDocument();
+    expect(within(seccion).queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('Consulta de los movimientos de un usuario: monto con signo, categoría y cuenta en solo lectura', async () => {
+    await abrir({
+      ruta: '/administracion/usuarios/u2',
+      rutas: {
+        '/admin/usuarios/u2': () => exito(ANA),
+        '/admin/usuarios/u2/categorias': () => lista([{ id: 'c1', nombre: 'Transporte', tipo: 'gasto', icono: 'bus' }]),
+        '/admin/usuarios/u2/cuentas': () =>
+          lista([{ id: 'a1', nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '100.00', saldoActual: '75.00' }]),
+        '/admin/usuarios/u2/movimientos': () =>
+          lista([
+            {
+              id: 'm1',
+              tipo: 'gasto',
+              monto: '25.00',
+              moneda: 'PEN',
+              fecha: '2026-01-10',
+              categoriaId: 'c1',
+              cuentaId: 'a1',
+              descripcion: 'Taxi',
+            },
+          ]),
+      },
+    });
+    const seccion = await screen.findByRole('region', { name: 'Movimientos' });
+    expect(await within(seccion).findByText('Taxi')).toBeInTheDocument();
+    expect(within(seccion).getByText(/Transporte · Efectivo/)).toBeInTheDocument();
+    expect(within(seccion).getByText(/S\/ 25\.00/)).toBeInTheDocument();
     expect(within(seccion).queryByRole('button')).not.toBeInTheDocument();
   });
 
