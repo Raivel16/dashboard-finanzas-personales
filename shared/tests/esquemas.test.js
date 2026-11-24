@@ -6,6 +6,8 @@ import {
   esquemaCambiarRol,
   esquemaConsultaUsuarios,
   esquemaActualizarCategoria,
+  esquemaActualizarCuenta,
+  esquemaConsultaCuentas,
   esquemaCategoria,
   esquemaConsultaCategorias,
   esquemaConsultaMovimientos,
@@ -101,7 +103,7 @@ describe('cuentas y categorías', () => {
   it('exige moneda y tipo válidos', () => {
     const r = validar(esquemaCuenta, { nombre: 'X1', tipo: 'otro', moneda: '' });
     expect(campos(r)).toEqual(['tipo', 'moneda']);
-    expect(r.errores[1].mensaje).toBe('Selecciona una moneda válida');
+    expect(r.errores[1].mensaje).toBe('La moneda es obligatoria');
     expect(validar(esquemaCuenta, { nombre: 'X1', tipo: 'banco', moneda: 'GBP' }).valido).toBe(false);
   });
 
@@ -341,5 +343,45 @@ describe('categorías (HU-06)', () => {
     expect(validar(esquemaConsultaCategorias, { tipo: 'gasto' }).valido).toBe(true);
     expect(validar(esquemaConsultaCategorias, { tipo: 'otro' }).valido).toBe(false);
     expect(validar(esquemaConsultaCategorias, { sort: 'passwordHash' }).valido).toBe(false);
+  });
+});
+
+describe('cuentas (HU-07, HU-25)', () => {
+  it('usa los mensajes de la spec para nombre vacío y moneda sin seleccionar', () => {
+    const r = validar(esquemaCuenta, { nombre: '', tipo: 'efectivo', moneda: '' });
+    expect(r.errores).toEqual([
+      { campo: 'nombre', mensaje: 'El nombre de la cuenta es obligatorio' },
+      { campo: 'moneda', mensaje: 'La moneda es obligatoria' },
+    ]);
+  });
+
+  it('una moneda no soportada dice "Selecciona una moneda válida"', () => {
+    const r = validar(esquemaCuenta, { nombre: 'Ahorros', tipo: 'banco', moneda: 'GBP' });
+    expect(r.errores[0].mensaje).toBe('Selecciona una moneda válida');
+  });
+
+  it('el saldo inicial vale 0.00 por defecto, admite negativos y se normaliza', () => {
+    const base = { nombre: 'Visa', tipo: 'tarjeta_credito', moneda: 'usd' };
+    expect(validar(esquemaCuenta, base).datos).toMatchObject({ moneda: 'USD', saldoInicial: '0.00' });
+    expect(validar(esquemaCuenta, { ...base, saldoInicial: '-200' }).datos.saldoInicial).toBe('-200.00');
+  });
+
+  it('la edición acepta cualquier campo, no completa el saldo y valida lo que llega', () => {
+    expect(validar(esquemaActualizarCuenta, {}).datos).toEqual({});
+    expect(validar(esquemaActualizarCuenta, { saldoInicial: '120' }).datos).toEqual({ saldoInicial: '120.00' });
+    expect(validar(esquemaActualizarCuenta, { moneda: 'eur' }).datos).toEqual({ moneda: 'EUR' });
+    expect(validar(esquemaActualizarCuenta, { nombre: 'x' }).valido).toBe(false);
+    expect(validar(esquemaActualizarCuenta, { tipo: 'otro' }).valido).toBe(false);
+    expect(validar(esquemaActualizarCuenta, { saldoInicial: '1.234' }).valido).toBe(false);
+  });
+
+  it('el listado filtra por tipo y moneda y ordena por nombre por defecto', () => {
+    expect(validar(esquemaConsultaCuentas, {}).datos).toMatchObject({ page: 1, sort: 'nombre' });
+    expect(validar(esquemaConsultaCuentas, { tipo: 'banco', moneda: 'usd' }).datos).toMatchObject({
+      tipo: 'banco',
+      moneda: 'USD',
+    });
+    expect(validar(esquemaConsultaCuentas, { moneda: 'GBP' }).valido).toBe(false);
+    expect(validar(esquemaConsultaCuentas, { sort: 'passwordHash' }).valido).toBe(false);
   });
 });

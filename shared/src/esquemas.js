@@ -158,26 +158,47 @@ export const esquemaCambiarContrasena = {
   passwordNueva: { ...contrasena, etiqueta: 'La contraseña nueva' },
 };
 
+const nombreCuenta = {
+  ...nombreCuentaCategoria,
+  mensajeRequerido: MENSAJES.cuenta.nombreObligatorio,
+};
+
+const monedaCuenta = (obligatoria = true) => ({
+  ...monedaRegla(obligatoria),
+  mensajeRequerido: MENSAJES.cuenta.monedaObligatoria,
+});
+
+const saldoInicialRegla = {
+  etiqueta: 'El saldo inicial',
+  sanear: recortar,
+  reglas: [
+    { ok: esDecimal, mensaje: MENSAJES.monto.saldo },
+    { ok: dentroDelMaximo, mensaje: MENSAJES.monto.maximo },
+  ],
+  convertir: normalizarMonto,
+};
+
+const tipoCuentaRegla = {
+  requerido: true,
+  etiqueta: 'El tipo de cuenta',
+  mensajeRequerido: MENSAJES.tipoCuenta,
+  sanear: recortar,
+  reglas: [{ ok: (t) => Object.values(TIPOS_CUENTA).includes(t), mensaje: MENSAJES.tipoCuenta }],
+};
+
 export const esquemaCuenta = {
-  nombre: nombreCuentaCategoria,
-  tipo: {
-    requerido: true,
-    etiqueta: 'El tipo de cuenta',
-    mensajeRequerido: MENSAJES.tipoCuenta,
-    sanear: recortar,
-    reglas: [{ ok: (t) => Object.values(TIPOS_CUENTA).includes(t), mensaje: MENSAJES.tipoCuenta }],
-  },
-  moneda: monedaRegla(),
-  saldoInicial: {
-    etiqueta: 'El saldo inicial',
-    sanear: recortar,
-    porDefecto: '0.00',
-    reglas: [
-      { ok: esDecimal, mensaje: MENSAJES.monto.saldo },
-      { ok: dentroDelMaximo, mensaje: MENSAJES.monto.maximo },
-    ],
-    convertir: normalizarMonto,
-  },
+  nombre: nombreCuenta,
+  tipo: tipoCuentaRegla,
+  moneda: monedaCuenta(),
+  saldoInicial: { ...saldoInicialRegla, porDefecto: '0.00' },
+};
+
+/** Edición: cualquier campo es opcional; el servicio exige al menos uno. */
+export const esquemaActualizarCuenta = {
+  nombre: { ...nombreCuenta, requerido: false },
+  tipo: { ...tipoCuentaRegla, requerido: false },
+  moneda: monedaCuenta(false),
+  saldoInicial: saldoInicialRegla,
 };
 
 export const esquemaCategoria = {
@@ -320,5 +341,19 @@ export const esquemaConsultaCategorias = {
   tipo: {
     sanear: recortar,
     reglas: [{ ok: (t) => Object.values(TIPOS_MOVIMIENTO).includes(t), mensaje: MENSAJES.tipoMovimiento }],
+  },
+};
+
+/** Listado de cuentas: paginación, orden por nombre y filtros opcionales por tipo y moneda. */
+export const esquemaConsultaCuentas = {
+  ...esquemaPaginacion,
+  ...crearEsquemaOrden(['nombre', 'saldoActual'], 'nombre'),
+  tipo: {
+    sanear: recortar,
+    reglas: [{ ok: (t) => Object.values(TIPOS_CUENTA).includes(t), mensaje: MENSAJES.tipoCuenta }],
+  },
+  moneda: {
+    sanear: (t) => recortar(t).toUpperCase(),
+    reglas: [{ ok: (t) => MONEDAS.includes(t), mensaje: MENSAJES.moneda }],
   },
 };

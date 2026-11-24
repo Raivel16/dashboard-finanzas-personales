@@ -111,10 +111,15 @@ describe('HU-22 · usuarios en solo lectura', () => {
   it('Consulta de los datos de un usuario: solo lectura y estado vacío "Este usuario aún no tiene movimientos"', async () => {
     await abrir({
       ruta: '/administracion/usuarios/u2',
-      rutas: { '/admin/usuarios/u2': () => exito(ANA), '/admin/usuarios/u2/categorias': () => lista([]) },
+      rutas: {
+        '/admin/usuarios/u2': () => exito(ANA),
+        '/admin/usuarios/u2/categorias': () => lista([]),
+        '/admin/usuarios/u2/cuentas': () => lista([]),
+      },
     });
     expect(await screen.findByRole('heading', { name: 'Ana Torres' })).toBeInTheDocument();
     expect(await screen.findByText('Este usuario aún no tiene categorías')).toBeInTheDocument();
+    expect(await screen.findByText('Este usuario aún no tiene cuentas')).toBeInTheDocument();
     expect(screen.getByText('Este usuario aún no tiene movimientos')).toBeInTheDocument();
     for (const seccion of ['Categorías', 'Cuentas', 'Movimientos', 'Presupuestos']) {
       expect(screen.getByRole('heading', { name: seccion })).toBeInTheDocument();
@@ -141,6 +146,26 @@ describe('HU-22 · usuarios en solo lectura', () => {
     expect(within(seccion).getByText('Sueldo')).toBeInTheDocument();
     expect(within(seccion).queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Editar|Eliminar|Nueva categoría/ })).not.toBeInTheDocument();
+  });
+
+  it('Consulta de las cuentas de un usuario: nombre, tipo, moneda y saldo en solo lectura, sin botones de acción', async () => {
+    await abrir({
+      ruta: '/administracion/usuarios/u2',
+      rutas: {
+        '/admin/usuarios/u2': () => exito(ANA),
+        '/admin/usuarios/u2/categorias': () => lista([]),
+        '/admin/usuarios/u2/cuentas': () =>
+          lista([
+            { id: 'a1', nombre: 'Sueldo BCP', tipo: 'banco', moneda: 'PEN', saldoInicial: '100.00', saldoActual: '1250.50' },
+            { id: 'a2', nombre: 'Visa', tipo: 'tarjeta_credito', moneda: 'USD', saldoInicial: '0.00', saldoActual: '-80.00' },
+          ]),
+      },
+    });
+    const seccion = await screen.findByRole('region', { name: 'Cuentas' });
+    expect(await within(seccion).findByText('Sueldo BCP')).toBeInTheDocument();
+    expect(within(seccion).getByText('S/ 1,250.50')).toBeInTheDocument();
+    expect(within(seccion).getByText('−$ 80.00')).toBeInTheDocument();
+    expect(within(seccion).queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('un usuario inexistente muestra el mensaje de la API', async () => {

@@ -13,6 +13,9 @@ import { crearRequerirRol } from './middlewares/autorizacion.middleware.js';
 import { crearCategoriaService } from './services/categoria.service.js';
 import { crearCategoriaController } from './controllers/categoria.controller.js';
 import { crearCategoriasRoutes } from './routes/categorias.routes.js';
+import { crearCuentaService } from './services/cuenta.service.js';
+import { crearCuentaController } from './controllers/cuenta.controller.js';
+import { crearCuentasRoutes } from './routes/cuentas.routes.js';
 import { crearPerfilService } from './services/perfil.service.js';
 import { crearPerfilController } from './controllers/perfil.controller.js';
 import { crearPerfilRoutes } from './routes/perfil.routes.js';
@@ -78,9 +81,11 @@ export function crearApp({
   const admin = crearAdminService({ autorizacion, logger });
   const categorias = crearCategoriaService({ admin, logger });
   const categoriaController = crearCategoriaController({ categorias });
+  const cuentas = crearCuentaService({ admin, logger });
+  const cuentaController = crearCuentaController({ cuentas });
   const autenticar = crearAutenticar(sesiones);
   const requerirRol = crearRequerirRol(autorizacion);
-  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias };
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas };
 
   const api = express.Router();
   api.use(sinCache);
@@ -94,11 +99,13 @@ export function crearApp({
   );
   api.use('/perfil', crearPerfilRoutes({ controlador: crearPerfilController({ perfil }), autenticar }));
   api.use('/categorias', crearCategoriasRoutes({ controlador: categoriaController, autenticar }));
+  api.use('/cuentas', crearCuentasRoutes({ controlador: cuentaController, autenticar }));
   api.use(
     '/admin',
     crearAdminRoutes({
       controlador: crearAdminController({ admin }),
       categorias: categoriaController,
+      cuentas: cuentaController,
       autenticar,
       requerirRol,
     }),
