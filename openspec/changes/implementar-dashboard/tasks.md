@@ -4,13 +4,13 @@
 
 ## 1. Preparación [RT-01]
 
-- [ ] 1.1 Crear la rama `feature/implementar-dashboard` desde un `dev` actualizado y verificar con `git branch --show-current`
-- [ ] 1.2 Agregar en `shared/` los esquemas de consulta del dashboard (mes y moneda opcionales) y los mensajes de la spec; verificar con pruebas de `shared`
+- [x] 1.1 Crear la rama `feature/implementar-dashboard` desde un `dev` actualizado y verificar con `git branch --show-current`
+- [x] 1.2 Agregar en `shared/` los esquemas de consulta del dashboard (mes y moneda opcionales) y los mensajes de la spec; verificar con pruebas de `shared`
 
 ## 2. Servidor [HU-12, HU-13, HU-28]
 
-- [ ] 2.1 Crear agregaciones, servicio, vista, controlador y rutas de `GET /dashboard/monedas` y `GET /dashboard/indicadores` con `decimal.js`; verificar con pruebas "Indicadores del mes en curso", "Cambio de período", "Indicadores en cero sin movimientos", "Presupuesto utilizado y sin presupuesto", "Dashboard en la moneda principal", "Cambio de moneda" y "Selector limitado a las monedas en uso" (incluida la persona sin cuentas)
-- [ ] 2.2 Crear `GET /dashboard/graficos` con la evolución de 6 meses y la distribución por categoría (ocho mayores y "Otras"); verificar con pruebas "Gráficos con movimientos de 6 meses", "Distribución con monto y porcentaje", "Sin gastos: distribución vacía" y que solo cuenta la moneda elegida y los datos propios
+- [x] 2.1 Crear agregaciones, servicio, vista, controlador y rutas de `GET /dashboard/monedas` y `GET /dashboard/indicadores` con `decimal.js`; verificar con pruebas "Indicadores del mes en curso", "Cambio de período", "Indicadores en cero sin movimientos", "Presupuesto utilizado y sin presupuesto", "Dashboard en la moneda principal", "Cambio de moneda" y "Selector limitado a las monedas en uso" (incluida la persona sin cuentas)
+- [x] 2.2 Crear `GET /dashboard/graficos` con la evolución de 6 meses y la distribución por categoría (ocho mayores y "Otras"); verificar con pruebas "Gráficos con movimientos de 6 meses", "Distribución con monto y porcentaje", "Sin gastos: distribución vacía" y que solo cuenta la moneda elegida y los datos propios
 
 ## 3. Cliente: indicadores [HU-12, HU-28]
 
