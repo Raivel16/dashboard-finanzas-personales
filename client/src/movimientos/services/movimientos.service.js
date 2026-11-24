@@ -1,8 +1,8 @@
 import { api } from '../../shared/api/clienteHttp.js';
 
-/** Página del historial con su saldo resultante: { data, meta } (meta lleva page, limit, total y totalPages). */
-export const listarMovimientos = ({ page = 1, limit = 20, signal } = {}) =>
-  api.get('/movimientos', { consulta: { page, limit }, signal });
+/** Página del historial (con filtros desde, hasta, tipo, categoriaId y cuentaId) y su saldo resultante: { data, meta } (meta lleva page, limit, total y totalPages). */
+export const listarMovimientos = ({ page = 1, limit = 20, filtros = {}, signal } = {}) =>
+  api.get('/movimientos', { consulta: { page, limit, ...filtros }, signal });
 
 /** Devuelven { data, meta }: meta.advertencias trae, por ejemplo, el aviso de saldo insuficiente. */
 export const crearMovimiento = (cuerpo) => api.post('/movimientos', cuerpo);
