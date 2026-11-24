@@ -330,6 +330,9 @@ export const esquemaConsultaMovimientos = {
   moneda: monedaRegla(false),
 };
 
+/** Consulta del dashboard (indicadores y gráficos): mes (por defecto el actual) y moneda (por defecto la principal). */
+export const esquemaConsultaDashboard = esquemaSeguimientoPresupuestos;
+
 /** Listado de presupuestos: paginación, orden por mes y filtros por mes y moneda. */
 export const esquemaConsultaPresupuestos = {
   ...esquemaPaginacion,
