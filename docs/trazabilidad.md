@@ -36,9 +36,9 @@ Estado de las obligaciones por recurso:
 | Categorías (`implementar-categorias`) | `GET /admin/usuarios/:id/categorias` | Sí | Sí (`server/tests/categorias.test.js`, `client/tests/administracion.test.jsx`) |
 | Cuentas (`implementar-cuentas`) | `GET /admin/usuarios/:id/cuentas` | Sí | Sí (`server/tests/cuentas.test.js`, `client/tests/administracion.test.jsx`) |
 | Movimientos (`implementar-movimientos`) | `GET /admin/usuarios/:id/movimientos` | Sí | Sí (`server/tests/movimientos.test.js`, `client/tests/administracion.test.jsx`) |
-| Presupuestos (`implementar-presupuestos`) | Pendiente | Pendiente | Pendiente |
+| Presupuestos (`implementar-presupuestos`) | `GET /admin/usuarios/:id/presupuestos` | Sí | Sí (`server/tests/presupuestos.test.js`, `client/tests/presupuestos.test.jsx`) |
 
-`implementar-movimientos` ya reemplazó los puertos provisionales de conteo de movimientos de categorías y cuentas por su propio repositorio, recalcula `saldoActual` en cada transacción y valida la cuenta y la categoría dentro de ella; `npm run verificar-saldos -w server` revisa todas las cuentas. `implementar-presupuestos` decidirá qué ocurre al eliminar una categoría con presupuesto.
+`implementar-movimientos` ya reemplazó los puertos provisionales de conteo de movimientos de categorías y cuentas por su propio repositorio, recalcula `saldoActual` en cada transacción y valida la cuenta y la categoría dentro de ella; `npm run verificar-saldos -w server` revisa todas las cuentas. `implementar-presupuestos` decidió que una categoría con presupuestos no se elimina (409), igual que con movimientos.
 
 ## Matriz
 

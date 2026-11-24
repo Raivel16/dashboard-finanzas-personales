@@ -1,10 +1,16 @@
 // Capa HTTP de los movimientos. Nunca toca modelos ni repositorios.
 import { cuerpoExito, cuerpoLista } from '../views/respuesta.view.js';
 import { movimientoJson } from '../views/movimiento.view.js';
+import { alertaJson } from '../views/presupuesto.view.js';
 
 /** Las advertencias (p. ej. saldo insuficiente) viajan en `meta` sin bloquear la operación. */
-const conAdvertencias = ({ movimiento, advertencias }) =>
-  cuerpoExito(movimientoJson(movimiento), advertencias.length > 0 ? { advertencias } : undefined);
+const conAvisos = ({ movimiento, advertencias, alertas = [] }) => {
+  const meta = {
+    ...(advertencias.length > 0 && { advertencias }),
+    ...(alertas.length > 0 && { alertas: alertas.map(alertaJson) }),
+  };
+  return cuerpoExito(movimientoJson(movimiento), Object.keys(meta).length > 0 ? meta : undefined);
+};
 
 export function crearMovimientoController({ movimientos }) {
   return {
@@ -19,11 +25,11 @@ export function crearMovimientoController({ movimientos }) {
     },
 
     async crear(req, res) {
-      res.status(201).json(conAdvertencias(await movimientos.crear(req.usuario, req.body)));
+      res.status(201).json(conAvisos(await movimientos.crear(req.usuario, req.body)));
     },
 
     async actualizar(req, res) {
-      res.json(conAdvertencias(await movimientos.actualizar(req.usuario, req.params.id, req.body)));
+      res.json(conAvisos(await movimientos.actualizar(req.usuario, req.params.id, req.body)));
     },
 
     async eliminar(req, res) {

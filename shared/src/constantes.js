@@ -49,6 +49,9 @@ export const CATEGORIAS_PREDETERMINADAS = Object.freeze([
   { tipo: 'ingreso', nombre: 'Otros ingresos', icono: 'circle-plus' },
 ]);
 
+/** Porcentajes del presupuesto que disparan una alerta al registrar un gasto (HU-15). */
+export const UMBRALES_PRESUPUESTO = Object.freeze({ ALERTA: 90, EXCEDIDO: 100 });
+
 // Códigos de error de la API (contrato-api).
 export const CODIGOS_ERROR = Object.freeze({
   VALIDATION_ERROR: 'VALIDATION_ERROR',

@@ -1,6 +1,6 @@
 // Único lugar donde se declaran las rutas. Cada dominio expone su página por su index.js.
 import { createBrowserRouter, createMemoryRouter, Outlet } from 'react-router-dom';
-import { ArrowLeftRight, Home, LayoutGrid, ShieldCheck, Tags, UserRound, Wallet } from 'lucide-react';
+import { ArrowLeftRight, Home, LayoutGrid, PiggyBank, ShieldCheck, Tags, UserRound, Wallet } from 'lucide-react';
 import { InicioPage } from '../inicio/index.js';
 import { CatalogoPage, FormularioDemo, useFormularioDemo } from '../catalogo/index.js';
 import {
@@ -20,6 +20,7 @@ import { CategoriasPage } from '../categorias/index.js';
 import { CuentasPage } from '../cuentas/index.js';
 import { MovimientosPage } from '../movimientos/index.js';
 import { PerfilPage } from '../perfil/index.js';
+import { PresupuestosPage } from '../presupuestos/index.js';
 import { PaginaNoEncontrada } from '../shared/components/PaginaNoEncontrada.jsx';
 
 function FormularioRegistroDemo({ cerrar }) {
@@ -47,6 +48,9 @@ export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
 
   destinos.push({ ruta: '/movimientos', etiqueta: 'Movimientos', icono: ArrowLeftRight });
   hijas.push({ path: 'movimientos', element: <MovimientosPage />, handle: { titulo: 'Movimientos' } });
+
+  destinos.push({ ruta: '/presupuestos', etiqueta: 'Presupuestos', icono: PiggyBank });
+  hijas.push({ path: 'presupuestos', element: <PresupuestosPage />, handle: { titulo: 'Presupuestos' } });
 
   destinos.push({ ruta: '/cuentas', etiqueta: 'Cuentas', icono: Wallet });
   hijas.push({ path: 'cuentas', element: <CuentasPage />, handle: { titulo: 'Cuentas' } });

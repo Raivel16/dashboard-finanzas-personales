@@ -43,7 +43,7 @@ export function useFormularioMovimiento({ panel, cuentas, categorias, alGuardar 
         const { data, meta } = editando
           ? await actualizarMovimiento(panel.movimiento.id, datos)
           : await crearMovimiento(datos);
-        alGuardar({ movimiento: data, editado: editando, advertencias: meta?.advertencias ?? [] });
+        alGuardar({ movimiento: data, editado: editando, advertencias: meta?.advertencias ?? [], alertas: meta?.alertas ?? [] });
       } catch (error) {
         const porCampo = erroresPorCampo(error);
         if (porCampo) formulario.fijarErrores(porCampo);
