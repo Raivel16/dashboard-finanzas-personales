@@ -183,6 +183,7 @@ Rutas de `/api/v1/movimientos` (sesión obligatoria; cada persona solo ve y modi
 - Crear, editar y eliminar son **una transacción** que guarda el movimiento y ajusta `saldoActual`; si algo falla no queda nada a medias. El saldo siempre es `saldoInicial + ingresos − gastos`, y cada operación lo comprueba y lo corrige (con un aviso en el log) si no coincide.
 - La categoría debe ser del mismo tipo que el movimiento ("Selecciona una categoría de ingreso" o "de gasto") y la cuenta y la categoría deben ser propias.
 - Administración los lee con `GET /admin/usuarios/:id/movimientos` (solo lectura) y los muestra en el detalle de cada usuario.
+- El historial del cliente (HU-10, HU-11) abre el detalle de cada movimiento y se filtra por rango de fechas, tipo, categoría y cuenta con "Aplicar filtros" y "Limpiar filtros". Un rango con la fecha inicial mayor que la final se avisa y no se aplica; los filtros se envían como parámetros de `GET /movimientos` y el saldo resultante no cambia al filtrar.
 - `npm run verificar-saldos -w server` compara el saldo guardado de cada cuenta con la fórmula, lista las que difieren y termina con código 1 si hay alguna. Solo lee.
 
 ## Flujo de ramas y commits

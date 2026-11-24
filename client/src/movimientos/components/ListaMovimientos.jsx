@@ -1,6 +1,7 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { Boton } from '../../shared/components/Boton.jsx';
+import { FiltrosMovimientos } from './FiltrosMovimientos.jsx';
 import { FilaMovimiento } from './FilaMovimiento.jsx';
 
 const BOTON_ICONO =
@@ -8,7 +9,7 @@ const BOTON_ICONO =
 
 const nombreDe = (lista, id) => lista.find((elemento) => elemento.id === id)?.nombre;
 
-/** Presentación de "Movimientos": los datos y las acciones llegan por props. */
+/** Presentación del "Historial de movimientos": los datos y las acciones llegan por props. */
 export function ListaMovimientos({
   estado,
   mensaje,
@@ -17,11 +18,15 @@ export function ListaMovimientos({
   cuentas,
   categorias,
   pagina,
+  hayFiltros,
+  formFiltros,
   eliminando,
   irAPagina,
   alCrear,
   alEditar,
   alEliminar,
+  alVerDetalle,
+  limpiarFiltros,
   reintentar,
 }) {
   if (estado === 'cargando') {
@@ -40,18 +45,36 @@ export function ListaMovimientos({
     );
   }
 
+  const sinCuentas = cuentas.length === 0;
+  const vacio = hayFiltros ? (
+    <>
+      <p>No se encontraron movimientos con los filtros seleccionados</p>
+      <Boton onClick={limpiarFiltros} className="mt-3">
+        Limpiar filtros
+      </Boton>
+    </>
+  ) : sinCuentas ? (
+    <p>Para registrar movimientos primero crea una cuenta en &quot;Cuentas&quot;.</p>
+  ) : (
+    <>
+      <p>Aún no tienes movimientos registrados</p>
+      <Boton variante="primario" onClick={alCrear} className="mt-3">
+        Registrar el primer movimiento
+      </Boton>
+    </>
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <Boton variante="primario" onClick={alCrear} className="self-start">
         <Plus aria-hidden="true" size={18} />
         Nuevo movimiento
       </Boton>
+      {(hayFiltros || movimientos.length > 0) && (
+        <FiltrosMovimientos filtros={formFiltros} categorias={categorias} cuentas={cuentas} />
+      )}
       {movimientos.length === 0 ? (
-        <p className="rounded-superficie border border-filete bg-hoja p-4 text-tinta-suave">
-          {cuentas.length === 0
-            ? 'Para registrar movimientos primero crea una cuenta en "Cuentas".'
-            : 'Todavía no tienes movimientos. Registra el primero.'}
-        </p>
+        <div className="rounded-superficie border border-filete bg-hoja p-4 text-tinta-suave">{vacio}</div>
       ) : (
         <ul className="flex flex-col overflow-hidden rounded-superficie border border-filete bg-hoja">
           {movimientos.map((movimiento) => (
@@ -60,6 +83,7 @@ export function ListaMovimientos({
               movimiento={movimiento}
               categoria={nombreDe(categorias, movimiento.categoriaId)}
               cuenta={nombreDe(cuentas, movimiento.cuentaId)}
+              alVerDetalle={alVerDetalle}
               acciones={
                 <div className="flex shrink-0">
                   <button

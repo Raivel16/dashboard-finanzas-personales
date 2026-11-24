@@ -8,10 +8,11 @@ import { eliminarMovimiento, listarMovimientos } from '../services/movimientos.s
 /**
  * Sección "Movimientos": historial paginado con el saldo que dejó cada uno, las cuentas y categorías para los
  * formularios, el panel de registrar o editar y la eliminación con confirmación.
- * `estado`: cargando | listo | error. `panel`: null, { modo: 'crear' } o { modo: 'editar', movimiento }.
+ * `estado`: cargando | listo | error. `panel`: null o { modo: 'crear' | 'editar' | 'detalle', movimiento }.
  */
 export function useMovimientos() {
   const [pagina, setPagina] = useState(1);
+  const [filtros, setFiltros] = useState({}); // aplicados: desde, hasta, tipo, categoriaId, cuentaId
   const [intento, setIntento] = useState(0);
   // Última carga terminada. Mientras llega la siguiente (otra página, o tras guardar) se sigue mostrando la anterior.
   const [resultado, setResultado] = useState(null);
@@ -21,7 +22,7 @@ export function useMovimientos() {
   useEffect(() => {
     const control = new AbortController();
     Promise.all([
-      listarMovimientos({ page: pagina, signal: control.signal }),
+      listarMovimientos({ page: pagina, filtros, signal: control.signal }),
       listarCuentas({ signal: control.signal }),
       listarCategorias({ signal: control.signal }),
     ])
@@ -29,13 +30,20 @@ export function useMovimientos() {
         setResultado({ movimientos: historial.data, meta: historial.meta, cuentas, categorias }),
       )
       .catch((error) => {
-        if (error?.name !== 'AbortError') setResultado({ error: error.message });
+        if (error?.name !== 'AbortError') setResultado({ error: MENSAJES.movimiento.errorHistorial });
       });
     return () => control.abort();
-  }, [pagina, intento]);
+  }, [pagina, filtros, intento]);
 
   let estado = 'cargando';
   if (resultado) estado = resultado.error ? 'error' : 'listo';
+
+  /** Aplicar o limpiar filtros vuelve a la primera página. */
+  const aplicarFiltros = useCallback((nuevos) => {
+    setFiltros(nuevos);
+    setPagina(1);
+  }, []);
+  const limpiarFiltros = useCallback(() => aplicarFiltros({}), [aplicarFiltros]);
 
   const recargar = useCallback(() => setIntento((n) => n + 1), []);
   const cerrarPanel = useCallback(() => setPanel(null), []);
@@ -79,11 +87,16 @@ export function useMovimientos() {
     cuentas: resultado?.cuentas ?? [],
     categorias: resultado?.categorias ?? [],
     pagina,
+    filtros,
+    hayFiltros: Object.values(filtros).some(Boolean),
+    aplicarFiltros,
+    limpiarFiltros,
     panel,
     eliminando,
     irAPagina: setPagina,
     abrirCrear: () => setPanel({ modo: 'crear' }),
     abrirEditar: (movimiento) => setPanel({ modo: 'editar', movimiento }),
+    abrirDetalle: (movimiento) => setPanel({ modo: 'detalle', movimiento }),
     cerrarPanel,
     guardado,
     eliminar,
