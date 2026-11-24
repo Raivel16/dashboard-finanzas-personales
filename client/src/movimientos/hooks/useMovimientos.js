@@ -5,6 +5,11 @@ import { listarCuentas } from '../../cuentas/index.js';
 import { confirmar, notificar } from '../../shared/utils/notificaciones.js';
 import { eliminarMovimiento, listarMovimientos } from '../services/movimientos.service.js';
 
+const mensajeAlerta = (porcentaje, categoria) =>
+  categoria ? MENSAJES.presupuesto.alertaCategoria(porcentaje, categoria) : MENSAJES.presupuesto.alerta(porcentaje);
+const mensajeExcedido = (categoria) =>
+  categoria ? MENSAJES.presupuesto.alertaExcedidoCategoria(categoria) : MENSAJES.presupuesto.alertaExcedido;
+
 /**
  * Sección "Movimientos": historial paginado con el saldo que dejó cada uno, las cuentas y categorías para los
  * formularios, el panel de registrar o editar y la eliminación con confirmación.
@@ -35,6 +40,8 @@ export function useMovimientos() {
     return () => control.abort();
   }, [pagina, filtros, intento]);
 
+  const categoriasCargadas = resultado?.categorias;
+
   let estado = 'cargando';
   if (resultado) estado = resultado.error ? 'error' : 'listo';
 
@@ -50,13 +57,18 @@ export function useMovimientos() {
 
   /** Tras crear o editar: el saldo resultante de otras filas cambia, así que se vuelve a pedir el historial. */
   const guardado = useCallback(
-    ({ editado, advertencias = [] }) => {
+    ({ editado, advertencias = [], alertas = [] }) => {
       setPanel(null);
       notificar.exito(editado ? MENSAJES.movimiento.actualizado : MENSAJES.movimiento.creado);
       for (const advertencia of advertencias) notificar.atencion(advertencia);
+      for (const alerta of alertas) {
+        const categoria = (categoriasCargadas ?? []).find((c) => c.id === alerta.categoriaId)?.nombre;
+        if (alerta.umbral >= 100) notificar.error(mensajeExcedido(categoria));
+        else notificar.atencion(mensajeAlerta(alerta.porcentaje, categoria));
+      }
       recargar();
     },
-    [recargar],
+    [recargar, categoriasCargadas],
   );
 
   const eliminar = async (movimiento) => {

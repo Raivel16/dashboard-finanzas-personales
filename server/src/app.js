@@ -14,6 +14,9 @@ import { crearCategoriaService } from './services/categoria.service.js';
 import { crearCategoriaController } from './controllers/categoria.controller.js';
 import { crearCategoriasRoutes } from './routes/categorias.routes.js';
 import { crearCuentaService } from './services/cuenta.service.js';
+import { crearPresupuestoService } from './services/presupuesto.service.js';
+import { crearPresupuestoController } from './controllers/presupuesto.controller.js';
+import { crearPresupuestosRoutes } from './routes/presupuestos.routes.js';
 import { crearCuentaController } from './controllers/cuenta.controller.js';
 import { crearCuentasRoutes } from './routes/cuentas.routes.js';
 import { crearMovimientoService } from './services/movimiento.service.js';
@@ -88,9 +91,11 @@ export function crearApp({
   const cuentaController = crearCuentaController({ cuentas });
   const movimientos = crearMovimientoService({ admin, logger, config, reloj });
   const movimientoController = crearMovimientoController({ movimientos });
+  const presupuestos = crearPresupuestoService({ admin, logger, config, reloj });
+  const presupuestoController = crearPresupuestoController({ presupuestos });
   const autenticar = crearAutenticar(sesiones);
   const requerirRol = crearRequerirRol(autorizacion);
-  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas, movimientos };
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas, movimientos, presupuestos };
 
   const api = express.Router();
   api.use(sinCache);
@@ -106,6 +111,7 @@ export function crearApp({
   api.use('/categorias', crearCategoriasRoutes({ controlador: categoriaController, autenticar }));
   api.use('/cuentas', crearCuentasRoutes({ controlador: cuentaController, autenticar }));
   api.use('/movimientos', crearMovimientosRoutes({ controlador: movimientoController, autenticar }));
+  api.use('/presupuestos', crearPresupuestosRoutes({ controlador: presupuestoController, autenticar }));
   api.use(
     '/admin',
     crearAdminRoutes({
@@ -113,6 +119,7 @@ export function crearApp({
       categorias: categoriaController,
       cuentas: cuentaController,
       movimientos: movimientoController,
+      presupuestos: presupuestoController,
       autenticar,
       requerirRol,
     }),

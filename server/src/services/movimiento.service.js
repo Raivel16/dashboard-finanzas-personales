@@ -7,10 +7,12 @@ import { MENSAJES, TIPOS_MOVIMIENTO, crearEsquemaMovimiento, validar } from '@fi
 import { NotFoundError, ValidationError } from '../utils/errores.js';
 import { aDecimal128, montoATexto } from '../utils/dinero.js';
 import { dateATexto, hoy, textoADate } from '../utils/fechas.js';
+import { porcentajeUsado, umbralCruzado } from '../utils/presupuesto.js';
 import { enTransaccion } from '../utils/transaccion.js';
 import { categoriaRepository } from '../repositories/categoria.repository.js';
 import { cuentaRepository } from '../repositories/cuenta.repository.js';
 import { ModeloMovimiento, movimientoRepository } from '../repositories/movimiento.repository.js';
+import { presupuestoRepository } from '../repositories/presupuesto.repository.js';
 
 const CAMPOS_EDITABLES = ['tipo', 'monto', 'fecha', 'categoriaId', 'cuentaId', 'descripcion'];
 const comoDecimal = (valor) => new Decimal(String(valor));
@@ -32,6 +34,24 @@ function filtroDe({ desde, hasta, tipo, categoriaId, cuentaId, moneda }) {
     ...(moneda && { moneda }),
   };
 }
+
+/** Un movimiento visto como gasto de un mes y una moneda (null si es un ingreso o no existe). */
+const comoGasto = (movimiento) =>
+  movimiento?.tipo === TIPOS_MOVIMIENTO.GASTO
+    ? {
+        monto: comoDecimal(movimiento.monto),
+        periodo: dateATexto(movimiento.fecha).slice(0, 7),
+        moneda: movimiento.moneda,
+        categoriaId: String(movimiento.categoriaId),
+      }
+    : null;
+
+/** ¿El gasto cuenta para ese presupuesto? Mismo mes y moneda y, si es de categoría, la misma categoría. */
+const cuentaPara = (gasto, presupuesto) =>
+  gasto !== null &&
+  gasto.periodo === presupuesto.periodo &&
+  gasto.moneda === presupuesto.moneda &&
+  (!presupuesto.categoriaId || String(presupuesto.categoriaId) === gasto.categoriaId);
 
 export function crearMovimientoService({ admin, logger, config, reloj }) {
   const esquema = () => crearEsquemaMovimiento({ hoy: hoy(config.zonaHoraria, reloj.ahora()) });
@@ -83,6 +103,41 @@ export function crearMovimientoService({ admin, logger, config, reloj }) {
     }
   }
 
+  /**
+   * Alertas de presupuesto (HU-15): para cada presupuesto al que suma el gasto nuevo, compara el porcentaje de antes y
+   * de después del cambio; si cruza 90 % o 100 % hay una alerta. Se llama con el movimiento ya guardado, dentro de la
+   * misma transacción, y no guarda estado: cada cruce se avisa una sola vez.
+   */
+  async function calcularAlertas(tenantId, antes, despues, session) {
+    const nuevo = comoGasto(despues);
+    if (nuevo === null) return [];
+    const anterior = comoGasto(antes);
+    const presupuestos = (await presupuestoRepository(tenantId).delMes(nuevo, { session })).filter((p) =>
+      cuentaPara(nuevo, p),
+    );
+    const alertas = [];
+    for (const presupuesto of presupuestos) {
+      const gastado = comoDecimal(
+        await movimientoRepository(tenantId).gastoDelMes(
+          { periodo: nuevo.periodo, moneda: nuevo.moneda, categoriaId: presupuesto.categoriaId },
+          { session },
+        ),
+      );
+      const gastadoAntes = gastado.minus(nuevo.monto).plus(cuentaPara(anterior, presupuesto) ? anterior.monto : 0);
+      const despuesPct = porcentajeUsado(gastado, presupuesto.monto);
+      const umbral = umbralCruzado(porcentajeUsado(gastadoAntes, presupuesto.monto), despuesPct);
+      if (umbral !== null) {
+        alertas.push({
+          presupuestoId: presupuesto._id,
+          umbral,
+          porcentaje: despuesPct.floor(),
+          categoriaId: presupuesto.categoriaId,
+        });
+      }
+    }
+    return alertas;
+  }
+
   const advertenciaSaldo = (datos, disponible) =>
     datos.tipo === TIPOS_MOVIMIENTO.GASTO && comoDecimal(datos.monto).greaterThan(comoDecimal(disponible))
       ? [MENSAJES.movimiento.saldoInsuficiente]
@@ -120,7 +175,8 @@ export function crearMovimientoService({ admin, logger, config, reloj }) {
         );
         await ajustarSaldo(actor.tenantId, cuenta._id, efecto(datos.tipo, datos.monto), session);
         await verificarSaldos(actor.tenantId, [cuenta._id], session);
-        return { movimiento, advertencias };
+        const alertas = await calcularAlertas(actor.tenantId, null, movimiento, session);
+        return { movimiento, advertencias, alertas };
       });
     },
 
@@ -172,7 +228,8 @@ export function crearMovimientoService({ admin, logger, config, reloj }) {
           { session },
         );
         await verificarSaldos(actor.tenantId, [actual.cuentaId, cuenta._id], session);
-        return { movimiento, advertencias };
+        const alertas = await calcularAlertas(actor.tenantId, actual, movimiento, session);
+        return { movimiento, advertencias, alertas };
       });
     },
 

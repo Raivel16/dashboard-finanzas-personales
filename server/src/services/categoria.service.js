@@ -1,6 +1,7 @@
 // Categorías propias (HU-06). El inquilino y el creador salen siempre de la sesión, nunca del cuerpo.
 import { MENSAJES } from '@finanzas/shared';
 import { enTransaccion } from '../utils/transaccion.js';
+import { presupuestoRepository } from '../repositories/presupuesto.repository.js';
 import { movimientoRepository } from '../repositories/movimiento.repository.js';
 import { ConflictError, NotFoundError, ValidationError } from '../utils/errores.js';
 import {
@@ -57,6 +58,9 @@ export function crearCategoriaService({ admin, logger }) {
         if (!categoria) throw new NotFoundError();
         if ((await movimientoRepository(actor.tenantId).contarPorCategoria(categoria._id, { session })) > 0) {
           throw new ConflictError(MENSAJES.categoria.conMovimientos);
+        }
+        if ((await presupuestoRepository(actor.tenantId).contarPorCategoria(categoria._id, { session })) > 0) {
+          throw new ConflictError(MENSAJES.presupuesto.conPresupuestos);
         }
         await repositorio.eliminarPorId(categoria._id, { session });
       });
