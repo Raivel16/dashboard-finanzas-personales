@@ -1,4 +1,4 @@
-// HU-08, HU-09, HU-26 y HU-27 · sección "Movimientos" del cliente.
+// HU-08, HU-09, HU-10, HU-11, HU-26 y HU-27 · sección "Movimientos" del cliente.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -113,7 +113,7 @@ describe('HU-26 · historial con saldo resultante', () => {
     expect(await screen.findByText(/primero crea una cuenta/)).toBeInTheDocument();
     cleanup();
     await abrir({ inicial: [] });
-    expect(await screen.findByText(/Todavía no tienes movimientos/)).toBeInTheDocument();
+    expect(await screen.findByText(/Aún no tienes movimientos registrados/)).toBeInTheDocument();
   });
 
   it('un error de carga muestra el mensaje y permite reintentar', async () => {
@@ -126,7 +126,7 @@ describe('HU-26 · historial con saldo resultante', () => {
             : lista([GASTO]),
       },
     });
-    expect(await screen.findByRole('alert')).toHaveTextContent('Ocurrió un error inesperado');
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo cargar el historial. Intenta nuevamente');
     falla = false;
     await usuario.click(screen.getByRole('button', { name: 'Reintentar' }));
     expect(await screen.findByText('Almuerzo')).toBeInTheDocument();
@@ -143,6 +143,71 @@ describe('HU-26 · historial con saldo resultante', () => {
     fetchSimulado.mockClear();
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }));
     await waitFor(() => expect(llamadasA(fetchSimulado, '/movimientos')[0][0]).toContain('page=2'));
+  });
+});
+
+describe('HU-10 · HU-11 · consulta y filtrado', () => {
+  const ultimaUrl = (fetchSimulado) => llamadasA(fetchSimulado, '/movimientos').at(-1)[0];
+
+  it('Ver detalle: abre el panel con todos los datos del movimiento', async () => {
+    const { usuario } = await abrir();
+    await usuario.click(await screen.findByRole('button', { name: /Ver detalle del movimiento del 2026-01-10/ }));
+    const panel = within(screen.getByRole('dialog', { name: 'Detalle del movimiento' }));
+    expect(panel.getByText('Almuerzo')).toBeInTheDocument();
+    expect(panel.getByText('Alimentación')).toBeInTheDocument();
+    expect(panel.getByText('Efectivo')).toBeInTheDocument();
+    expect(panel.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
+    await usuario.click(panel.getAllByRole('button', { name: 'Cerrar' }).at(-1));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('Historial vacío: invita a registrar el primer movimiento', async () => {
+    const { usuario } = await abrir({ inicial: [] });
+    await screen.findByText('Aún no tienes movimientos registrados');
+    await usuario.click(screen.getByRole('button', { name: 'Registrar el primer movimiento' }));
+    expect(screen.getByRole('dialog', { name: 'Nuevo movimiento' })).toBeInTheDocument();
+  });
+
+  it('Filtra por rango de fechas y categoría y los envía al servidor', async () => {
+    const { fetchSimulado, usuario } = await abrir();
+    await screen.findByText('Almuerzo');
+    const filtros = within(screen.getByRole('form', { name: 'Filtros del historial' }));
+    fireEvent.change(filtros.getByLabelText('Desde'), { target: { value: '2026-01-01' } });
+    fireEvent.change(filtros.getByLabelText('Hasta'), { target: { value: '2026-01-31' } });
+    await usuario.selectOptions(filtros.getByLabelText('Categoría'), '65f000000000000000000001');
+    await usuario.click(filtros.getByRole('button', { name: 'Aplicar filtros' }));
+    await waitFor(() => {
+      const url = ultimaUrl(fetchSimulado);
+      expect(url).toContain('desde=2026-01-01');
+      expect(url).toContain('hasta=2026-01-31');
+      expect(url).toContain('categoriaId=65f000000000000000000001');
+    });
+  });
+
+  it('Rango de fechas inválido: avisa y no permite aplicar', async () => {
+    await abrir();
+    await screen.findByText('Almuerzo');
+    const filtros = within(screen.getByRole('form', { name: 'Filtros del historial' }));
+    fireEvent.change(filtros.getByLabelText('Desde'), { target: { value: '2026-02-01' } });
+    fireEvent.change(filtros.getByLabelText('Hasta'), { target: { value: '2026-01-01' } });
+    expect(await screen.findByText('La fecha inicial no puede ser mayor a la fecha final')).toBeInTheDocument();
+    expect(filtros.getByRole('button', { name: 'Aplicar filtros' })).toBeDisabled();
+  });
+
+  it('Sin resultados: muestra el mensaje y "Limpiar filtros" restablece el historial', async () => {
+    let sinResultados = false;
+    const { usuario } = await abrir({
+      rutas: { '/movimientos': async () => (sinResultados ? lista([]) : lista([GASTO])) },
+    });
+    await screen.findByText('Almuerzo');
+    sinResultados = true;
+    const filtros = within(screen.getByRole('form', { name: 'Filtros del historial' }));
+    await usuario.selectOptions(filtros.getByLabelText('Tipo'), 'ingreso');
+    await usuario.click(filtros.getByRole('button', { name: 'Aplicar filtros' }));
+    expect(await screen.findByText('No se encontraron movimientos con los filtros seleccionados')).toBeInTheDocument();
+    sinResultados = false;
+    await usuario.click(screen.getByRole('button', { name: 'Limpiar filtros' }));
+    expect(await screen.findByText('Almuerzo')).toBeInTheDocument();
   });
 });
 
