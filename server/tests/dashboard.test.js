@@ -134,6 +134,25 @@ describe('dashboard', () => {
     });
   });
 
+  describe('HU-05 · privacidad con categorías de igual nombre', () => {
+    it('Usuarios con categorías de igual nombre: los totales y la distribución de A no incluyen los gastos de B', async () => {
+      const a = await preparar();
+      const b = await preparar();
+      const cuentaA = await a.cuenta();
+      const cuentaB = await b.cuenta();
+      expect(a.gasto('Alimentación').nombre).toBe(b.gasto('Alimentación').nombre);
+      await mover(a.agente, cuentaA.id, 'gasto', a.gasto('Alimentación').id, '100', '2026-01-05');
+      await mover(b.agente, cuentaB.id, 'gasto', b.gasto('Alimentación').id, '70', '2026-01-05');
+
+      expect((await indicadores(a.agente)).body.data.gastos).toBe('100.00');
+      const { distribucion } = (await graficos(a.agente)).body.data;
+      expect(distribucion.items).toEqual([expect.objectContaining({ nombre: 'Alimentación', total: '100.00' })]);
+      const historial = (await a.agente.get(`/api/v1/movimientos?categoriaId=${a.gasto('Alimentación').id}`)).body;
+      expect(historial.meta.total).toBe(1);
+      expect(historial.data[0].monto).toBe('100.00');
+    });
+  });
+
   describe('HU-13 · gráficos', () => {
     it('Evolución de 6 meses con ceros en los meses sin movimientos y distribución con monto y porcentaje', async () => {
       const p = await preparar();

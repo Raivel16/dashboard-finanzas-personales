@@ -239,6 +239,37 @@ describe('HU-08 · registrar', () => {
     expect(notificar.atencion).not.toHaveBeenCalled();
   });
 
+  it('Actualización automática de indicadores tras registrar un ingreso: el dashboard la refleja sin recargar la página', async () => {
+    let registrado = false;
+    const indicadores = () => ({
+      periodo: '2026-01',
+      moneda: 'PEN',
+      ingresos: registrado ? '1500.00' : '0.00',
+      gastos: '0.00',
+      balance: registrado ? '1500.00' : '0.00',
+      hayMovimientos: registrado,
+      presupuesto: null,
+    });
+    const entorno = await abrir({
+      inicial: [GASTO],
+      rutas: { '/dashboard/indicadores': async () => respuestaApi(200, { data: indicadores() }) },
+    });
+    const panel = await abrirFormulario(entorno);
+    await entorno.usuario.selectOptions(panel.getByLabelText('Tipo'), 'ingreso');
+    await entorno.usuario.type(panel.getByLabelText('Monto'), '1500');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000003');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
+    await waitFor(() => expect(notificar.exito).toHaveBeenCalled());
+    registrado = true;
+
+    await entorno.usuario.click(screen.getAllByRole('link', { name: 'Inicio' })[0]);
+    const tarjetas = await screen.findByLabelText('Indicadores del período');
+    expect(await within(tarjetas).findAllByText('S/ 1,500.00')).not.toHaveLength(0);
+    // Sin recargar: la sesión se consultó una sola vez al abrir la aplicación.
+    expect(llamadasA(entorno.fetchSimulado, '/auth/me')).toHaveLength(1);
+  });
+
   it('Registro rechazado por monto o fecha inválidos: muestra los mensajes y no llama a la API', async () => {
     const entorno = await abrir();
     const panel = await abrirFormulario(entorno);
