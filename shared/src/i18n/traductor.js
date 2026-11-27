@@ -4,7 +4,7 @@ import { IDIOMAS } from '../constantes.js';
 
 // Marcador de posición: un carácter de uso privado que ningún texto real contiene.
 const marca = (i) => `${i}`;
-const escaparRegex = (texto) => texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const escaparRegex = (texto) => texto.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 /** Recorre en paralelo un catálogo español y su equivalente; registra textos fijos y plantillas. */
 function recorrer(es, en, fijos, plantillas) {

@@ -15,6 +15,10 @@ export function FormularioPresupuesto({ formulario, errorGeneral, editando, cate
   const { enviar, enviando, formularioRef, propsCampo } = formulario;
   const deGasto = categorias.filter((c) => c.tipo === TIPOS_MOVIMIENTO.GASTO);
   const nombreCategoria = deGasto.find((c) => c.id === presupuesto?.categoriaId)?.nombre;
+
+  let textoBoton = t('Guardar presupuesto');
+  if (editando) textoBoton = t('Guardar cambios');
+  if (enviando) textoBoton = t('Guardando…');
   return (
     <form ref={formularioRef} onSubmit={enviar} noValidate className="flex flex-col gap-4">
       {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
@@ -43,7 +47,7 @@ export function FormularioPresupuesto({ formulario, errorGeneral, editando, cate
       <Campo {...propsCampo('monto')} etiqueta={t('Monto')} inputMode="decimal" autoComplete="off" />
       <div className="flex gap-2">
         <Boton type="submit" variante="primario" disabled={enviando}>
-          {enviando ? t('Guardando…') : editando ? t('Guardar cambios') : t('Guardar presupuesto')}
+          {textoBoton}
         </Boton>
         <Boton onClick={alCancelar}>{t('Cancelar')}</Boton>
       </div>

@@ -14,6 +14,9 @@ export function FormularioCategoria({ formulario, errorGeneral, editando, tipo, 
   const tipoCampo = propsCampo('tipo');
   const icono = propsCampo('icono');
 
+  let textoBoton = t('Crear categoría');
+  if (editando) textoBoton = t('Guardar cambios');
+  if (enviando) textoBoton = t('Guardando…');
   return (
     <form ref={formularioRef} onSubmit={enviar} noValidate className="flex flex-col gap-4">
       {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
@@ -53,7 +56,7 @@ export function FormularioCategoria({ formulario, errorGeneral, editando, tipo, 
 
       <div className="flex gap-2">
         <Boton type="submit" variante="primario" disabled={enviando}>
-          {enviando ? t('Guardando…') : editando ? t('Guardar cambios') : t('Crear categoría')}
+          {textoBoton}
         </Boton>
         <Boton onClick={alCancelar}>{t('Cancelar')}</Boton>
       </div>

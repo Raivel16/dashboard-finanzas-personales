@@ -10,6 +10,10 @@ import { useT } from '../../shared/preferencias/traducir.js';
 export function FormularioCuenta({ formulario, errorGeneral, editando, alCancelar }) {
   const t = useT();
   const { enviar, enviando, formularioRef, propsCampo } = formulario;
+
+  let textoBoton = t('Crear cuenta');
+  if (editando) textoBoton = t('Guardar cambios');
+  if (enviando) textoBoton = t('Guardando…');
   return (
     <form ref={formularioRef} onSubmit={enviar} noValidate className="flex flex-col gap-4">
       {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
@@ -38,7 +42,7 @@ export function FormularioCuenta({ formulario, errorGeneral, editando, alCancela
       />
       <div className="flex gap-2">
         <Boton type="submit" variante="primario" disabled={enviando}>
-          {enviando ? t('Guardando…') : editando ? t('Guardar cambios') : t('Crear cuenta')}
+          {textoBoton}
         </Boton>
         <Boton onClick={alCancelar}>{t('Cancelar')}</Boton>
       </div>

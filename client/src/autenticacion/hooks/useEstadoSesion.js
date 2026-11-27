@@ -17,7 +17,7 @@ const avisoDe = (codigo) =>
  */
 export function useEstadoSesion() {
   const [estado, setEstado] = useState('cargando');
-  const [usuario, setUsuarioEnEstado] = useState(null);
+  const [usuarioEnEstado, setUsuarioEnEstado] = useState(null);
 
   // Con sesión mandan las preferencias guardadas en el perfil (HU-32, HU-33). Se aplican al recibir los datos, antes
   // de pintar: así las pantallas hijas ya piden sus datos en el idioma de la persona.
@@ -58,12 +58,15 @@ export function useEstadoSesion() {
     };
   }, [setUsuario]);
 
-  const iniciarSesion = useCallback(async (credenciales) => {
-    const actual = await servicio.iniciarSesion(credenciales);
-    setUsuario(actual);
-    setAviso(null);
-    setEstado('autenticado');
-  }, [setUsuario]);
+  const iniciarSesion = useCallback(
+    async (credenciales) => {
+      const actual = await servicio.iniciarSesion(credenciales);
+      setUsuario(actual);
+      setAviso(null);
+      setEstado('autenticado');
+    },
+    [setUsuario],
+  );
 
   const cerrarSesion = useCallback(async () => {
     try {
@@ -93,15 +96,24 @@ export function useEstadoSesion() {
   return useMemo(
     () => ({
       estado,
-      usuario,
+      usuario: usuarioEnEstado,
       aviso,
-      esAdmin: usuario?.rol === ROLES.ADMIN,
+      esAdmin: usuarioEnEstado?.rol === ROLES.ADMIN,
       iniciarSesion,
       cerrarSesion,
       limpiarAviso,
       reemplazarUsuario,
       refrescarSesion,
     }),
-    [estado, usuario, aviso, iniciarSesion, cerrarSesion, limpiarAviso, reemplazarUsuario, refrescarSesion],
+    [
+      estado,
+      usuarioEnEstado,
+      aviso,
+      iniciarSesion,
+      cerrarSesion,
+      limpiarAviso,
+      reemplazarUsuario,
+      refrescarSesion,
+    ],
   );
 }

@@ -24,6 +24,22 @@ describe('preferencias de idioma y accesibilidad', () => {
   };
   const correosPara = (email) =>
     e.transporte.sendMail.mock.calls.map(([c]) => c).filter((c) => c.to === email);
+  // Crea una cuenta en efectivo y devuelve una función que registra un gasto en ella con la primera categoría de gasto.
+  const prepararGasto = async (agente, saldoInicial) => {
+    const cuenta = (
+      await agente
+        .post('/api/v1/cuentas')
+        .send({ nombre: 'Cash', tipo: 'efectivo', moneda: 'PEN', saldoInicial })
+    ).body.data;
+    const categoria = (await agente.get('/api/v1/categorias?limit=100')).body.data.find(
+      (c) => c.tipo === 'gasto',
+    );
+    return (monto, encabezados = {}) =>
+      agente
+        .post('/api/v1/movimientos')
+        .set(encabezados)
+        .send({ tipo: 'gasto', monto, fecha: '2026-01-10', cuentaId: cuenta.id, categoriaId: categoria.id });
+  };
 
   describe('HU-32 · idioma', () => {
     it('Cambio del idioma a inglés: se guarda en el perfil y se conserva al volver a iniciar sesión', async () => {
@@ -53,24 +69,9 @@ describe('preferencias de idioma y accesibilidad', () => {
     it('Mensajes de error en el idioma elegido: un monto 0 se rechaza con el mensaje en inglés', async () => {
       const { agente } = await sesionIniciada();
       await agente.patch('/api/v1/perfil/preferencias').send({ idioma: 'en' });
-      const cuenta = (
-        await agente
-          .post('/api/v1/cuentas')
-          .send({ nombre: 'Cash', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '50' })
-      ).body.data;
-      const categoria = (await agente.get('/api/v1/categorias?limit=100')).body.data.find(
-        (c) => c.tipo === 'gasto',
-      );
+      const registrarGasto = await prepararGasto(agente, '50');
 
-      const res = await agente
-        .post('/api/v1/movimientos')
-        .send({
-          tipo: 'gasto',
-          monto: '0',
-          fecha: '2026-01-10',
-          cuentaId: cuenta.id,
-          categoriaId: categoria.id,
-        });
+      const res = await registrarGasto('0');
       expect(res.status).toBe(400);
       expect(res.body.error.message).toBe('The submitted data is not valid');
       expect(res.body.error.details).toContainEqual({
@@ -79,16 +80,7 @@ describe('preferencias de idioma y accesibilidad', () => {
       });
       // Con la preferencia en español, la misma solicitud responde en español aunque el navegador esté en inglés.
       await agente.patch('/api/v1/perfil/preferencias').send({ idioma: 'es' });
-      const enEspanol = await agente
-        .post('/api/v1/movimientos')
-        .set('Accept-Language', 'en')
-        .send({
-          tipo: 'gasto',
-          monto: '0',
-          fecha: '2026-01-10',
-          cuentaId: cuenta.id,
-          categoriaId: categoria.id,
-        });
+      const enEspanol = await registrarGasto('0', { 'Accept-Language': 'en' });
       expect(enEspanol.body.error.details[0].mensaje).toBe(
         'El monto debe ser mayor a 0, con hasta 2 decimales',
       );
@@ -96,23 +88,8 @@ describe('preferencias de idioma y accesibilidad', () => {
 
     it('traduce también las advertencias y los mensajes de éxito', async () => {
       const { agente } = await sesionIniciada({ idioma: 'en' });
-      const cuenta = (
-        await agente
-          .post('/api/v1/cuentas')
-          .send({ nombre: 'Cash', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '5' })
-      ).body.data;
-      const categoria = (await agente.get('/api/v1/categorias?limit=100')).body.data.find(
-        (c) => c.tipo === 'gasto',
-      );
-      const res = await agente
-        .post('/api/v1/movimientos')
-        .send({
-          tipo: 'gasto',
-          monto: '20',
-          fecha: '2026-01-10',
-          cuentaId: cuenta.id,
-          categoriaId: categoria.id,
-        });
+      const registrarGasto = await prepararGasto(agente, '5');
+      const res = await registrarGasto('20');
       expect(res.body.meta.advertencias).toEqual(['The amount exceeds the available balance of the account']);
     });
 
