@@ -1,7 +1,9 @@
 import { LogOut } from 'lucide-react';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 /** Datos de la persona y botón para cerrar sesión. Se muestra sobre la barra de color tapa. */
 export function MenuUsuario({ usuario, alCerrarSesion, compacto = false }) {
+  const t = useT();
   return (
     <div className={`flex ${compacto ? 'items-center gap-2' : 'flex-col gap-2 px-3'} text-tapa-texto`}>
       {!compacto && (
@@ -16,7 +18,7 @@ export function MenuUsuario({ usuario, alCerrarSesion, compacto = false }) {
         className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-control border border-tapa-texto-suave px-3 text-sm font-medium hover:bg-white/10"
       >
         <LogOut aria-hidden="true" size={18} />
-        <span>Cerrar sesión</span>
+        <span>{t('Cerrar sesión')}</span>
       </button>
     </div>
   );

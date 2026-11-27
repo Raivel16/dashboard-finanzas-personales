@@ -3,6 +3,7 @@ import { Aviso } from '../../shared/components/Aviso.jsx';
 import { Boton } from '../../shared/components/Boton.jsx';
 import { Campo } from '../../shared/components/Campo.jsx';
 import { FilaPresupuesto } from './FilaPresupuesto.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 const BOTON_ICONO =
   'inline-flex min-h-11 min-w-11 items-center justify-center rounded-control text-tinta-suave hover:bg-papel disabled:opacity-60';
@@ -31,16 +32,17 @@ export function ListaPresupuestos({
   alEliminar,
   reintentar,
 }) {
+  const t = useT();
   const nombreDe = (item) =>
     item.categoriaId
-      ? (categorias.find((c) => c.id === item.categoriaId)?.nombre ?? 'Categoría')
-      : 'Presupuesto general';
+      ? (categorias.find((c) => c.id === item.categoriaId)?.nombre ?? t('Categoría'))
+      : t('Presupuesto general');
 
   const selectorMes = (
     <Campo
       id="presupuestos-mes"
       nombre="mes"
-      etiqueta="Mes"
+      etiqueta={t('Mes')}
       tipo="month"
       valor={periodo}
       alCambiar={(evento) => cambiarPeriodo(evento.target.value)}
@@ -50,7 +52,7 @@ export function ListaPresupuestos({
   if (estado === 'cargando') {
     return (
       <p role="status" className="text-tinta-suave">
-        Cargando presupuestos…
+        {t('Cargando presupuestos…')}
       </p>
     );
   }
@@ -58,7 +60,7 @@ export function ListaPresupuestos({
     return (
       <div className="flex flex-col items-start gap-3">
         <Aviso tipo="error">{mensaje}</Aviso>
-        <Boton onClick={reintentar}>Reintentar</Boton>
+        <Boton onClick={reintentar}>{t('Reintentar')}</Boton>
       </div>
     );
   }
@@ -69,15 +71,15 @@ export function ListaPresupuestos({
         {selectorMes}
         <Boton variante="primario" onClick={alCrear}>
           <Plus aria-hidden="true" size={18} />
-          Nuevo presupuesto
+          {t('Nuevo presupuesto')}
         </Boton>
       </div>
       {items.length === 0 ? (
         <div className="rounded-superficie border border-filete bg-hoja p-4 text-tinta-suave">
-          <p>No has definido un presupuesto para este mes</p>
+          <p>{t('No has definido un presupuesto para este mes')}</p>
           {!esMesPasado && (
             <Boton variante="primario" onClick={alCrear} className="mt-3">
-              Definir presupuesto
+              {t('Definir presupuesto')}
             </Boton>
           )}
         </div>
@@ -85,7 +87,7 @@ export function ListaPresupuestos({
         porMoneda(items).map((grupo) => (
           <section key={grupo.moneda} aria-labelledby={`presupuestos-${grupo.moneda}`} className="flex flex-col gap-2">
             <h3 id={`presupuestos-${grupo.moneda}`} className="text-lg font-semibold">
-              Presupuestos en {grupo.moneda}
+              {t('Presupuestos en {moneda}', grupo)}
             </h3>
             <ul className="flex flex-col overflow-hidden rounded-superficie border border-filete bg-hoja">
               {grupo.items.map((item) => (
@@ -99,7 +101,7 @@ export function ListaPresupuestos({
                         <button
                           type="button"
                           className={BOTON_ICONO}
-                          aria-label={`Editar ${nombreDe(item)} en ${item.moneda}`}
+                          aria-label={t('Editar {nombre} en {moneda}', { nombre: nombreDe(item), moneda: item.moneda })}
                           onClick={() => alEditar(item)}
                         >
                           <Pencil aria-hidden="true" size={18} />
@@ -108,7 +110,7 @@ export function ListaPresupuestos({
                       <button
                         type="button"
                         className={BOTON_ICONO}
-                        aria-label={`Eliminar ${nombreDe(item)} en ${item.moneda}`}
+                        aria-label={t('Eliminar {nombre} en {moneda}', { nombre: nombreDe(item), moneda: item.moneda })}
                         disabled={eliminando === item.id}
                         onClick={() => alEliminar(item)}
                       >

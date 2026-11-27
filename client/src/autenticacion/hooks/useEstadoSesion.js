@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MENSAJES, ROLES } from '@finanzas/shared';
 import { configurarSesionHttp } from '../../shared/api/clienteHttp.js';
 import * as servicio from '../services/autenticacion.service.js';
+import { cambiarPreferencias } from '../../shared/preferencias/preferencias.js';
 
 /** Mensaje para la pantalla de inicio de sesión según por qué terminó la sesión. */
 const avisoDe = (codigo) =>
@@ -16,7 +17,17 @@ const avisoDe = (codigo) =>
  */
 export function useEstadoSesion() {
   const [estado, setEstado] = useState('cargando');
-  const [usuario, setUsuario] = useState(null);
+  const [usuario, setUsuarioEnEstado] = useState(null);
+
+  // Con sesión mandan las preferencias guardadas en el perfil (HU-32, HU-33). Se aplican al recibir los datos, antes
+  // de pintar: así las pantallas hijas ya piden sus datos en el idioma de la persona.
+  const setUsuario = useCallback((actual) => {
+    if (actual) {
+      const { idioma, textoGrande, altoContraste } = actual;
+      cambiarPreferencias({ idioma, textoGrande, altoContraste });
+    }
+    setUsuarioEnEstado(actual);
+  }, []);
   const [aviso, setAviso] = useState(null);
 
   useEffect(() => {
@@ -45,14 +56,14 @@ export function useEstadoSesion() {
       activo = false;
       configurarSesionHttp();
     };
-  }, []);
+  }, [setUsuario]);
 
   const iniciarSesion = useCallback(async (credenciales) => {
     const actual = await servicio.iniciarSesion(credenciales);
     setUsuario(actual);
     setAviso(null);
     setEstado('autenticado');
-  }, []);
+  }, [setUsuario]);
 
   const cerrarSesion = useCallback(async () => {
     try {
@@ -63,12 +74,12 @@ export function useEstadoSesion() {
     setUsuario(null);
     setAviso(null);
     setEstado('anonimo');
-  }, []);
+  }, [setUsuario]);
 
   const limpiarAviso = useCallback(() => setAviso(null), []);
 
   /** Sustituye los datos de la persona (p. ej. tras guardar su perfil) sin volver a iniciar sesión. */
-  const reemplazarUsuario = useCallback((actual) => setUsuario(actual), []);
+  const reemplazarUsuario = useCallback((actual) => setUsuario(actual), [setUsuario]);
 
   /** Vuelve a leer la sesión del servidor (p. ej. tras un 403, por si el rol cambió durante la sesión). */
   const refrescarSesion = useCallback(async () => {
@@ -77,7 +88,7 @@ export function useEstadoSesion() {
     } catch {
       // Si la sesión terminó, el cliente HTTP ya avisó y el estado pasó a anónimo.
     }
-  }, []);
+  }, [setUsuario]);
 
   return useMemo(
     () => ({

@@ -10,6 +10,11 @@ export function crearPerfilController({ perfil }) {
       res.json(cuerpoExito(usuarioJson(usuario)));
     },
 
+    async actualizarPreferencias(req, res) {
+      const usuario = await perfil.actualizarPreferencias(req.usuario.id, req.datos);
+      res.json(cuerpoExito(usuarioJson(usuario)));
+    },
+
     async cambiarContrasena(req, res) {
       await perfil.cambiarContrasena(req.usuario.id, req.sesionId, req.datos);
       res.json(cuerpoExito({ mensaje: MENSAJES.auth.contrasenaCambiada }));

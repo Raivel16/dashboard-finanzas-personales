@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { MENSAJES } from '@finanzas/shared';
 import { confirmar, notificar } from '../../shared/utils/notificaciones.js';
+import { traducir } from '../../shared/preferencias/traducir.js';
 import { eliminarCuenta, listarCuentas } from '../services/cuentas.service.js';
 
 /**
@@ -47,7 +48,7 @@ export function useCuentas() {
   const eliminar = async (cuenta) => {
     const acepto = await confirmar({
       titulo: 'Eliminar cuenta',
-      texto: `Se eliminará la cuenta "${cuenta.nombre}". Esta acción no se puede deshacer.`,
+      texto: traducir('Se eliminará la cuenta "{nombre}". Esta acción no se puede deshacer.', cuenta),
       confirmar: 'Eliminar',
       peligro: true,
     });

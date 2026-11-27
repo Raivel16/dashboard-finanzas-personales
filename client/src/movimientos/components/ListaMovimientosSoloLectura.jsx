@@ -1,5 +1,6 @@
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { FilaMovimiento } from './FilaMovimiento.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 const nombreDe = (lista, id) => lista.find((elemento) => elemento.id === id)?.nombre;
 
@@ -8,10 +9,11 @@ const nombreDe = (lista, id) => lista.find((elemento) => elemento.id === id)?.no
  * eliminar. `cuentas` y `categorias` (de la misma persona) solo sirven para mostrar sus nombres.
  */
 export function ListaMovimientosSoloLectura({ estado, mensaje, movimientos, total, cuentas = [], categorias = [] }) {
+  const t = useT();
   if (estado === 'cargando') {
     return (
       <p role="status" className="text-tinta-suave">
-        Cargando movimientos…
+        {t('Cargando movimientos…')}
       </p>
     );
   }
@@ -19,7 +21,7 @@ export function ListaMovimientosSoloLectura({ estado, mensaje, movimientos, tota
   if (movimientos.length === 0) {
     return (
       <p className="rounded-superficie border border-filete bg-hoja p-4 text-tinta-suave">
-        Este usuario aún no tiene movimientos
+        {t('Este usuario aún no tiene movimientos')}
       </p>
     );
   }
@@ -37,7 +39,7 @@ export function ListaMovimientosSoloLectura({ estado, mensaje, movimientos, tota
       </ul>
       {total > movimientos.length && (
         <p className="text-sm text-tinta-suave">
-          Se muestran los {movimientos.length} más recientes de {total}.
+          {t('Se muestran los {cantidad} más recientes de {total}.', { cantidad: movimientos.length, total })}
         </p>
       )}
     </div>

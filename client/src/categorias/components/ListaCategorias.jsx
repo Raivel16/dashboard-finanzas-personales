@@ -2,6 +2,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { Boton } from '../../shared/components/Boton.jsx';
 import { GrupoCategorias } from './GrupoCategorias.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 const BOTON_ICONO =
   'inline-flex min-h-11 min-w-11 items-center justify-center rounded-control text-tinta-suave hover:bg-papel disabled:opacity-60';
@@ -18,10 +19,11 @@ export function ListaCategorias({
   alEliminar,
   reintentar,
 }) {
+  const t = useT();
   if (estado === 'cargando') {
     return (
       <p role="status" className="text-tinta-suave">
-        Cargando categorías…
+        {t('Cargando categorías…')}
       </p>
     );
   }
@@ -29,7 +31,7 @@ export function ListaCategorias({
     return (
       <div className="flex flex-col items-start gap-3">
         <Aviso tipo="error">{mensaje}</Aviso>
-        <Boton onClick={reintentar}>Reintentar</Boton>
+        <Boton onClick={reintentar}>{t('Reintentar')}</Boton>
       </div>
     );
   }
@@ -39,7 +41,7 @@ export function ListaCategorias({
       <button
         type="button"
         className={BOTON_ICONO}
-        aria-label={`Editar ${categoria.nombre}`}
+        aria-label={t('Editar {nombre}', categoria)}
         onClick={() => alEditar(categoria)}
       >
         <Pencil aria-hidden="true" size={18} />
@@ -47,7 +49,7 @@ export function ListaCategorias({
       <button
         type="button"
         className={BOTON_ICONO}
-        aria-label={`Eliminar ${categoria.nombre}`}
+        aria-label={t('Eliminar {nombre}', categoria)}
         disabled={eliminando === categoria.id}
         onClick={() => alEliminar(categoria)}
       >
@@ -60,20 +62,20 @@ export function ListaCategorias({
     <div className="flex flex-col gap-6">
       <Boton variante="primario" onClick={alCrear} className="self-start">
         <Plus aria-hidden="true" size={18} />
-        Nueva categoría
+        {t('Nueva categoría')}
       </Boton>
       <GrupoCategorias
         id="categorias-gastos"
-        titulo="Gastos"
+        titulo={t('Gastos')}
         categorias={gastos}
-        vacio="Todavía no tienes categorías de gastos. Crea una para clasificar tus movimientos."
+        vacio={t('Todavía no tienes categorías de gastos. Crea una para clasificar tus movimientos.')}
         acciones={acciones}
       />
       <GrupoCategorias
         id="categorias-ingresos"
-        titulo="Ingresos"
+        titulo={t('Ingresos')}
         categorias={ingresos}
-        vacio="Todavía no tienes categorías de ingresos. Crea una para clasificar tus movimientos."
+        vacio={t('Todavía no tienes categorías de ingresos. Crea una para clasificar tus movimientos.')}
         acciones={acciones}
       />
     </div>

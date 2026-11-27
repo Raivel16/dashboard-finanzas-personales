@@ -1,5 +1,5 @@
 // Único acceso al modelo Categoria. Siempre se construye con el tenantId del usuario autenticado.
-import { CATEGORIAS_PREDETERMINADAS } from '@finanzas/shared';
+import { categoriasPredeterminadas } from '@finanzas/shared';
 import { Categoria } from '../models/categoria.model.js';
 import { RepositorioBase } from './base.repository.js';
 
@@ -25,10 +25,13 @@ export class CategoriaRepository extends RepositorioBase {
 
 export const categoriaRepository = (tenantId) => new CategoriaRepository(tenantId);
 
-/** Crea las categorías predeterminadas propias de un usuario nuevo (HU-24), dentro de la transacción recibida. */
-export async function crearPredeterminadas({ tenantId, usuarioId }, { session }) {
+/**
+ * Crea las categorías predeterminadas propias de un usuario nuevo (HU-24) en su idioma de registro (HU-32),
+ * dentro de la transacción recibida.
+ */
+export async function crearPredeterminadas({ tenantId, usuarioId, idioma }, { session }) {
   return Categoria.insertMany(
-    CATEGORIAS_PREDETERMINADAS.map((c) => ({ ...c, tenantId, usuarioId })),
+    categoriasPredeterminadas(idioma).map((c) => ({ ...c, tenantId, usuarioId })),
     { session },
   );
 }

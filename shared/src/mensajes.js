@@ -131,6 +131,7 @@ export const MENSAJES = Object.freeze({
   moneda: 'Selecciona una moneda válida',
   tipoMovimiento: 'Selecciona un tipo de movimiento válido',
   tipoCuenta: 'Selecciona un tipo de cuenta válido',
+  idioma: 'Selecciona un idioma válido',
   id: 'El identificador no es válido',
   paginacion: {
     pagina: 'page debe ser un número entero mayor o igual a 1',

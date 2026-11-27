@@ -34,7 +34,7 @@ describe('validar', () => {
       password: 'Clave1234',
     });
     expect(r.valido).toBe(true);
-    expect(r.datos).toEqual({ nombre: 'Ana', email: 'ana@correo.com', password: 'Clave1234' });
+    expect(r.datos).toEqual({ nombre: 'Ana', email: 'ana@correo.com', password: 'Clave1234', idioma: 'es' });
   });
 
   it('informa un error por cada campo inválido', () => {

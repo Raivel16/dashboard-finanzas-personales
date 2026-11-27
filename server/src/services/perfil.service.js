@@ -16,6 +16,16 @@ export function crearPerfilService({ reloj, correo, logger, sesiones, costoBcryp
       return usuario;
     },
 
+    /** Cambia el idioma o las preferencias de accesibilidad; exige al menos una. */
+    async actualizarPreferencias(usuarioId, preferencias) {
+      if (Object.keys(preferencias).length === 0) {
+        throw new ValidationError([{ campo: 'idioma', mensaje: MENSAJES.cuenta.sinCambios }]);
+      }
+      const usuario = await usuarioRepository.actualizarPreferencias(usuarioId, preferencias);
+      if (!usuario) throw new NotFoundError();
+      return usuario;
+    },
+
     async cambiarContrasena(usuarioId, sesionId, { passwordActual, passwordNueva }) {
       const usuario = await usuarioRepository.buscarPorId(usuarioId);
       if (!usuario) throw new NotFoundError();
@@ -62,7 +72,7 @@ export function crearPerfilService({ reloj, correo, logger, sesiones, costoBcryp
       correo
         .enviar({
           para: usuario.email,
-          ...correoContrasenaActualizada({ nombre: usuario.nombre, conservaSesion: true }),
+          ...correoContrasenaActualizada({ nombre: usuario.nombre, conservaSesion: true, idioma: usuario.idioma }),
         })
         .catch((error) =>
           logger.error({ err: error }, 'no se pudo enviar el aviso de contraseña actualizada'),

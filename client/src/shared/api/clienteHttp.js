@@ -1,5 +1,8 @@
 // Único cliente HTTP de la aplicación. Interpreta { data, meta } y { error: { code, message, details } }
-// del contrato de la API, y convierte cualquier falla en un ErrorApi con mensaje en español.
+// del contrato de la API, y convierte cualquier falla en un ErrorApi. Envía el idioma vigente en Accept-Language
+// para que la API responda sus mensajes en ese idioma (HU-32).
+import { obtenerIdioma } from '../preferencias/preferencias.js';
+
 const BASE = '/api/v1';
 
 export class ErrorApi extends Error {
@@ -40,6 +43,7 @@ async function ejecutar(
       credentials: 'include',
       headers: {
         Accept: binario ? '*/*' : 'application/json',
+        'Accept-Language': obtenerIdioma(),
         ...(cuerpo !== undefined && { 'Content-Type': 'application/json' }),
       },
       body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined,

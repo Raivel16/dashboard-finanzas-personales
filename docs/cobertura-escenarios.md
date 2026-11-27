@@ -1,6 +1,6 @@
 # Cobertura de escenarios
 
-Cada uno de los 124 escenarios de [historias-de-usuario.md](historias-de-usuario.md) (31 historias × 4) y la prueba automática que lo verifica. "servidor" son pruebas de la API (Jest + Supertest) y "cliente" pruebas de la interfaz (Vitest + Testing Library).
+Cada uno de los 132 escenarios de [historias-de-usuario.md](historias-de-usuario.md) (33 historias × 4) y la prueba automática que lo verifica. "servidor" son pruebas de la API (Jest + Supertest) y "cliente" pruebas de la interfaz (Vitest + Testing Library).
 
 
 ## HU-01 — Registro de nuevo usuario
@@ -9,43 +9,43 @@ Cada uno de los 124 escenarios de [historias-de-usuario.md](historias-de-usuario
 |---|---|---|
 | 1 | Registro exitoso con datos válidos | [registro.test.js:16](../server/tests/registro.test.js#L16)<br>[autenticacion.test.jsx:55](../client/tests/autenticacion.test.jsx#L55) |
 | 2 | Creación exitosa de identificadores y aislamiento de datos | [registro.test.js:35](../server/tests/registro.test.js#L35) |
-| 3 | Registro rechazado por correo ya registrado | [registro.test.js:61](../server/tests/registro.test.js#L61)<br>[autenticacion.test.jsx:73](../client/tests/autenticacion.test.jsx#L73) |
-| 4 | Registro rechazado por contraseña insegura | [registro.test.js:85](../server/tests/registro.test.js#L85)<br>[autenticacion.test.jsx:88](../client/tests/autenticacion.test.jsx#L88) |
+| 3 | Registro rechazado por correo ya registrado | [registro.test.js:61](../server/tests/registro.test.js#L61)<br>[autenticacion.test.jsx:74](../client/tests/autenticacion.test.jsx#L74) |
+| 4 | Registro rechazado por contraseña insegura | [registro.test.js:85](../server/tests/registro.test.js#L85)<br>[autenticacion.test.jsx:89](../client/tests/autenticacion.test.jsx#L89) |
 
 ## HU-02 — Inicio de sesión
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Inicio de sesión exitoso con credenciales válidas | [sesion.test.js:31](../server/tests/sesion.test.js#L31)<br>[autenticacion.test.jsx:116](../client/tests/autenticacion.test.jsx#L116) |
+| 1 | Inicio de sesión exitoso con credenciales válidas | [sesion.test.js:31](../server/tests/sesion.test.js#L31)<br>[autenticacion.test.jsx:117](../client/tests/autenticacion.test.jsx#L117) |
 | 2 | Acceso ampliado para un administrador | [sesion.test.js:58](../server/tests/sesion.test.js#L58)<br>[administracion.test.jsx:52](../client/tests/administracion.test.jsx#L52) |
-| 3 | Bloqueo temporal por credenciales incorrectas | [sesion.test.js:70](../server/tests/sesion.test.js#L70)<br>[autenticacion.test.jsx:133](../client/tests/autenticacion.test.jsx#L133) |
-| 4 | Sesión invalidada por expiración del token | [sesion.test.js:156](../server/tests/sesion.test.js#L156)<br>[autenticacion.test.jsx:156](../client/tests/autenticacion.test.jsx#L156) |
+| 3 | Bloqueo temporal por credenciales incorrectas | [sesion.test.js:70](../server/tests/sesion.test.js#L70)<br>[autenticacion.test.jsx:134](../client/tests/autenticacion.test.jsx#L134) |
+| 4 | Sesión invalidada por expiración del token | [sesion.test.js:156](../server/tests/sesion.test.js#L156)<br>[autenticacion.test.jsx:157](../client/tests/autenticacion.test.jsx#L157) |
 
 ## HU-03 — Recuperación de contraseña
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Solicitud exitosa de recuperación de contraseña | [recuperacion.test.js:26](../server/tests/recuperacion.test.js#L26)<br>[autenticacion.test.jsx:225](../client/tests/autenticacion.test.jsx#L225) |
-| 2 | Restablecimiento exitoso mediante enlace válido | [recuperacion.test.js:37](../server/tests/recuperacion.test.js#L37)<br>[autenticacion.test.jsx:244](../client/tests/autenticacion.test.jsx#L244) |
+| 1 | Solicitud exitosa de recuperación de contraseña | [recuperacion.test.js:26](../server/tests/recuperacion.test.js#L26)<br>[autenticacion.test.jsx:226](../client/tests/autenticacion.test.jsx#L226) |
+| 2 | Restablecimiento exitoso mediante enlace válido | [recuperacion.test.js:37](../server/tests/recuperacion.test.js#L37)<br>[autenticacion.test.jsx:245](../client/tests/autenticacion.test.jsx#L245) |
 | 3 | Solicitud procesada sin revelar existencia de la cuenta | [recuperacion.test.js:54](../server/tests/recuperacion.test.js#L54) |
-| 4 | Enlace de recuperación expirado | [recuperacion.test.js:65](../server/tests/recuperacion.test.js#L65)<br>[autenticacion.test.jsx:265](../client/tests/autenticacion.test.jsx#L265) |
+| 4 | Enlace de recuperación expirado | [recuperacion.test.js:65](../server/tests/recuperacion.test.js#L65)<br>[autenticacion.test.jsx:266](../client/tests/autenticacion.test.jsx#L266) |
 
 ## HU-18 — Cerrar sesión
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Cierre de sesión exitoso | [cierre.test.js:14](../server/tests/cierre.test.js#L14)<br>[autenticacion.test.jsx:206](../client/tests/autenticacion.test.jsx#L206) |
+| 1 | Cierre de sesión exitoso | [cierre.test.js:14](../server/tests/cierre.test.js#L14)<br>[autenticacion.test.jsx:207](../client/tests/autenticacion.test.jsx#L207) |
 | 2 | Otras sesiones permanecen activas | [cierre.test.js:33](../server/tests/cierre.test.js#L33) |
-| 3 | Regreso a una página tras cerrar sesión | [cierre.test.js:42](../server/tests/cierre.test.js#L42)<br>[autenticacion.test.jsx:206](../client/tests/autenticacion.test.jsx#L206) |
+| 3 | Regreso a una página tras cerrar sesión | [cierre.test.js:42](../server/tests/cierre.test.js#L42)<br>[autenticacion.test.jsx:207](../client/tests/autenticacion.test.jsx#L207) |
 | 4 | Cierre de sesión con la sesión ya expirada | [cierre.test.js:56](../server/tests/cierre.test.js#L56) |
 
 ## HU-19 — Mantener la sesión activa durante el uso
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Sesión renovada mientras el usuario está activo | [sesion.test.js:170](../server/tests/sesion.test.js#L170)<br>[autenticacion.test.jsx:185](../client/tests/autenticacion.test.jsx#L185) |
+| 1 | Sesión renovada mientras el usuario está activo | [sesion.test.js:170](../server/tests/sesion.test.js#L170)<br>[autenticacion.test.jsx:186](../client/tests/autenticacion.test.jsx#L186) |
 | 2 | Regreso después de una pausa corta | [sesion.test.js:179](../server/tests/sesion.test.js#L179) |
-| 3 | Sesión cerrada desde otro dispositivo | [sesion.test.js:139](../server/tests/sesion.test.js#L139)<br>[autenticacion.test.jsx:171](../client/tests/autenticacion.test.jsx#L171) |
+| 3 | Sesión cerrada desde otro dispositivo | [sesion.test.js:139](../server/tests/sesion.test.js#L139)<br>[autenticacion.test.jsx:172](../client/tests/autenticacion.test.jsx#L172) |
 | 4 | Límite máximo de la sesión | [sesion.test.js:195](../server/tests/sesion.test.js#L195) |
 
 ## HU-20 — Gestionar mi perfil
@@ -281,3 +281,21 @@ Cada uno de los 124 escenarios de [historias-de-usuario.md](historias-de-usuario
 | 2 | Reporte PDF con totales por moneda | [reportes.test.js:129](../server/tests/reportes.test.js#L129) |
 | 3 | Excel que supera el límite | [reportes.test.js:160](../server/tests/reportes.test.js#L160)<br>[reportes.test.jsx:160](../client/tests/reportes.test.jsx#L160) |
 | 4 | Reporte aislado por usuario | [reportes.test.js:176](../server/tests/reportes.test.js#L176) |
+
+## HU-32 — Elegir el idioma de la aplicación
+
+| # | Escenario | Pruebas |
+|---|---|---|
+| 1 | Cambio del idioma a inglés | [preferencias.test.js:29](../server/tests/preferencias.test.js#L29)<br>[preferencias.test.jsx:70](../client/tests/preferencias.test.jsx#L70) |
+| 2 | Idioma antes de iniciar sesión | [preferencias.test.js:42](../server/tests/preferencias.test.js#L42)<br>[preferencias.test.jsx:103](../client/tests/preferencias.test.jsx#L103) |
+| 3 | Mensajes de error en el idioma elegido | [preferencias.test.js:53](../server/tests/preferencias.test.js#L53)<br>[preferencias.test.jsx:122](../client/tests/preferencias.test.jsx#L122) |
+| 4 | Correos y reportes en el idioma elegido | [preferencias.test.js:119](../server/tests/preferencias.test.js#L119)<br>[preferencias.test.js:130](../server/tests/preferencias.test.js#L130) |
+
+## HU-33 — Usar la aplicación de forma accesible
+
+| # | Escenario | Pruebas |
+|---|---|---|
+| 1 | Registro de un movimiento solo con teclado | [preferencias.test.jsx:235](../client/tests/preferencias.test.jsx#L235) |
+| 2 | Texto grande y alto contraste | [preferencias.test.js:201](../server/tests/preferencias.test.js#L201)<br>[preferencias.test.jsx:291](../client/tests/preferencias.test.jsx#L291) |
+| 3 | Errores anunciados al lector de pantalla | [preferencias.test.jsx:355](../client/tests/preferencias.test.jsx#L355) |
+| 4 | Gráficos y pantallas sin barreras | [preferencias.test.jsx:376](../client/tests/preferencias.test.jsx#L376) |

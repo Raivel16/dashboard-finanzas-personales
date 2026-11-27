@@ -1,8 +1,8 @@
 // Formato de montos y fechas. El servidor entrega los montos como texto con 2 decimales ("1250.50").
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-
-dayjs.locale('es');
+import 'dayjs/locale/en';
+import { obtenerIdioma } from '../preferencias/preferencias.js';
 
 const SIGNO_MENOS = '−'; // − (no el guion)
 
@@ -32,7 +32,7 @@ export function signoDe(tipo) {
   return '';
 }
 
-/** "2026-08-15" -> "15 ago 2026" */
+/** "2026-08-15" -> "15 ago 2026" (en inglés, "15 Aug 2026"). */
 export function formatearFecha(texto) {
-  return dayjs(texto).format('D MMM YYYY');
+  return dayjs(texto).locale(obtenerIdioma()).format('D MMM YYYY');
 }

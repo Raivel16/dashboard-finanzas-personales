@@ -1,12 +1,14 @@
 // Notificaciones (react-toastify) y confirmaciones (SweetAlert2) con el sistema visual de DESIGN.md.
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
+import { traducir } from '../preferencias/traducir.js';
 
+// Los mensajes se traducen al idioma vigente (HU-32): pueden venir de MENSAJES, de la API o de t('…').
 export const notificar = {
-  exito: (mensaje) => toast.success(mensaje),
-  error: (mensaje) => toast.error(mensaje),
-  atencion: (mensaje) => toast.warning(mensaje),
-  info: (mensaje) => toast.info(mensaje),
+  exito: (mensaje) => toast.success(traducir(mensaje)),
+  error: (mensaje) => toast.error(traducir(mensaje)),
+  atencion: (mensaje) => toast.warning(traducir(mensaje)),
+  info: (mensaje) => toast.info(traducir(mensaje)),
 };
 
 /** Configuración de SweetAlert2: los estilos viven en index.css (clases swal-finanzas). */
@@ -34,11 +36,11 @@ export async function confirmar({
 }) {
   const resultado = await Swal.fire({
     ...OPCIONES_DIALOGO,
-    title: titulo,
-    text: texto,
+    title: traducir(titulo),
+    text: traducir(texto),
     showCancelButton: true,
-    confirmButtonText: textoConfirmar,
-    cancelButtonText: cancelar,
+    confirmButtonText: traducir(textoConfirmar),
+    cancelButtonText: traducir(cancelar),
     customClass: {
       ...OPCIONES_DIALOGO.customClass,
       confirmButton: `swal-finanzas__confirmar${peligro ? ' swal-finanzas__confirmar--peligro' : ''}`,

@@ -3,6 +3,7 @@ import validator from 'validator';
 import {
   ICONO_CATEGORIA_POR_DEFECTO,
   ICONOS_CATEGORIA,
+  IDIOMAS,
   LIMITES,
   MONEDAS,
   PAGINACION,
@@ -129,10 +130,24 @@ const fechaFormato = { ok: esFecha, mensaje: MENSAJES.fecha.formato };
 
 // ---- Esquemas ----
 
+const idiomaRegla = {
+  etiqueta: 'El idioma',
+  sanear: recortar,
+  reglas: [{ ok: (t) => Object.values(IDIOMAS).includes(t), mensaje: MENSAJES.idioma }],
+};
+
+const booleanoRegla = (etiqueta) => ({
+  etiqueta,
+  reglas: [{ ok: (t) => t === 'true' || t === 'false', mensaje: MENSAJES.generales.invalido(etiqueta) }],
+  convertir: (t) => t === 'true',
+});
+
 export const esquemaRegistro = {
   nombre: nombreUsuario,
   email: correo,
   password: contrasena,
+  // Idioma en que se registra: define el de la aplicación y el de las categorías predeterminadas (HU-32).
+  idioma: { ...idiomaRegla, porDefecto: IDIOMAS.ES },
 };
 
 export const esquemaInicioSesion = {
@@ -150,6 +165,13 @@ export const esquemaRestablecerContrasena = {
 export const esquemaActualizarPerfil = {
   nombre: nombreUsuario,
   monedaPrincipal: monedaRegla(false),
+};
+
+/** Preferencias de idioma y accesibilidad (HU-32, HU-33). Todas opcionales; el servicio exige al menos una. */
+export const esquemaPreferencias = {
+  idioma: idiomaRegla,
+  textoGrande: booleanoRegla('Texto grande'),
+  altoContraste: booleanoRegla('Alto contraste'),
 };
 
 export const esquemaCambiarContrasena = {

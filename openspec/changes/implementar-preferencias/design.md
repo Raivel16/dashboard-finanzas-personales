@@ -14,7 +14,7 @@ No se reescriben los servicios para que lancen claves. `shared/src/i18n/` define
 El cliente agrega su propio diccionario con los textos de las pantallas (`client/src/shared/i18n/textos.en.js`). Una prueba recorre el código del cliente y exige que cada texto pasado a `t('…')` tenga traducción.
 
 ### 2. Preferencias en el usuario
-El modelo de usuario gana `idioma` (`es` | `en`, por defecto `es`), `textoGrande` y `altoContraste` (booleanos, por defecto `false`). Viajan en `/auth/me` y se cambian con `PATCH /perfil`. El registro acepta `idioma` y crea las categorías predeterminadas en ese idioma (los nombres en inglés están en el catálogo).
+El modelo de usuario gana `idioma` (`es` | `en`, por defecto `es`), `textoGrande` y `altoContraste` (booleanos, por defecto `false`). Viajan en `/auth/me` y se cambian con `PATCH /perfil/preferencias` (ruta propia: `PATCH /perfil` exige el nombre y cambiar el idioma no debe obligar a reenviarlo). El registro acepta `idioma` y crea las categorías predeterminadas en ese idioma (los nombres en inglés están en el catálogo).
 
 ### 3. Idioma de cada respuesta de la API
 `req.idioma` es el idioma del usuario autenticado o, sin sesión, el del encabezado `Accept-Language` (inglés si empieza por `en`, si no español). El middleware de errores traduce `message` y cada `details[].mensaje`; los controladores traducen `meta.advertencias` y `meta.alertas`. Los correos (bienvenida, recuperación, contraseña actualizada) y los reportes reciben el idioma de la persona destinataria.

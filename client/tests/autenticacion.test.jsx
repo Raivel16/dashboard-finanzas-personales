@@ -67,6 +67,7 @@ describe('HU-01 · registro', () => {
       nombre: 'Ana Torres',
       email: 'ana@correo.com',
       password: 'Clave1234',
+      idioma: 'es',
     });
   });
 

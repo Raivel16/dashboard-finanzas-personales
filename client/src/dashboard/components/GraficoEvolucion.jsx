@@ -3,8 +3,10 @@ import dayjs from 'dayjs';
 import { formatearMonto } from '../../shared/utils/formato.js';
 import { COLORES_GRAFICO } from '../../shared/utils/tokens.js';
 import { TablaDatos } from './TablaDatos.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
+import { obtenerIdioma } from '../../shared/preferencias/preferencias.js';
 
-const mesCorto = (periodo) => dayjs(`${periodo}-01`).format('MMM YY');
+const mesCorto = (periodo) => dayjs(`${periodo}-01`).locale(obtenerIdioma()).format('MMM YY');
 
 /** Etiqueta del tooltip de una barra: serie y monto exacto con su moneda. */
 export const etiquetaEvolucion = (moneda) => (contexto) =>
@@ -12,11 +14,12 @@ export const etiquetaEvolucion = (moneda) => (contexto) =>
 
 /** Evolución de ingresos y gastos de los últimos meses (barras agrupadas), con su tabla equivalente. */
 export function GraficoEvolucion({ evolucion, moneda }) {
+  const t = useT();
   const datos = {
     labels: evolucion.map((m) => mesCorto(m.periodo)),
     datasets: [
-      { label: 'Ingresos', data: evolucion.map((m) => Number(m.ingresos)), backgroundColor: COLORES_GRAFICO.ingresos },
-      { label: 'Gastos', data: evolucion.map((m) => Number(m.gastos)), backgroundColor: COLORES_GRAFICO.gastos },
+      { label: t('Ingresos'), data: evolucion.map((m) => Number(m.ingresos)), backgroundColor: COLORES_GRAFICO.ingresos },
+      { label: t('Gastos'), data: evolucion.map((m) => Number(m.gastos)), backgroundColor: COLORES_GRAFICO.gastos },
     ],
   };
   const opciones = {
@@ -32,12 +35,12 @@ export function GraficoEvolucion({ evolucion, moneda }) {
           data={datos}
           options={opciones}
           role="img"
-          aria-label={`Ingresos y gastos de los últimos ${evolucion.length} meses`}
+          aria-label={t('Ingresos y gastos de los últimos {cantidad} meses', { cantidad: evolucion.length })}
         />
       </div>
       <TablaDatos
-        resumen="Ver evolución en tabla"
-        columnas={['Mes', 'Ingresos', 'Gastos']}
+        resumen={t('Ver evolución en tabla')}
+        columnas={[t('Mes'), t('Ingresos'), t('Gastos')]}
         filas={evolucion.map((m) => [
           mesCorto(m.periodo),
           formatearMonto(m.ingresos, moneda),

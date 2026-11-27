@@ -52,6 +52,37 @@
   }
 }
 
+/* Preferencias de accesibilidad (HU-33), aplicadas como atributos de <html>.
+   Texto grande: todo el diseño usa rem, así que subir el tamaño base escala la aplicación completa. */
+html[data-texto='grande'] {
+  font-size: 125%;
+}
+
+/* Alto contraste: los mismos tokens con pares de al menos 7:1 (WCAG AAA para texto). Los valores viven también en
+   COLORES_ALTO_CONTRASTE (shared/utils/tokens.js) y tests/accesibilidad.test.jsx calcula su contraste. */
+html[data-contraste='alto'] {
+  --color-tapa: #0b2229;
+  --color-tapa-texto: #ffffff;
+  --color-tapa-texto-suave: #dbe8e6;
+  --color-sello: #3b2280;
+  --color-sello-oscuro: #2a1660;
+  --color-papel: #ffffff;
+  --color-hoja: #ffffff;
+  --color-tinta: #000000;
+  --color-tinta-suave: #25343a;
+  --color-filete: #5b6b66;
+  --color-borde: #25343a;
+  --color-ingreso: #004a3b;
+  --color-ingreso-fondo: #e3f4ed;
+  --color-gasto: #7d1a14;
+  --color-gasto-fondo: #fdebe8;
+  --color-atencion: #4d3200;
+  --color-atencion-fondo: #fff3d1;
+}
+html[data-contraste='alto'] :focus-visible {
+  outline-width: 3px;
+}
+
 /* El sello "Asentado" entra con un movimiento corto (120–200 ms); sin él si se prefiere menos movimiento. */
 @keyframes sello-entra {
   from {
