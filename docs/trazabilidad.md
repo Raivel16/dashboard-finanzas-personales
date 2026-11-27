@@ -93,3 +93,5 @@ Son la base técnica del sistema. No son historias de usuario, pero cada uno hab
 ## Regla de cierre
 
 Una historia o requisito técnico está terminado cuando sus 4 escenarios tienen pruebas automatizadas que pasan, el lint y la integración continua están en verde y su cambio fue fusionado en `dev` por pull request. No se exige un porcentaje mínimo de cobertura.
+
+La prueba que verifica cada uno de los 124 escenarios está en [cobertura-escenarios.md](cobertura-escenarios.md).
