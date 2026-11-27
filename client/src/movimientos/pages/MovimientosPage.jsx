@@ -19,10 +19,8 @@ export function MovimientosPage() {
     alLimpiar: movimientos.limpiarFiltros,
   });
 
-  const exportacion = useExportacion({
-    filtros: movimientos.filtros,
-    hayDatos: movimientos.estado === 'listo' && (movimientos.meta?.total ?? 0) > 0,
-  });
+  // El historial recargado (alta, edición o baja) cambia `movimientos.meta` y la exportación vuelve a contar.
+  const exportacion = useExportacion({ filtros: movimientos.filtros, version: movimientos.meta });
 
   const detalle = panel?.modo === 'detalle' ? panel.movimiento : null;
   const eliminarDesdeDetalle = () => {
@@ -40,11 +38,7 @@ export function MovimientosPage() {
         <h2 id="historial-movimientos" className="text-lg font-semibold">
           Historial de movimientos
         </h2>
-        <BarraExportacion
-          hayDatos={movimientos.estado !== 'listo' || (movimientos.meta?.total ?? 0) > 0}
-          {...exportacion}
-          alExportar={exportacion.exportar}
-        />
+        <BarraExportacion {...exportacion} alExportar={exportacion.exportar} />
         <ListaMovimientos
           {...movimientos}
           formFiltros={formFiltros}
