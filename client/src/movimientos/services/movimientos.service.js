@@ -14,3 +14,7 @@ export const eliminarMovimiento = (id) => api.delete(`/movimientos/${id}`);
 /** Lectura de administrador: los movimientos recientes de otra persona (solo lectura). */
 export const listarMovimientosDeUsuario = (usuarioId, { signal } = {}) =>
   api.get(`/admin/usuarios/${usuarioId}/movimientos`, { consulta: { limit: 20 }, signal });
+
+/** Reporte del historial filtrado (formato 'pdf' o 'xlsx'): { data: Blob, meta: { nombre } }. */
+export const descargarReporte = (formato, filtros = {}) =>
+  api.descargar(`/reportes/movimientos.${formato}`, { consulta: filtros });

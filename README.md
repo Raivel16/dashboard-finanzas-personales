@@ -216,6 +216,19 @@ La pantalla de inicio muestra el resumen del mes y la moneda elegidos. Rutas de 
 - `periodo` (`AAAA-MM`) es por defecto el mes actual y `moneda` la principal de la persona. No hay conversión entre monedas: cada consulta usa solo los movimientos de una moneda.
 - Los indicadores y los gráficos son consultas separadas: si una falla, la otra sigue visible. Cada gráfico (Chart.js) tiene su tabla equivalente.
 
+## Reportes
+
+Desde el historial de movimientos se exportan los movimientos filtrados. Rutas de `/api/v1/reportes` (sesión obligatoria, solo datos propios, respuesta como descarga con `Content-Disposition: attachment`):
+
+| Método y ruta | Archivo |
+|---|---|
+| `GET /reportes/movimientos.pdf` | PDF (jsPDF): período, ingresos, gastos y balance por moneda, y la tabla de movimientos. |
+| `GET /reportes/movimientos.xlsx` | Excel (SheetJS): hoja "Movimientos" y hoja "Resumen" por moneda, tipo y categoría. |
+
+- Reciben los mismos filtros del historial (`desde`, `hasta`, `tipo`, `categoriaId`, `cuentaId`, `moneda`). Sin fechas, el reporte cubre el mes en curso.
+- Máximo 5000 movimientos por archivo; sin movimientos o por encima del tope responden 400 con el mensaje que explica qué hacer. El archivo se arma completo antes de responder, así que un fallo nunca deja un archivo a medias.
+- SheetJS se instala desde `https://cdn.sheetjs.com/` (el paquete `xlsx` de npm está desactualizado), con la versión fijada en `server/package.json`.
+
 ## Flujo de ramas y commits
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).
