@@ -16,7 +16,7 @@ describe('fronteras de la Screaming Architecture', { timeout: 30_000 }, () => {
   it('un dominio no puede importar archivos internos de otro dominio', async () => {
     const m = await mensajes(
       'client/src/inicio/hooks/prueba.js',
-      "import { FormularioDemo } from '../../catalogo/components/FormularioDemo.jsx';\nexport const x = FormularioDemo;\n",
+      "import { FilaMovimiento } from '../../movimientos/components/FilaMovimiento.jsx';\nexport const x = FilaMovimiento;\n",
     );
     expect(m).toHaveLength(1);
     expect(m[0].message).toMatch(/index\.js/);
@@ -25,7 +25,7 @@ describe('fronteras de la Screaming Architecture', { timeout: 30_000 }, () => {
   it('un dominio sí puede importar el index.js de otro dominio y de shared', async () => {
     const m = await mensajes(
       'client/src/inicio/hooks/prueba.js',
-      "import { CatalogoPage } from '../../catalogo/index.js';\nimport { api } from '../../shared/api/clienteHttp.js';\nexport const x = [CatalogoPage, api];\n",
+      "import { MovimientosPage } from '../../movimientos/index.js';\nimport { api } from '../../shared/api/clienteHttp.js';\nexport const x = [MovimientosPage, api];\n",
     );
     expect(m).toHaveLength(0);
   });

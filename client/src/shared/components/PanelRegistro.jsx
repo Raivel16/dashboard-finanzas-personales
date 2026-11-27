@@ -12,9 +12,18 @@ export function PanelRegistro({ abierto, titulo, alCerrar, children }) {
   const esEscritorio = useEsEscritorio();
   const origenFoco = useRef(null);
 
+  // El origen es el último elemento enfocado fuera del panel: un campo con autoFocus roba el foco antes de que
+  // este componente pueda leer document.activeElement, así que se sigue el foco mientras el panel está cerrado.
+  useEffect(() => {
+    const alEnfocar = (evento) => {
+      if (!evento.target.closest?.('[role="dialog"]')) origenFoco.current = evento.target;
+    };
+    document.addEventListener('focusin', alEnfocar);
+    return () => document.removeEventListener('focusin', alEnfocar);
+  }, []);
+
   useEffect(() => {
     if (!abierto) return undefined;
-    origenFoco.current = document.activeElement;
     const alTeclear = (evento) => evento.key === 'Escape' && alCerrar();
     document.addEventListener('keydown', alTeclear);
     return () => {
