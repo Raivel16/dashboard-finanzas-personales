@@ -142,7 +142,10 @@ describe('HU-26 · historial con saldo resultante', () => {
     await screen.findByText('Página 1 de 3');
     fetchSimulado.mockClear();
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }));
-    await waitFor(() => expect(llamadasA(fetchSimulado, '/movimientos')[0][0]).toContain('page=2'));
+    // Un refetch tardío de la página 1 puede llegar antes: basta con que alguna solicitud pida la página elegida.
+    await waitFor(() =>
+      expect(llamadasA(fetchSimulado, '/movimientos').some(([url]) => url.includes('page=2'))).toBe(true),
+    );
   });
 });
 
