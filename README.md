@@ -24,6 +24,7 @@ Proyecto universitario (UC) de Ingeniería Web, desarrollado con **Spec-Driven D
 - [Desarrollo guiado por especificaciones](#desarrollo-guiado-por-especificaciones)
 - [Flujo de trabajo](#flujo-de-trabajo)
 - [Documentación](#documentación)
+- [Autores](#autores)
 
 ## Funcionalidades
 
@@ -299,3 +300,10 @@ Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md)
 | [docs/exposicion.md](docs/exposicion.md) | Guion de la exposición final según la rúbrica |
 | [DESIGN.md](DESIGN.md) y [PRODUCT.md](PRODUCT.md) | Sistema visual, usuarios, voz y principios del producto |
 | [Diseño técnico](openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md) | Decisiones de arquitectura y su justificación |
+
+## Autores
+
+Proyecto de Ingeniería Web (UC), Programa Académico de Ingeniería de Sistemas e Informática.
+
+- Lorenzo Valiente Raivel
+- Lapierre Castillo Pavel Jordan
