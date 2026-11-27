@@ -1,10 +1,12 @@
 // Cuenta o medio de pago (HU-07, HU-25). Es de un inquilino. Los importes son Decimal128: nunca Number.
 import mongoose from 'mongoose';
+import { ID_UUID } from './plugins/identificador.js';
 import { MONEDAS, TIPOS_CUENTA } from '@finanzas/shared';
 import { tenantPlugin } from './plugins/tenant.plugin.js';
 
 const esquema = new mongoose.Schema(
   {
+    ...ID_UUID,
     nombre: { type: String, required: true, trim: true },
     tipo: { type: String, enum: Object.values(TIPOS_CUENTA), required: true },
     moneda: { type: String, enum: MONEDAS, required: true },

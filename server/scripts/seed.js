@@ -14,7 +14,7 @@ import mongoose from 'mongoose';
 import { v4 as uuid } from 'uuid';
 import { CATEGORIAS_PREDETERMINADAS } from '@finanzas/shared';
 
-const { Decimal128, ObjectId } = mongoose.mongo;
+const { Decimal128 } = mongoose.mongo;
 
 const DOMINIO_DEMO = 'demo.finanzas.test';
 const URI_LOCAL = 'mongodb://127.0.0.1:27017/finanzas?directConnection=true';
@@ -167,7 +167,7 @@ export function validarEntorno({ uri, entorno, soloAdmin, permitirRemoto }) {
 
 function crearUsuario({ nombre, email, passwordHash, rol = 'usuario' }) {
   return conTiempos({
-    _id: new ObjectId(),
+    _id: uuid(),
     tenantId: uuid(),
     nombre,
     email,
@@ -183,7 +183,7 @@ function crearUsuario({ nombre, email, passwordHash, rol = 'usuario' }) {
 function crearCategorias(usuario) {
   return CATEGORIAS_PREDETERMINADAS.map(({ tipo, nombre, icono }) =>
     conTiempos({
-      _id: new ObjectId(),
+      _id: uuid(),
       tenantId: usuario.tenantId,
       usuarioId: usuario._id,
       nombre,
@@ -225,7 +225,7 @@ function generarMovimientos(perfil, usuario, cuentas, categorias, hoy) {
     movimientos.push(
       conTiempos(
         {
-          _id: new ObjectId(),
+          _id: uuid(),
           tenantId: usuario.tenantId,
           usuarioId: usuario._id,
           tipo,
@@ -278,7 +278,7 @@ function generarMovimientos(perfil, usuario, cuentas, categorias, hoy) {
 function aplicarSaldos(cuentas, movimientos) {
   for (const cuenta of cuentas) {
     const neto = movimientos
-      .filter((m) => m.cuentaId.equals(cuenta._id))
+      .filter((m) => m.cuentaId === cuenta._id)
       .reduce((total, m) => total + (m.tipo === 'ingreso' ? 1 : -1) * aCentimos(m.monto), 0);
     cuenta.saldoActual = aDecimal(cuenta.centimosIniciales + neto);
     delete cuenta.centimosIniciales;
@@ -292,11 +292,11 @@ function generarPresupuestos(perfil, usuario, cuentas, categorias, movimientos, 
   const delMes = movimientos.filter((m) => m.tipo === 'gasto' && m.fecha.toISOString().startsWith(actual));
   const gastado = (moneda, categoriaId) =>
     delMes
-      .filter((m) => m.moneda === moneda && (!categoriaId || m.categoriaId.equals(categoriaId)))
+      .filter((m) => m.moneda === moneda && (!categoriaId || m.categoriaId === categoriaId))
       .reduce((total, m) => total + aCentimos(m.monto), 0);
   const crear = (per, moneda, categoriaId, centimos) =>
     conTiempos({
-      _id: new ObjectId(),
+      _id: uuid(),
       tenantId: usuario.tenantId,
       usuarioId: usuario._id,
       periodo: per,
@@ -372,7 +372,7 @@ export async function cargarDemo({ password }) {
     const categorias = crearCategorias(usuario);
     const cuentas = perfil.cuentas.map(({ inicial, ...cuenta }) =>
       conTiempos({
-        _id: new ObjectId(),
+        _id: uuid(),
         tenantId: usuario.tenantId,
         usuarioId: usuario._id,
         ...cuenta,

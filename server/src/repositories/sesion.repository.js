@@ -1,8 +1,8 @@
 // Único acceso al modelo Sesion.
-import mongoose from 'mongoose';
+import { esIdentificador } from '../models/plugins/identificador.js';
 import { Sesion } from '../models/sesion.model.js';
 
-const valido = (id) => mongoose.isValidObjectId(id);
+const valido = esIdentificador;
 
 export const sesionRepository = {
   async crear(datos) {

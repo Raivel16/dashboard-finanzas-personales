@@ -1,9 +1,11 @@
 // Sesión de un dispositivo. Guarda solo el hash del token de renovación, nunca su valor.
 import mongoose from 'mongoose';
+import { ID_UUID, REFERENCIA_UUID } from './plugins/identificador.js';
 
 const esquema = new mongoose.Schema(
   {
-    usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true, index: true },
+    ...ID_UUID,
+    usuarioId: { ...REFERENCIA_UUID, ref: 'Usuario', required: true, index: true },
     tokenHash: { type: String, required: true, unique: true },
     // Token anterior a la última rotación: se acepta durante una ventana de gracia breve.
     tokenHashAnterior: { type: String, default: null, index: true, sparse: true },

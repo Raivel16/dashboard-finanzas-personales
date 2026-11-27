@@ -12,11 +12,11 @@ vi.mock('../src/shared/utils/notificaciones.js', () => ({
 }));
 
 const MES = fechaHoy().slice(0, 7);
-const ALIMENTACION = '65f000000000000000000001';
-const SUELDO = '65f000000000000000000003';
+const ALIMENTACION = '65f00000-0000-4000-8000-000000000001';
+const SUELDO = '65f00000-0000-4000-8000-000000000003';
 const CATEGORIAS = [
   { id: ALIMENTACION, nombre: 'Alimentación', tipo: 'gasto', icono: 'utensils' },
-  { id: '65f000000000000000000002', nombre: 'Entretenimiento', tipo: 'gasto', icono: 'clapperboard' },
+  { id: '65f00000-0000-4000-8000-000000000002', nombre: 'Entretenimiento', tipo: 'gasto', icono: 'clapperboard' },
   { id: SUELDO, nombre: 'Sueldo', tipo: 'ingreso', icono: 'wallet' },
 ];
 const GENERAL = {
@@ -293,7 +293,7 @@ describe('HU-15 · alertas al registrar un gasto', () => {
         '/cuentas': async () =>
           respuestaApi(200, {
             data: [
-              { id: '65f0000000000000000000a1', nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '500.00', saldoActual: '500.00' },
+              { id: '65f00000-0000-4000-8000-0000000000a1', nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '500.00', saldoActual: '500.00' },
             ],
             meta: { page: 1, limit: 100, total: 1 },
           }),
@@ -310,7 +310,7 @@ describe('HU-15 · alertas al registrar un gasto', () => {
     const panel = within(screen.getByRole('dialog', { name: 'Nuevo movimiento' }));
     await usuario.type(panel.getByLabelText('Monto'), '900');
     await usuario.selectOptions(panel.getByLabelText('Categoría'), ALIMENTACION);
-    await usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     await usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
     await waitFor(() => expect(notificar.exito).toHaveBeenCalled());
     return fetchSimulado;

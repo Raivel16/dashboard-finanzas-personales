@@ -7,7 +7,8 @@ import { RepositorioBase } from './base.repository.js';
 /** Para la lectura de administrador (admin.repositorioLecturaDe recibe el modelo). */
 export const ModeloMovimiento = Movimiento;
 
-const id = (valor) => new mongoose.Types.ObjectId(valor);
+// Las referencias se guardan como el UUID en texto (RT-08).
+const id = (valor) => String(valor);
 
 /** Efecto firmado de un movimiento sobre el saldo: ingreso suma y gasto resta. */
 const EFECTO = { $cond: [{ $eq: ['$tipo', 'ingreso'] }, '$monto', { $multiply: ['$monto', -1] }] };

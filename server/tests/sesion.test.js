@@ -50,7 +50,7 @@ describe('HU-02 y HU-19 · sesión', () => {
       const u = await e.registrar();
       const { res } = await e.iniciarSesion(u);
       const { valor } = cookieDe(res, 'refresh_token');
-      const guardada = await sesiones().findOne({ usuarioId: new mongoose.Types.ObjectId(u.id) });
+      const guardada = await sesiones().findOne({ usuarioId: u.id });
       expect(guardada.tokenHash).toMatch(/^[0-9a-f]{64}$/);
       expect(JSON.stringify(guardada)).not.toContain(valor);
     });
@@ -140,7 +140,7 @@ describe('HU-02 y HU-19 · sesión', () => {
       const u = await e.registrar();
       const { agente } = await e.iniciarSesion(u);
       await sesiones().updateMany(
-        { usuarioId: new mongoose.Types.ObjectId(u.id) },
+        { usuarioId: u.id },
         { $set: { revocadaEn: new Date() } },
       );
       const res = await me(agente);
