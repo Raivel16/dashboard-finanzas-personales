@@ -18,5 +18,5 @@
 
 ## 4. Documentación y cierre
 
-- [ ] 4.1 Reescribir el README con las secciones habituales y agregar `docs/exposicion.md` alineado con la rúbrica
-- [ ] 4.2 Registrar RT-08 y RT-09 en `docs/trazabilidad.md`, regenerar la matriz y verificar que lint, pruebas, compilación y `npm run cobertura:comprobar` pasan
+- [x] 4.1 Reescribir el README con las secciones habituales y agregar `docs/exposicion.md` alineado con la rúbrica
+- [x] 4.2 Registrar RT-08 y RT-09 en `docs/trazabilidad.md`, regenerar la matriz y verificar que lint, pruebas, compilación y `npm run cobertura:comprobar` pasan

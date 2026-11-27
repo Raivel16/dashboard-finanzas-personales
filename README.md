@@ -1,258 +1,301 @@
 # Dashboard de Finanzas Personales
 
-Proyecto universitario (UC) con stack **MERN**: MongoDB, Express, React y Node.js. Permite registrar cuentas, categorías, movimientos y presupuestos, y ver indicadores y reportes de las finanzas personales.
+[![CI](https://github.com/Raivel16/dashboard-finanzas-personales/actions/workflows/ci.yml/badge.svg)](https://github.com/Raivel16/dashboard-finanzas-personales/actions/workflows/ci.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Raivel16_dashboard-finanzas-personales&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Raivel16_dashboard-finanzas-personales)
 
-El desarrollo es guiado por especificaciones (OpenSpec): las historias de usuario están en [docs/historias-de-usuario.md](docs/historias-de-usuario.md), la trazabilidad en [docs/trazabilidad.md](docs/trazabilidad.md) y el diseño técnico en [openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md](openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md). La interfaz sigue [DESIGN.md](DESIGN.md) y [PRODUCT.md](PRODUCT.md).
+Aplicación web para registrar, organizar, visualizar y analizar los ingresos y gastos personales. Es una aplicación cliente-servidor con stack **MERN** (MongoDB Atlas, Express, React y Node.js), preparada como **SaaS multiinquilino** con control de acceso por roles (RBAC).
 
-## Requisitos
+Proyecto universitario (UC) de Ingeniería Web, desarrollado con **Spec-Driven Development** (OpenSpec): cada línea de código responde a una historia de usuario o a un requisito técnico.
 
-- **Node.js 22** (el archivo `.nvmrc` lo fija; con `fnm` o `nvm` basta `fnm use` / `nvm use`).
-- **MongoDB como replica set** (local o Atlas). Las transacciones que mantienen los saldos consistentes lo exigen: sin replica set el servidor no arranca.
+## Contenido
+
+- [Funcionalidades](#funcionalidades)
+- [Tecnologías](#tecnologías)
+- [Arquitectura](#arquitectura)
+- [Requisitos previos](#requisitos-previos)
+- [Instalación y ejecución](#instalación-y-ejecución)
+- [Base de datos: MongoDB Atlas](#base-de-datos-mongodb-atlas)
+- [Configuración](#configuración)
+- [Datos de demostración](#datos-de-demostración)
+- [Comandos](#comandos)
+- [Pruebas y calidad](#pruebas-y-calidad)
+- [API REST](#api-rest)
+- [Seguridad y aislamiento de datos](#seguridad-y-aislamiento-de-datos)
+- [Desarrollo guiado por especificaciones](#desarrollo-guiado-por-especificaciones)
+- [Flujo de trabajo](#flujo-de-trabajo)
+- [Documentación](#documentación)
+
+## Funcionalidades
+
+Las 33 historias de usuario (HU-01 a HU-33) están implementadas y cada uno de sus 132 escenarios tiene una prueba automática.
+
+| Área | Qué permite | Historias |
+|---|---|---|
+| Autenticación | Registro, inicio de sesión con bloqueo tras 3 intentos, recuperación de contraseña por correo, cierre de sesión, renovación de sesión, perfil y cambio de contraseña | HU-01–03, HU-18–21 |
+| Control de acceso | Roles `usuario` y `admin`; el administrador consulta en solo lectura los datos de cualquier usuario y cambia roles | HU-04, HU-05, HU-22, HU-23 |
+| Categorías | Categorías propias de ingreso y gasto, con 10 predeterminadas al registrarse | HU-06, HU-24 |
+| Cuentas | Efectivo, banco, tarjeta de crédito o billetera digital, en PEN, USD o EUR, con saldo actualizado | HU-07, HU-25 |
+| Movimientos | Ingresos y gastos que ajustan el saldo de su cuenta en una transacción | HU-08, HU-09, HU-26, HU-27 |
+| Consulta | Historial paginado con filtros por fechas, tipo, categoría y cuenta | HU-10, HU-11 |
+| Dashboard | Indicadores (ingresos, gastos, balance, presupuesto usado) y gráficos de evolución y distribución por categoría | HU-12, HU-13, HU-28, HU-29 |
+| Presupuestos | Presupuesto mensual general y por categoría, con seguimiento y alertas al 90 % y 100 % | HU-14, HU-15, HU-30 |
+| Reportes | Exportación del historial filtrado a PDF y Excel, generada en el servidor | HU-16, HU-17, HU-31 |
+| Preferencias | Español o inglés en toda la aplicación, texto grande, alto contraste y uso completo con teclado y lector de pantalla | HU-32, HU-33 |
+
+## Tecnologías
+
+| Capa | Tecnología | Uso |
+|---|---|---|
+| Base de datos | **MongoDB Atlas** (Mongoose) | Persistencia; transacciones para mantener los saldos consistentes |
+| API | **Node.js 22** + **Express 5** | API REST `/api/v1` |
+| Cliente | **React 19** + Vite + Tailwind CSS | Interfaz responsiva |
+| Autenticación | JSON Web Tokens (`jsonwebtoken`) + bcrypt | Sesión sin estado en cookies `httpOnly` y contraseñas cifradas |
+| Gráficos | Chart.js | Evolución mensual y distribución por categoría |
+| Fechas | Day.js | Fechas y períodos en la zona horaria de la aplicación |
+| Alertas y notificaciones | SweetAlert2 y React-Toastify | Confirmaciones y avisos de cada operación |
+| Reportes | jsPDF (+ autotable) y SheetJS | PDF y Excel generados en el servidor |
+| Validación | Validator.js | Mismas reglas en cliente y servidor (paquete `shared/`) |
+| Identificadores | UUID v4 | Identificador público de cada recurso y `tenantId` |
+| Correo | Nodemailer (SMTP, p. ej. Brevo) | Bienvenida y recuperación de contraseña |
+| Calidad | ESLint, Prettier, Jest, Vitest, Testing Library, axe-core, GitHub Actions, SonarCloud | Verificación de cada cambio |
+
+## Arquitectura
+
+Monorepo con npm workspaces:
+
+```text
+├── client/   React (Screaming Architecture: carpetas por dominio de negocio)
+├── server/   API Express (MVC por capas: Controller – Service – Repository)
+├── shared/   Validaciones, constantes y mensajes que usan cliente y servidor
+├── docs/     Historias de usuario, trazabilidad, cobertura, API y exposición
+└── openspec/ Especificaciones (specs) y cambios de OpenSpec
+```
+
+### Servidor: Controller – Service – Repository
+
+```mermaid
+flowchart LR
+  C[Cliente React] -->|HTTP + cookie JWT| R[routes]
+  R --> M[middlewares<br/>autenticación, rol, validación, idioma]
+  M --> CT[controllers<br/>solo HTTP]
+  CT --> S[services<br/>reglas de negocio y autorización]
+  S --> RP[repositories<br/>filtran siempre por tenantId]
+  RP --> MD[models<br/>Mongoose]
+  MD --> DB[(MongoDB Atlas)]
+  CT --> V[views<br/>JSON, PDF y Excel]
+```
+
+| Capa | Responsabilidad | Ejemplo |
+|---|---|---|
+| `routes/` | Define las rutas y sus middlewares | [movimientos.routes.js](server/src/routes/movimientos.routes.js) |
+| `middlewares/` | Autentica el JWT, exige rol, valida el cuerpo y resuelve el idioma | [autenticacion.middleware.js](server/src/middlewares/autenticacion.middleware.js) |
+| `controllers/` | Traduce HTTP a llamadas de servicio; nunca toca modelos ni repositorios | [movimiento.controller.js](server/src/controllers/movimiento.controller.js) |
+| `services/` | Reglas de negocio, transacciones y autorización por rol; no conoce `req`/`res` | [movimiento.service.js](server/src/services/movimiento.service.js) |
+| `repositories/` | Único código que usa los modelos; agrega el `tenantId` a toda consulta | [base.repository.js](server/src/repositories/base.repository.js) |
+| `models/` | Esquemas de Mongoose, identificador UUID y plugin de inquilino | [tenant.plugin.js](server/src/models/plugins/tenant.plugin.js) |
+| `views/` | Representación JSON y archivos PDF/Excel de cada recurso | [movimiento.view.js](server/src/views/movimiento.view.js) |
+
+Ejemplo, `POST /api/v1/movimientos`:
+1. `autenticar` verifica el JWT y vuelve a leer el usuario (rol vigente).
+2. El controlador pasa el cuerpo al servicio.
+3. El servicio valida con el esquema compartido y abre una transacción.
+4. Dentro de ella comprueba que la cuenta y la categoría sean del mismo inquilino, guarda el movimiento y ajusta el saldo, que verifica con la fórmula saldo inicial + ingresos − gastos.
+5. Por último calcula las alertas de presupuesto.
+6. El repositorio filtra cada consulta por `tenantId`, y la vista responde `201` con `{ data, meta }`.
+
+### Cliente: Screaming Architecture
+
+Cada dominio (`autenticacion/`, `movimientos/`, `dashboard/`, `presupuestos/`…) tiene `components/` (presentación), `hooks/` (estado y lógica), `services/` (llamadas a la API), `pages/` y un `index.js` como API pública. Las rutas viven en `client/src/router/` y lo transversal en `client/src/shared/`. ESLint impide que un dominio importe el interior de otro.
+
+## Requisitos previos
+
+- **Node.js 22** (fijado en `.nvmrc`: `fnm use` o `nvm use`).
+- **MongoDB como replica set**: un clúster de **MongoDB Atlas** (recomendado; ya es replica set) o MongoDB local configurado como replica set ([ver más abajo](#alternativa-mongodb-local)). Las transacciones lo exigen: sin replica set el servidor no arranca.
 - Git.
 
-## Instalación
+## Instalación y ejecución
 
 ```sh
 git clone https://github.com/Raivel16/dashboard-finanzas-personales.git
 cd dashboard-finanzas-personales
 npm install
-cp server/.env.example server/.env   # y completa JWT_ACCESS_SECRET (ver el archivo)
-npm run seed -w server               # opcional: datos de demostración
-npm run dev                          # servidor en :3000 y cliente en :5173
+cp server/.env.example server/.env   # completa MONGODB_URI y JWT_ACCESS_SECRET
+npm run seed:admin -w server         # primer administrador (ver Datos de demostración)
+npm run dev                          # API en :3000 y cliente en :5173
 ```
 
-Abre <http://localhost:5173>: la página de inicio muestra si la API y la base de datos están disponibles.
+Abre <http://localhost:5173>. La página de inicio muestra si la API y la base de datos están disponibles.
 
-El repositorio es un monorepo con npm workspaces: `client/` (React), `server/` (Express) y `shared/` (validaciones, constantes y mensajes en español usados por ambos).
+Para producción: `npm run build` compila el cliente en `client/dist` (archivos estáticos que sirve cualquier servidor web) y `npm start -w server` inicia la API; define `NODE_ENV=production` y el SMTP en su `.env`.
 
-## MongoDB local como replica set
+## Base de datos: MongoDB Atlas
 
-MongoDB instalado localmente arranca como servidor único; hay que convertirlo en un replica set de un nodo **una sola vez**.
+La aplicación no necesita cambios de código para usar Atlas: basta con la URI de conexión.
 
-1. Edita el archivo de configuración y agrega:
+1. Crea una cuenta y un clúster (el nivel gratuito M0 alcanza) en <https://cloud.mongodb.com>.
+2. En **Database Access** crea un usuario de base de datos con el rol *Read and write to any database*.
+3. En **Network Access** agrega tu IP actual (o la del equipo que hará la demostración).
+4. En **Connect → Drivers** copia la URI `mongodb+srv://…` y agrégale el nombre de la base antes de los parámetros:
+
+   ```text
+   MONGODB_URI=mongodb+srv://<usuario>:<contraseña>@<clúster>.mongodb.net/finanzas?retryWrites=true&w=majority
+   ```
+
+   Si la contraseña tiene caracteres especiales (`@`, `:`, `/`, `#`…), escríbelos codificados (`@` → `%40`).
+
+5. Guarda esa línea en `server/.env`. Ese archivo no se versiona; la URI nunca va al repositorio.
+6. Carga los datos:
+
+   ```sh
+   npm run seed:admin -w server                     # primer administrador (ADMIN_EMAIL y ADMIN_PASSWORD)
+   npm run seed -w server -- --permitir-remoto      # opcional: usuarios y datos de demostración
+   ```
+
+   El seed se niega a escribir en una base que no sea local si no se pasa `--permitir-remoto`.
+
+7. `npm run dev` y comprueba en la página de inicio que la base de datos aparece como disponible.
+
+### Alternativa: MongoDB local
+
+MongoDB instalado localmente arranca como servidor único y hay que convertirlo una vez en replica set de un nodo:
+
+1. Agrega al archivo de configuración (`C:\Program Files\MongoDB\Server\<versión>\bin\mongod.cfg` en Windows, `/etc/mongod.conf` en Linux, `/opt/homebrew/etc/mongod.conf` en macOS):
 
    ```yaml
    replication:
      replSetName: rs0
    ```
 
-   - Windows: `C:\Program Files\MongoDB\Server\<versión>\bin\mongod.cfg` (se edita como administrador).
-   - Linux: `/etc/mongod.conf`. macOS (Homebrew): `/opt/homebrew/etc/mongod.conf`.
+2. Reinicia el servicio (`Restart-Service MongoDB` como administrador en Windows; `sudo systemctl restart mongod` en Linux).
+3. Inicia el replica set: `mongosh --eval "rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '127.0.0.1:27017' }] })"`.
+4. Usa `MONGODB_URI=mongodb://127.0.0.1:27017/finanzas?directConnection=true`.
 
-2. Reinicia el servicio (en Windows, `Restart-Service MongoDB` como administrador; en Linux, `sudo systemctl restart mongod`).
-3. Inicia el replica set:
+Una base local creada antes de los identificadores UUID (RT-08) se vuelve a poblar con `npm run seed -w server`.
 
-   ```sh
-   mongosh --eval "rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '127.0.0.1:27017' }] })"
-   ```
+## Configuración
 
-4. Usa en `server/.env`: `MONGODB_URI=mongodb://127.0.0.1:27017/finanzas?directConnection=true`.
+Variables de `server/.env` (plantilla en [server/.env.example](server/.env.example)). El servidor valida la configuración al arrancar y, si falta una obligatoria, se detiene indicando cuál, sin mostrar valores secretos.
 
-Si el servidor no arranca y dice que falta el replica set, repite los pasos anteriores.
+| Variable | Obligatoria | Descripción |
+|---|---|---|
+| `MONGODB_URI` | Sí | URI de MongoDB Atlas o del replica set local |
+| `JWT_ACCESS_SECRET` | Sí | Secreto de los tokens de acceso (mínimo 32 caracteres). Genera uno con `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"` |
+| `CLIENT_URL` | Sí | Origen del cliente para CORS y enlaces de correo (`http://localhost:5173` en desarrollo) |
+| `NODE_ENV`, `PORT` | No | Entorno (`development`) y puerto (`3000`) |
+| `APP_TIMEZONE` | No | Zona horaria de fechas y períodos (`America/Lima`) |
+| `JWT_ACCESS_TTL`, `REFRESH_INACTIVITY_MIN`, `REFRESH_ABSOLUTE_DAYS`, `RESET_TOKEN_TTL_MIN` | No | Duración del token de acceso (`15m`), inactividad máxima (`30` min), vida máxima de la sesión (`7` días) y vigencia del enlace de recuperación (`30` min) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | En producción | Servidor de correo. Sin `SMTP_HOST` los correos se escriben en el log, con el enlace de recuperación incluido |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Para `seed:admin` | Primer administrador; bórralos después de usarlos |
+| `SEED_PASSWORD` | No | Contraseña de los usuarios demo (`Demo1234`) |
 
-### Cambiar a MongoDB Atlas
+## Datos de demostración
 
-No requiere cambios de código: reemplaza solo `MONGODB_URI` en `server/.env` por la URI `mongodb+srv://...` de tu clúster (Atlas ya es un replica set) y permite tu IP en _Network Access_.
+`npm run seed -w server` crea datos sintéticos de 8 meses:
+
+| Usuario | Correo | Qué muestra |
+|---|---|---|
+| Administración Demo | `admin@demo.finanzas.test` | Rol administrador: usuarios, roles y datos ajenos en solo lectura |
+| Ana Torres | `ana.torres@demo.finanzas.test` | Cuentas en PEN y USD; presupuestos por categoría normal (Transporte), en alerta (Alimentación) y excedido (Entretenimiento) |
+| Luis Quispe | `luis.quispe@demo.finanzas.test` | Cuentas en PEN y EUR; presupuesto general en alerta. Sirve para mostrar el aislamiento entre inquilinos |
+| Sofía Nueva | `sofia.nueva@demo.finanzas.test` | Usuario sin movimientos (estados vacíos) |
+
+Todos usan la contraseña `Demo1234` (o la de `SEED_PASSWORD`). Repetir el comando reemplaza solo los usuarios del dominio `demo.finanzas.test`. El seed se niega a ejecutarse con `NODE_ENV=production`.
+
+`npm run seed:admin -w server` crea el primer administrador real con `ADMIN_EMAIL` y `ADMIN_PASSWORD`. No promueve a un usuario estándar existente; los demás administradores se promueven desde la pantalla "Administración".
 
 ## Comandos
 
 Desde la raíz del repositorio:
 
-| Comando                        | Qué hace                                                         |
-| ------------------------------ | ---------------------------------------------------------------- |
-| `npm run dev`                  | Servidor (:3000) y cliente (:5173) juntos; Vite reenvía `/api`   |
-| `npm test`                     | Pruebas de `shared`, `server` y `client`                         |
-| `npm run lint`                 | ESLint, incluidas las fronteras entre dominios del cliente       |
-| `npm run build`                | Compila el cliente en `client/dist`                              |
-| `npm run format`               | Formatea con Prettier (`format:check` solo comprueba)            |
-| `npm run seed -w server`       | Carga datos de demostración (reemplaza solo los usuarios demo)   |
-| `npm run seed:admin -w server` | Crea el primer administrador desde `ADMIN_EMAIL` y `ADMIN_PASSWORD` |
-| `npm run verificar-saldos -w server` | Revisa que el saldo de cada cuenta sea saldo inicial + ingresos − gastos (solo lee) |
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | API (:3000) y cliente (:5173); Vite reenvía `/api` a la API |
+| `npm test` | Pruebas de `shared`, `server` y `client` |
+| `npm run lint` | ESLint, incluidas las fronteras entre dominios del cliente |
+| `npm run build` | Compila el cliente en `client/dist` |
+| `npm run format` / `format:check` | Formatea con Prettier o solo comprueba |
+| `npm run cobertura` | Regenera la matriz de cobertura de escenarios |
+| `npm run cobertura:comprobar` | Falla si algún escenario no tiene prueba o la matriz está desactualizada |
+| `npm run seed -w server` | Datos de demostración (`-- --permitir-remoto` para Atlas) |
+| `npm run seed:admin -w server` | Primer administrador |
+| `npm run verificar-saldos -w server` | Comprueba que cada saldo sea saldo inicial + ingresos − gastos (solo lee) |
 
-Una sola prueba o un solo paquete:
+Una sola prueba o paquete:
 
 ```sh
 npm test -w shared
-npm test -w client -- tests/rt05.test.jsx
-npm test -w server -- seed            # Jest filtra por nombre de archivo
-npm test -w server -- -t "primer administrador"   # o por nombre de prueba
+npm test -w client -- tests/movimientos.test.jsx
+npm test -w server -- identificadores          # Jest filtra por nombre de archivo
+npm test -w server -- -t "primer administrador" # o por nombre de prueba
 ```
 
-Las pruebas del servidor usan MongoDB en memoria (replica set), sin `.env` ni servicios externos. La primera vez `mongodb-memory-server` descarga el binario de `mongod`. Si prefieres usar el instalado en tu máquina:
+Las pruebas del servidor usan MongoDB en memoria como replica set, sin `.env` ni servicios externos. Para usar el `mongod` instalado en lugar de descargarlo, define `MONGOMS_SYSTEM_BINARY` con su ruta.
 
-```sh
-# Windows (PowerShell)
-$env:MONGOMS_SYSTEM_BINARY = "C:\Program Files\MongoDB\Server\9.0\bin\mongod.exe"
-# Linux / macOS / Git Bash
-export MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
-```
+## Pruebas y calidad
 
-## Datos de demostración
+- **Escenarios cubiertos**: cada uno de los 132 escenarios (33 historias × 4) está enlazado a su prueba en [docs/cobertura-escenarios.md](docs/cobertura-escenarios.md). La matriz se genera desde [docs/cobertura-escenarios.json](docs/cobertura-escenarios.json), y la integración continua falla si un escenario queda sin prueba (RT-09).
+- **Servidor** (Jest + Supertest): contrato de la API, reglas de negocio, transacciones, aislamiento por `tenantId`, RBAC, correos y reportes.
+- **Cliente** (Vitest + Testing Library): pantallas completas con la API simulada, recorrido con teclado y accesibilidad con axe-core.
+- **Integración continua** ([ci.yml](.github/workflows/ci.yml)): en cada pull request hacia `dev` y `main` ejecuta lint, pruebas, la verificación de cobertura y la compilación.
+- **SonarCloud** analiza cada pull request; solo se fusiona con su quality gate en verde.
 
-`npm run seed -w server` crea, con datos sintéticos, un administrador y tres usuarios: `ana.torres` y `luis.quispe` (varias monedas y presupuestos normal, en alerta y excedido) y `sofia.nueva` (sin movimientos). Todos con el correo `<usuario>@demo.finanzas.test` y la contraseña `Demo1234` (o la de `SEED_PASSWORD`).
+## API REST
 
-- Repetirlo reemplaza únicamente esos usuarios; los demás no cambian.
-- Se niega a ejecutarse con `NODE_ENV=production` o sobre una base que no sea local, salvo `--permitir-remoto`.
+La API vive en `/api/v1`:
+- Respuestas uniformes: `{ data }` en éxito y `{ error: { code, message, details } }` en error.
+- Identificadores UUID v4 y montos como texto decimal con su moneda.
 
-`npm run seed:admin -w server` crea el primer administrador con `ADMIN_EMAIL` y `ADMIN_PASSWORD`. Si el correo ya es de un usuario estándar, falla en lugar de promoverlo; si el administrador ya existe, informa que no hay cambios.
-
-## Autenticación
-
-Rutas de `/api/v1/auth` (diseño completo en `openspec/changes/archive/2026-11-21-implementar-autenticacion/design.md`):
-
-| Método y ruta | Qué hace |
+| Recurso | Rutas principales |
 |---|---|
-| `POST /registro` | Crea la cuenta (rol `usuario`) y envía el correo de bienvenida. |
-| `POST /login` | Inicia sesión y fija las cookies. Tres fallos seguidos bloquean la cuenta 5 minutos (429). |
-| `GET /me` | Devuelve la persona con la sesión actual. |
-| `POST /refresh` | Renueva el token de acceso (rota el token de renovación). |
-| `POST /logout` | Cierra solo la sesión de este dispositivo; responde 204 aunque ya haya expirado. |
-| `POST /olvide-contrasena` | Responde siempre igual, exista o no el correo. Un enlace cada 60 segundos. |
-| `POST /restablecer-contrasena` | Cambia la contraseña con el enlace (un solo uso) y cierra todas las sesiones. |
+| Autenticación | `POST /auth/registro`, `POST /auth/login`, `GET /auth/me`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/olvide-contrasena`, `POST /auth/restablecer-contrasena` |
+| Perfil | `PATCH /perfil`, `PUT /perfil/contrasena`, `PATCH /perfil/preferencias` |
+| Categorías, cuentas, movimientos | `GET`, `POST` en la colección; `GET`, `PATCH`, `DELETE` en `/:id` |
+| Presupuestos | `GET /presupuestos`, `GET /presupuestos/seguimiento`, `POST`, `PUT /:id`, `DELETE /:id` |
+| Dashboard | `GET /dashboard/monedas`, `GET /dashboard/indicadores`, `GET /dashboard/graficos` |
+| Reportes | `GET /reportes/movimientos.pdf`, `GET /reportes/movimientos.xlsx` |
+| Administración | `GET /admin/usuarios`, `GET /admin/usuarios/:id` (y sus cuentas, categorías, movimientos y presupuestos), `PATCH /admin/usuarios/:id/rol` |
+| Salud | `GET /health` |
 
-Perfil (requiere sesión; actúa siempre sobre la persona autenticada, sin identificador en la ruta):
+La referencia completa, con parámetros, códigos de respuesta y reglas de negocio, está en [docs/api.md](docs/api.md).
 
-| Método y ruta | Qué hace |
-|---|---|
-| `PATCH /api/v1/perfil` | Actualiza `nombre` y `monedaPrincipal` (PEN, USD o EUR). El correo, el rol y el tenant se ignoran. |
-| `PUT /api/v1/perfil/contrasena` | Cambia la contraseña con `passwordActual` y `passwordNueva`: rechaza la actual incorrecta (400) y la nueva igual a la actual (400), cierra las demás sesiones y conserva la actual. Los intentos fallidos con la actual comparten el límite de 3 del inicio de sesión (429). |
+## Seguridad y aislamiento de datos
 
-- **Cookies** `httpOnly` con `sameSite=lax` (`secure` en producción): `access_token` (JWT de 15 minutos) y `refresh_token` (opaco, solo en `/api/v1/auth`). Solo el hash de este último se guarda en la base.
-- **Tiempos:** la sesión caduca tras 30 minutos sin actividad (`REFRESH_INACTIVITY_MIN`) y, en todo caso, a los 7 días (`REFRESH_ABSOLUTE_DAYS`). El enlace de recuperación vence a los 30 minutos (`RESET_TOKEN_TTL_MIN`).
-- **Errores de sesión:** `TOKEN_EXPIRED` (el cliente renueva solo), `SESSION_EXPIRED` y `SESSION_REVOKED` (hay que iniciar sesión de nuevo).
-- **Sin SMTP configurado** los correos se escriben en el log del servidor, con el enlace de recuperación incluido: sirve para probar el flujo en local.
-- **Correo real (Brevo u otro):** define `SMTP_*` y `MAIL_FROM` en `server/.env`. Gmail y otros proveedores pueden enviar estos mensajes a la carpeta de spam la primera vez; pide a quien pruebe que revise esa carpeta o marque el remitente como seguro.
-- **Límites conocidos:** no hay límite por IP (solo el bloqueo por cuenta y el enfriamiento de los correos); es una mejora futura que no cambia el contrato.
+- **Autenticación sin estado**: el token de acceso es un JWT de 15 minutos en una cookie `httpOnly` y `sameSite=lax` (`secure` en producción). La sesión se renueva con un token opaco rotativo, del que solo se guarda el hash. Las contraseñas se guardan cifradas con bcrypt.
+- **RBAC en dos capas**: el middleware `requerirRol` protege las rutas de administración y los servicios vuelven a exigir el rol ([autorizacion.service.js](server/src/services/autorizacion.service.js)). El rol se lee de la base en cada solicitud, así que un cambio de rol se aplica de inmediato. Cada denegación queda en el log.
+- **Multiinquilino**: cada documento financiero guarda `tenantId` y `usuarioId`. Los repositorios agregan el `tenantId` del usuario autenticado a toda consulta, y el plugin de inquilino rechaza cualquier consulta sin él. Un recurso de otro usuario responde 404, igual que uno inexistente.
+- **Solo lectura para administración**: el administrador lee datos ajenos con un repositorio que no tiene métodos de escritura.
+- **Otras medidas**: bloqueo de la cuenta tras 3 intentos fallidos, recuperación de contraseña sin revelar si el correo existe, cabeceras de seguridad con Helmet y validación de toda entrada en cliente y servidor con las mismas reglas.
 
-## Administración y roles
+## Desarrollo guiado por especificaciones
 
-Rutas de `/api/v1/admin` (solo rol `admin`; el rol se lee de la base en cada solicitud, así que una degradación se aplica de inmediato):
+- [docs/historias-de-usuario.md](docs/historias-de-usuario.md): 33 historias en 10 épicas, cada una con 4 escenarios Gherkin (camino feliz, flujo alternativo, manejo de errores y caso de borde).
+- [openspec/specs/](openspec/specs/): una spec por capacidad. Cada requisito cita su origen (`Origen: HU-xx` o `RT-xx`).
+- [openspec/changes/archive/](openspec/changes/archive/): cada cambio implementado, con su propuesta, diseño y tareas.
+- [docs/trazabilidad.md](docs/trazabilidad.md): enlaza cada historia y requisito técnico con su spec, su cambio de OpenSpec, su rama y la versión publicada.
+- [docs/cobertura-escenarios.md](docs/cobertura-escenarios.md): enlaza cada escenario con su prueba.
 
-| Método y ruta | Qué hace |
-|---|---|
-| `GET /usuarios?q=&page=&limit=&sort=` | Lista usuarios paginados; `q` busca por nombre o correo (texto literal). |
-| `GET /usuarios/:id` | Datos de un usuario, sin información sensible. |
-| `PATCH /usuarios/:id/rol` | Cambia el rol (`usuario` o `admin`). Responde 409 "Debe existir al menos un administrador" si dejaría al sistema sin ninguno; la comprobación es atómica (transacción con documento centinela). |
-
-- Un usuario estándar recibe 403 "Acceso no autorizado", y cada denegación queda en el log. La autorización se comprueba en el middleware `requerirRol` y otra vez en el servicio.
-- Para leer datos financieros de otra persona, las rutas `GET` de administración usan `RepositorioLectura` (sin métodos de escritura). Las rutas de escritura siempre usan el `tenantId` de quien llama, por lo que editar un recurso ajeno responde 404.
-- Los administradores adicionales se promueven desde "Administración"; el primero se crea con `npm run seed:admin -w server`.
-
-## Categorías
-
-Rutas de `/api/v1/categorias` (sesión obligatoria; cada persona solo ve y modifica las suyas, y una ajena responde 404):
-
-| Método y ruta | Qué hace |
-|---|---|
-| `GET /categorias?tipo=&page=&limit=&sort=` | Lista paginada; por defecto ordena por tipo y nombre (sin distinguir tildes ni mayúsculas). La pantalla pide `limit=100`. |
-| `POST /categorias` | Crea una categoría (`nombre` de 2 a 50 caracteres, `tipo` `gasto` o `ingreso`, `icono` de la lista cerrada de `@finanzas/shared`). 409 "Ya existe una categoría con ese nombre" si se repite el nombre en el mismo tipo; la unicidad la impone un índice único de MongoDB. |
-| `PATCH /categorias/:id` | Cambia `nombre` o `icono`. El tipo no se puede cambiar. |
-| `DELETE /categorias/:id` | Elimina la categoría; 409 si tiene movimientos asociados (se comprueba contra la colección `movimientos`). |
-
-- Al registrarse, cada usuario recibe 10 categorías propias (7 de gasto y 3 de ingreso) creadas en la **misma transacción** que la cuenta: si falla algo no queda una cuenta a medias. Iniciar sesión nunca las repone.
-- Las cuentas registradas **antes** de este cambio (solo datos de desarrollo) no tienen categorías: se obtienen registrándose de nuevo o con `npm run seed -w server`.
-- Administración las lee con `GET /admin/usuarios/:id/categorias` (solo lectura) y las muestra en el detalle de cada usuario.
-
-## Cuentas
-
-Rutas de `/api/v1/cuentas` (sesión obligatoria; cada persona solo ve y modifica las suyas, y una ajena responde 404):
-
-| Método y ruta | Qué hace |
-|---|---|
-| `GET /cuentas?tipo=&moneda=&page=&limit=&sort=` | Lista paginada; por defecto ordena por nombre (sin distinguir tildes ni mayúsculas). La pantalla pide `limit=100`. |
-| `POST /cuentas` | Crea una cuenta (`nombre` de 2 a 50 caracteres, `tipo` efectivo, banco, tarjeta de crédito o billetera digital, `moneda` PEN, USD o EUR y `saldoInicial` opcional, que puede ser negativo). Su saldo actual empieza igual al inicial. 409 "Ya existe una cuenta con ese nombre" si se repite; la unicidad la impone un índice único de MongoDB. |
-| `GET /cuentas/:id` | Una cuenta propia. |
-| `PATCH /cuentas/:id` | Cambia `nombre`, `tipo`, `moneda` o `saldoInicial`. Corregir el saldo inicial mueve el saldo actual en la misma diferencia (100.00 a 120.00 con saldo actual 70.00 lo deja en 90.00) en una transacción. 409 si se cambia la moneda de una cuenta con movimientos. |
-| `DELETE /cuentas/:id` | Elimina la cuenta; 409 si tiene movimientos asociados (se comprueba contra la colección `movimientos`). |
-
-- Los saldos viajan como texto con dos decimales (`"1250.50"`), se guardan como `Decimal128` y se calculan con `decimal.js`.
-- Administración las lee con `GET /admin/usuarios/:id/cuentas` (solo lectura) y las muestra en el detalle de cada usuario.
-
-## Movimientos
-
-Rutas de `/api/v1/movimientos` (sesión obligatoria; cada persona solo ve y modifica los suyos, y uno ajeno responde 404):
-
-| Método y ruta | Qué hace |
-|---|---|
-| `GET /movimientos?desde=&hasta=&tipo=&categoriaId=&cuentaId=&moneda=&sort=&page=&limit=` | Historial paginado (por defecto `-fecha`; también `fecha`, `monto` y `-monto`). Cada movimiento trae `saldoResultante`, el saldo que dejó en su cuenta, calculado por fecha y orden de registro **antes** de aplicar los filtros. |
-| `POST /movimientos` | Registra un ingreso o gasto (`tipo`, `monto`, `fecha` AAAA-MM-DD sin fechas futuras, `categoriaId`, `cuentaId`, `descripcion` opcional). La moneda es la de la cuenta. Un gasto que supera el saldo se registra igual y la respuesta lleva `meta.advertencias`. |
-| `GET /movimientos/:id` | Un movimiento propio. |
-| `PATCH /movimientos/:id` | Cambia cualquier subconjunto de campos; se valida el resultado completo. Cambiar de cuenta mueve el saldo entre ambas y adopta la moneda de la nueva. |
-| `DELETE /movimientos/:id` | Elimina el movimiento y revierte su efecto en el saldo. |
-
-- Crear, editar y eliminar son **una transacción** que guarda el movimiento y ajusta `saldoActual`; si algo falla no queda nada a medias. El saldo siempre es `saldoInicial + ingresos − gastos`, y cada operación lo comprueba y lo corrige (con un aviso en el log) si no coincide.
-- La categoría debe ser del mismo tipo que el movimiento ("Selecciona una categoría de ingreso" o "de gasto") y la cuenta y la categoría deben ser propias.
-- Administración los lee con `GET /admin/usuarios/:id/movimientos` (solo lectura) y los muestra en el detalle de cada usuario.
-- El historial del cliente (HU-10, HU-11) abre el detalle de cada movimiento y se filtra por rango de fechas, tipo, categoría y cuenta con "Aplicar filtros" y "Limpiar filtros". Un rango con la fecha inicial mayor que la final se avisa y no se aplica; los filtros se envían como parámetros de `GET /movimientos` y el saldo resultante no cambia al filtrar.
-- `npm run verificar-saldos -w server` compara el saldo guardado de cada cuenta con la fórmula, lista las que difieren y termina con código 1 si hay alguna. Solo lee.
-
-## Presupuestos
-
-Rutas de `/api/v1/presupuestos` (sesión obligatoria; cada persona solo ve y modifica los suyos, y uno ajeno responde 404):
-
-| Método y ruta | Qué hace |
-|---|---|
-| `GET /presupuestos?periodo=&moneda=&sort=&page=&limit=` | Lista los presupuestos (también los de meses pasados). |
-| `GET /presupuestos/seguimiento?periodo=&moneda=` | Cada presupuesto del mes (por defecto el actual) con `gastado`, `restante`, `porcentaje`, `excedido`, `sobregiro` y, en el general, `sinAsignar`. |
-| `POST /presupuestos` | Define un presupuesto de `periodo` (`AAAA-MM`), `moneda`, `monto` y, opcional, `categoriaId` (sin categoría = general). 409 si ya existe uno para esa clave. |
-| `PUT /presupuestos/:id` | Reemplaza el monto (la pantalla pide confirmación antes). |
-| `DELETE /presupuestos/:id` | Elimina; un general con presupuestos por categoría responde 409. |
-
-- Hay un presupuesto por mes, moneda y categoría; solo se definen o cambian para el mes actual o futuros. El gasto se mide solo con movimientos de esa moneda y mes.
-- Un presupuesto por categoría exige el general del mismo mes y moneda, y la suma de las categorías no puede superarlo ("La suma por categorías supera el presupuesto general"). Un gasto sin presupuesto de categoría cuenta solo para el general.
-- Registrar o editar un gasto que cruza el 90 % o el 100 % de un presupuesto agrega `meta.alertas` a la respuesta (una sola vez por cruce, sin guardar estado) y la pantalla muestra el aviso.
-- Una categoría con presupuestos no se elimina (409). Administración los lee con `GET /admin/usuarios/:id/presupuestos` (solo lectura) y los muestra en el detalle de cada usuario.
-
-## Dashboard
-
-La pantalla de inicio muestra el resumen del mes y la moneda elegidos. Rutas de `/api/v1/dashboard` (solo lectura, sesión obligatoria, siempre sobre los datos propios):
-
-| Método y ruta | Qué devuelve |
-|---|---|
-| `GET /dashboard/monedas` | `principal` y las `monedas` de las cuentas de la persona (solo la principal si aún no tiene cuentas). |
-| `GET /dashboard/indicadores?periodo=&moneda=` | Ingresos, gastos, balance, `hayMovimientos` y el avance del presupuesto general del mes (o `null`). |
-| `GET /dashboard/graficos?periodo=&moneda=` | `evolucion` de los 6 meses que terminan en `periodo` y `distribucion` de los gastos del mes por categoría (las ocho mayores y "Otras"). |
-
-- `periodo` (`AAAA-MM`) es por defecto el mes actual y `moneda` la principal de la persona. No hay conversión entre monedas: cada consulta usa solo los movimientos de una moneda.
-- Los indicadores y los gráficos son consultas separadas: si una falla, la otra sigue visible. Cada gráfico (Chart.js) tiene su tabla equivalente.
-
-## Reportes
-
-Desde el historial de movimientos se exportan los movimientos filtrados. Rutas de `/api/v1/reportes` (sesión obligatoria, solo datos propios, respuesta como descarga con `Content-Disposition: attachment`):
-
-| Método y ruta | Archivo |
-|---|---|
-| `GET /reportes/movimientos.pdf` | PDF (jsPDF): período, ingresos, gastos y balance por moneda, y la tabla de movimientos. |
-| `GET /reportes/movimientos.xlsx` | Excel (SheetJS): hoja "Movimientos" y hoja "Resumen" por moneda, tipo y categoría. |
-
-- Reciben los mismos filtros del historial (`desde`, `hasta`, `tipo`, `categoriaId`, `cuentaId`, `moneda`). Sin fechas, el reporte cubre el mes en curso.
-- Máximo 5000 movimientos por archivo; sin movimientos o por encima del tope responden 400 con el mensaje que explica qué hacer. El archivo se arma completo antes de responder, así que un fallo nunca deja un archivo a medias.
-- SheetJS se instala desde `https://cdn.sheetjs.com/` (el paquete `xlsx` de npm está desactualizado), con la versión fijada en `server/package.json`.
-- Los títulos, columnas y totales salen en el idioma de la persona; los nombres que ella escribió (categorías, cuentas, descripciones) no se traducen.
-
-## Idioma y accesibilidad
-
-La aplicación está en español e inglés (HU-32) y se puede usar con teclado, lector de pantalla, texto grande y alto contraste (HU-33).
-
-| Método y ruta | Qué hace |
-|---|---|
-| `PATCH /perfil/preferencias` | Guarda `idioma` (`es` \| `en`), `textoGrande` y `altoContraste` (al menos uno). Devuelve la persona, igual que `/auth/me`. |
-
-- **Idioma.** Sin sesión sale del navegador y se elige en el pie de las pantallas públicas (queda en `localStorage`); con sesión manda el perfil. El registro guarda el idioma en uso y crea las categorías predeterminadas en ese idioma. El cliente envía `Accept-Language` y la API responde sus mensajes (errores, advertencias) en el idioma del usuario o, sin sesión, en el del encabezado. Los correos y los reportes usan el idioma del usuario.
-- **Cómo se traduce.** El español es la fuente. `shared/src/i18n/` tiene `MENSAJES_EN` (misma forma que `MENSAJES`, lo exige una prueba) y `crearTraductor`, que traduce por texto, incluidas las plantillas con valores. En el cliente cada texto va en `t('texto en español')` (`useT()`), con su traducción en `client/src/shared/preferencias/textos.en.js`; una prueba recorre el código y falla si un texto no tiene traducción.
-- **Accesibilidad.** "Texto grande" y "Alto contraste" están en *Mi perfil* y se aplican como `data-texto="grande"` y `data-contraste="alto"` en `<html>` (los colores de alto contraste cumplen al menos 7:1). Las pruebas pasan `axe-core` por las pantallas principales (el contraste se calcula aparte, jsdom no pinta), recorren con teclado el registro de un movimiento y comprueban el anuncio de errores.
-- **Ver la contraseña.** Todo campo de contraseña (`Campo` con `tipo="password"`) lleva un botón con un ojo, "Mostrar contraseña", que alterna entre texto oculto y visible; anuncia su estado con `aria-pressed` y no envía el formulario.
-
-## Flujo de ramas y commits
+## Flujo de trabajo
 
 Git Flow con Conventional Commits en español (detalle en [CLAUDE.md](CLAUDE.md) y [docs/Los prefijos en las ramas.pdf](docs/Los%20prefijos%20en%20las%20ramas.pdf)).
 
-- `main` solo recibe `dev` mediante pull request cuando se completa una épica; `dev` es la rama de integración. No se hace commit directo en ninguna de las dos.
-- Cada tarea sale de un `dev` actualizado y vuelve a él con un pull request cuyo job `verificar` (lint, pruebas y compilación con Node 22) debe pasar:
+- `main` solo recibe `dev` por pull request al completar una épica, y se etiqueta la versión (`v0.1.0` … `v1.0.0`). `dev` es la rama de integración. Nadie hace commit directo en ninguna de las dos.
+- Cada tarea sale de un `dev` actualizado y vuelve a él por pull request con la integración continua y SonarCloud en verde:
 
   ```sh
   git switch dev && git pull && git switch -c feature/implementar-movimientos
   ```
 
-- Prefijos: `feature/`, `fix/`, `hotfix/`, `refactor/`, `test/`, `docs/`, `chore/`, `ci/`, `release/`. Commits: `feat(hu-08): descripción en imperativo`.
-- No hay código sin una historia de usuario (HU-xx) o un requisito técnico (RT-xx) en [docs/trazabilidad.md](docs/trazabilidad.md).
+- Prefijos de rama: `feature/`, `fix/`, `hotfix/`, `refactor/`, `test/`, `docs/`, `chore/`, `ci/`, `release/`. Commits: `feat(hu-08): registra ingresos y gastos`.
+- No hay código sin una historia de usuario (HU-xx) o un requisito técnico (RT-xx).
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [docs/api.md](docs/api.md) | Referencia completa de la API REST |
+| [docs/historias-de-usuario.md](docs/historias-de-usuario.md) | Historias de usuario y escenarios |
+| [docs/trazabilidad.md](docs/trazabilidad.md) | Historia o requisito → spec → cambio → rama → versión |
+| [docs/cobertura-escenarios.md](docs/cobertura-escenarios.md) | Escenario → prueba automática |
+| [docs/exposicion.md](docs/exposicion.md) | Guion de la exposición final según la rúbrica |
+| [DESIGN.md](DESIGN.md) y [PRODUCT.md](PRODUCT.md) | Sistema visual, usuarios, voz y principios del producto |
+| [Diseño técnico](openspec/changes/archive/2026-11-21-definir-arquitectura-base/design.md) | Decisiones de arquitectura y su justificación |
