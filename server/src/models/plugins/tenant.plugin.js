@@ -63,7 +63,7 @@ export function tenantPlugin(schema) {
   // immutable: Mongoose ignora cualquier intento de cambiar el inquilino o el creador de un documento.
   schema.add({ tenantId: { type: String, required: true, index: true, immutable: true } });
   schema.add({
-    usuarioId: { type: schema.constructor.Types.ObjectId, required: true, immutable: true },
+    usuarioId: { type: String, required: true, immutable: true },
   });
 
   for (const operacion of OPERACIONES) {

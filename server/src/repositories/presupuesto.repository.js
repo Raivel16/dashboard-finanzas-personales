@@ -6,7 +6,8 @@ import { RepositorioBase } from './base.repository.js';
 /** Para la lectura de administrador (admin.repositorioLecturaDe recibe el modelo). */
 export const ModeloPresupuesto = Presupuesto;
 
-const id = (valor) => (valor ? new mongoose.Types.ObjectId(valor) : null);
+// Las referencias se guardan como el UUID en texto (RT-08).
+const id = (valor) => (valor ? String(valor) : null);
 const CERO = () => mongoose.Types.Decimal128.fromString('0');
 
 export class PresupuestoRepository extends RepositorioBase {

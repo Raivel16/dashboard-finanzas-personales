@@ -1,5 +1,4 @@
 // Modelos y repositorios de identidad (usuarios, sesiones, tokens de recuperación) con MongoDB real en memoria.
-import mongoose from 'mongoose';
 import { conectar, desconectar } from '../src/config/baseDatos.js';
 import { Usuario } from '../src/models/usuario.model.js';
 import { Sesion } from '../src/models/sesion.model.js';
@@ -8,6 +7,7 @@ import { usuarioRepository } from '../src/repositories/usuario.repository.js';
 import { sesionRepository } from '../src/repositories/sesion.repository.js';
 import { tokenRecuperacionRepository } from '../src/repositories/token-recuperacion.repository.js';
 import { iniciarReplicaSet } from './helpers/baseDatos.js';
+import { v4 as uuid } from 'uuid';
 
 const AHORA = new Date('2026-01-15T12:00:00.000Z');
 const enMinutos = (m) => new Date(AHORA.getTime() + m * 60_000);
@@ -145,7 +145,7 @@ describe('identidad: modelos y repositorios', () => {
       });
 
     it('rota el token: la búsqueda encuentra el vigente y el anterior, y solo una rotación simultánea gana', async () => {
-      const usuarioId = new mongoose.Types.ObjectId();
+      const usuarioId = uuid();
       const s = await nueva(usuarioId, 'hash-1');
       const rotaciones = await Promise.all(
         ['hash-2a', 'hash-2b'].map((nuevo) =>
@@ -166,7 +166,7 @@ describe('identidad: modelos y repositorios', () => {
     });
 
     it('no rota una sesión revocada', async () => {
-      const s = await nueva(new mongoose.Types.ObjectId(), 'h-rev');
+      const s = await nueva(uuid(), 'h-rev');
       await sesionRepository.revocar(s._id, AHORA);
       const r = await sesionRepository.rotar(s._id, {
         tokenHashActual: 'h-rev',
@@ -178,8 +178,8 @@ describe('identidad: modelos y repositorios', () => {
     });
 
     it('revocar afecta una sola sesión; revocarTodasDeUsuario, solo las de ese usuario', async () => {
-      const a = new mongoose.Types.ObjectId();
-      const b = new mongoose.Types.ObjectId();
+      const a = uuid();
+      const b = uuid();
       const [a1, a2, b1] = [await nueva(a), await nueva(a), await nueva(b)];
       await sesionRepository.revocar(a1._id, AHORA);
       expect((await sesionRepository.buscarPorId(a1._id)).revocadaEn).toEqual(AHORA);
@@ -192,7 +192,7 @@ describe('identidad: modelos y repositorios', () => {
     });
 
     it('extenderActividad mueve el vencimiento por inactividad', async () => {
-      const s = await nueva(new mongoose.Types.ObjectId());
+      const s = await nueva(uuid());
       await sesionRepository.extenderActividad(s._id, {
         ahora: enMinutos(10),
         expiraInactividad: enMinutos(40),
@@ -215,7 +215,7 @@ describe('identidad: modelos y repositorios', () => {
       });
 
     it('se marca como usado una sola vez, aun con solicitudes simultáneas', async () => {
-      const t = await nuevo(new mongoose.Types.ObjectId());
+      const t = await nuevo(uuid());
       const resultados = await Promise.all(
         [1, 2, 3].map(() => tokenRecuperacionRepository.marcarUsado(t._id, AHORA)),
       );
@@ -223,7 +223,7 @@ describe('identidad: modelos y repositorios', () => {
     });
 
     it('buscarVigenteReciente respeta uso, vencimiento y antigüedad', async () => {
-      const u = new mongoose.Types.ObjectId();
+      const u = uuid();
       const t = await nuevo(u);
       const consulta = (ahora, desde) =>
         tokenRecuperacionRepository.buscarVigenteReciente(u, { ahora, desde });
@@ -235,8 +235,8 @@ describe('identidad: modelos y repositorios', () => {
     });
 
     it('invalidarPendientes solo afecta los tokens sin usar de ese usuario', async () => {
-      const a = new mongoose.Types.ObjectId();
-      const otro = new mongoose.Types.ObjectId();
+      const a = uuid();
+      const otro = uuid();
       const t1 = await nuevo(a);
       const t2 = await nuevo(otro);
       await tokenRecuperacionRepository.invalidarPendientes(a, enMinutos(1));

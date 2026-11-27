@@ -21,7 +21,7 @@ describe('movimientos', () => {
   afterEach(() => jest.restoreAllMocks());
 
   const coleccion = (nombre) => mongoose.connection.collection(nombre);
-  const oid = (valor) => new mongoose.Types.ObjectId(valor);
+  const oid = (valor) => valor;
 
   /** Una persona con sesión, sus categorías predeterminadas y una función para crear cuentas. */
   async function preparar() {
@@ -466,7 +466,7 @@ describe('movimientos', () => {
       expect(categoriaAjena.body.error.details).toEqual([
         { campo: 'categoriaId', mensaje: 'La categoría seleccionada no existe' },
       ]);
-      const inexistente = await registrar(a.agente, gastoDe(a, cuentaA, '10', { cuentaId: '65f000000000000000000000' }));
+      const inexistente = await registrar(a.agente, gastoDe(a, cuentaA, '10', { cuentaId: '65f00000-0000-4000-8000-000000000000' }));
       expect(inexistente.body.error.details[0].mensaje).toBe('La cuenta seleccionada no existe');
       expect((await registrar(a.agente, gastoDe(a, cuentaA, '10', { cuentaId: 'x' }))).status).toBe(400);
 
@@ -536,7 +536,7 @@ describe('HU-04 · HU-05 · HU-22 · lectura de movimientos por administración'
   const usuarios = () => mongoose.connection.collection('usuarios');
   async function sesion(rol = ROLES.USUARIO) {
     const u = await e.registrar();
-    if (rol !== ROLES.USUARIO) await usuarios().updateOne({ _id: new mongoose.Types.ObjectId(u.id) }, { $set: { rol } });
+    if (rol !== ROLES.USUARIO) await usuarios().updateOne({ _id: u.id }, { $set: { rol } });
     const { agente } = await e.iniciarSesion(u);
     return { u, agente };
   }
@@ -586,7 +586,7 @@ describe('HU-04 · HU-05 · HU-22 · lectura de movimientos por administración'
 
   it('HU-22 · un usuario inexistente o inválido responde 404 y uno sin movimientos devuelve la lista vacía', async () => {
     const admin = await sesion(ROLES.ADMIN);
-    expect((await deUsuario(admin.agente, '65f000000000000000000000')).status).toBe(404);
+    expect((await deUsuario(admin.agente, '65f00000-0000-4000-8000-000000000000')).status).toBe(404);
     expect((await deUsuario(admin.agente, 'no-es-un-id')).status).toBe(404);
     const vacio = await sesion();
     const res = await deUsuario(admin.agente, vacio.u.id);

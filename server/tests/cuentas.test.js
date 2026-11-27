@@ -20,7 +20,7 @@ describe('cuentas', () => {
   const cuentas = () => mongoose.connection.collection('cuentas');
   const movimientos = () => mongoose.connection.collection('movimientos');
   const usuarios = () => mongoose.connection.collection('usuarios');
-  const id = (valor) => new mongoose.Types.ObjectId(valor);
+  const id = (valor) => valor;
 
   async function sesion() {
     const u = await e.registrar();
@@ -323,7 +323,7 @@ describe('HU-04 · HU-05 · HU-22 · lectura de cuentas por administración', ()
   async function sesion(rol = ROLES.USUARIO) {
     const u = await e.registrar();
     if (rol !== ROLES.USUARIO) {
-      await usuarios().updateOne({ _id: new mongoose.Types.ObjectId(u.id) }, { $set: { rol } });
+      await usuarios().updateOne({ _id: u.id }, { $set: { rol } });
     }
     const { agente } = await e.iniciarSesion(u);
     return { u, agente };
@@ -362,7 +362,7 @@ describe('HU-04 · HU-05 · HU-22 · lectura de cuentas por administración', ()
 
   it('HU-22 · un usuario inexistente o con id inválido responde 404 y uno sin cuentas devuelve la lista vacía', async () => {
     const admin = await sesion(ROLES.ADMIN);
-    expect((await deUsuario(admin.agente, '65f000000000000000000000')).status).toBe(404);
+    expect((await deUsuario(admin.agente, '65f00000-0000-4000-8000-000000000000')).status).toBe(404);
     expect((await deUsuario(admin.agente, 'no-es-un-id')).status).toBe(404);
 
     const vacio = await sesion();

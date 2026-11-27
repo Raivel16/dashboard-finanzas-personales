@@ -48,7 +48,7 @@ describe('presupuestos', () => {
       const usuario = await mongoose.connection.collection('usuarios').findOne({ email: u.email });
       const guardado = await mongoose.connection
         .collection('presupuestos')
-        .findOne({ _id: new mongoose.Types.ObjectId(res.body.data.id) });
+        .findOne({ _id: res.body.data.id });
       expect(guardado.tenantId).toBe(usuario.tenantId);
       expect(String(guardado.usuarioId)).toBe(String(usuario._id));
       expect(guardado.monto).toBeInstanceOf(mongoose.Types.Decimal128);
@@ -296,7 +296,7 @@ describe('presupuestos', () => {
       const admin = await e.registrar();
       await mongoose.connection
         .collection('usuarios')
-        .updateOne({ _id: new mongoose.Types.ObjectId(admin.id) }, { $set: { rol: ROLES.ADMIN } });
+        .updateOne({ _id: admin.id }, { $set: { rol: ROLES.ADMIN } });
       const { agente: agenteAdmin } = await e.iniciarSesion(admin);
       const usuario = await mongoose.connection.collection('usuarios').findOne({ email: p.u.email });
       const lectura = await agenteAdmin.get(`/api/v1/admin/usuarios/${usuario._id}/presupuestos`);

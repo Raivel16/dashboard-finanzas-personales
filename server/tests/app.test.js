@@ -97,8 +97,8 @@ describe('errores (contrato-api)', () => {
     const res = await request(app).post('/api/v1/prueba/movimientos').send({
       tipo: 'gasto',
       monto: 0,
-      categoriaId: '64b7f0c2a1b2c3d4e5f60718',
-      cuentaId: '64b7f0c2a1b2c3d4e5f60718',
+      categoriaId: '0b9c1f6e-4a2d-4c8e-9f1a-2b3c4d5e6f70',
+      cuentaId: '0b9c1f6e-4a2d-4c8e-9f1a-2b3c4d5e6f70',
     });
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
@@ -110,8 +110,8 @@ describe('errores (contrato-api)', () => {
       tipo: 'gasto',
       monto: 150,
       fecha: '2026-11-18',
-      categoriaId: '64b7f0c2a1b2c3d4e5f60718',
-      cuentaId: '64b7f0c2a1b2c3d4e5f60718',
+      categoriaId: '0b9c1f6e-4a2d-4c8e-9f1a-2b3c4d5e6f70',
+      cuentaId: '0b9c1f6e-4a2d-4c8e-9f1a-2b3c4d5e6f70',
     });
     expect(res.status).toBe(201);
     expect(res.body.data.monto).toBe('150.00');

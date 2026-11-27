@@ -4,8 +4,8 @@
 
 ## 1. Identificadores UUID [RT-08]
 
-- [ ] 1.1 Cambiar el `_id` de todos los modelos a UUID v4 y las referencias a `String`; adaptar repositorios, agregaciones, regla compartida de identificador y script de datos demo
-- [ ] 1.2 Reemplazar los identificadores fijos de las pruebas por UUID y agregar las pruebas de los 4 escenarios de RT-08; verificar con `npm test`
+- [x] 1.1 Cambiar el `_id` de todos los modelos a UUID v4 y las referencias a `String`; adaptar repositorios, agregaciones, regla compartida de identificador y script de datos demo
+- [x] 1.2 Reemplazar los identificadores fijos de las pruebas por UUID y agregar las pruebas de los 4 escenarios de RT-08; verificar con `npm test`
 
 ## 2. Cobertura de escenarios [RT-09]
 

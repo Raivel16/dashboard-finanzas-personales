@@ -1,10 +1,11 @@
 // Único acceso al modelo Usuario. No filtra por tenantId porque se usa para autenticar (ver el diseño).
 import mongoose from 'mongoose';
+import { esIdentificador } from '../models/plugins/identificador.js';
 import { ROLES } from '@finanzas/shared';
 import { Bloqueo } from '../models/bloqueo.model.js';
 import { Usuario } from '../models/usuario.model.js';
 
-const valido = (id) => mongoose.isValidObjectId(id);
+const valido = esIdentificador;
 
 export const usuarioRepository = {
   async crear(datos, { session } = {}) {
