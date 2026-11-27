@@ -53,7 +53,7 @@ function respuestaDashboard(ruta) {
 export function simularFetch(respuesta = respuestaSalud(), { sesion = USUARIO_PRUEBA, rutas = {} } = {}) {
   const simulado = vi.fn(async (url, opciones) => {
     const ruta = String(url).replace('/api/v1', '').split('?')[0];
-    if (rutas[ruta]) return rutas[ruta](opciones);
+    if (rutas[ruta]) return rutas[ruta](opciones, String(url));
     if (ruta === '/auth/me') {
       if (sesion && sesion.ok !== undefined) return sesion;
       return sesion

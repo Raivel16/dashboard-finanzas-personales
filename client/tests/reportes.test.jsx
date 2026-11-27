@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { fechaHoy } from '@finanzas/shared';
 import { llamadasA, montarApp, respuestaApi, respuestaError, simularFetch } from './ayudas.jsx';
 import { guardarArchivo } from '../src/shared/utils/descargas.js';
 
@@ -45,13 +46,14 @@ const archivo = (nombre, { cortado = false } = {}) => ({
   },
 });
 
-async function abrir({ movimientos = [GASTO], rutas = {} } = {}) {
+/** `delMes`: movimientos que caen en el mes en curso (lo que cuenta la exportación sin rango de fechas). */
+async function abrir({ movimientos = [GASTO], delMes = movimientos, rutas = {} } = {}) {
   const fetchSimulado = simularFetch(undefined, {
     rutas: {
       '/cuentas': async () => respuestaApi(200, { data: CUENTAS, meta: { page: 1, limit: 100, total: 1 } }),
       '/categorias': async () =>
         respuestaApi(200, { data: CATEGORIAS, meta: { page: 1, limit: 100, total: 1 } }),
-      '/movimientos': async () => lista(movimientos),
+      '/movimientos': async (_, url) => lista(url.includes('desde=') ? delMes : movimientos),
       ...rutas,
     },
   });
@@ -76,7 +78,15 @@ describe('HU-16 · exportar a PDF', () => {
     await usuario.click(screen.getByRole('button', { name: 'Exportar a PDF' }));
     await waitFor(() => expect(guardarArchivo).toHaveBeenCalledTimes(1));
     expect(guardarArchivo.mock.calls[0][1]).toBe('movimientos-2026-01.pdf');
-    expect(llamadasA(fetchSimulado, '/reportes/movimientos.pdf')).toHaveLength(1);
+    const [[url]] = llamadasA(fetchSimulado, '/reportes/movimientos.pdf');
+    expect(url).toContain(`desde=${fechaHoy().slice(0, 7)}-01`);
+  });
+
+  it('Período por defecto: sin rango de fechas avisa que se exporta el mes en curso y lo envía', async () => {
+    await abrir();
+    expect(await screen.findByText(/Sin un rango de fechas se exporta el mes en curso/)).toHaveTextContent(
+      `(${fechaHoy().slice(0, 7)}-01 al`,
+    );
   });
 
   it('Sin datos: deshabilita ambos botones y muestra "No hay datos disponibles para exportar"', async () => {
@@ -108,6 +118,16 @@ describe('HU-16 · exportar a PDF', () => {
     await waitFor(() => expect(guardarArchivo).toHaveBeenCalledTimes(1));
     expect(screen.queryByText(/Seguimos generando/)).not.toBeInTheDocument();
   }, 10000);
+});
+
+describe('HU-16 · HU-17 · sin datos en el período exportado', () => {
+  it('Con movimientos solo de meses anteriores: el historial los muestra pero ambos botones se deshabilitan', async () => {
+    await abrir({ movimientos: [GASTO], delMes: [] });
+    await screen.findByText('Almuerzo');
+    expect(await screen.findByText('No hay datos disponibles para exportar')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Exportar a PDF' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Exportar a Excel' })).toBeDisabled();
+  });
 });
 
 describe('HU-17 · exportar a Excel', () => {

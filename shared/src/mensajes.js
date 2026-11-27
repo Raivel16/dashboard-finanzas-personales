@@ -68,6 +68,7 @@ export const MENSAJES = Object.freeze({
     errorGenerar: 'Ocurrió un error al generar el archivo. Intenta nuevamente',
     supera: (maximo) => `El reporte supera los ${maximo} movimientos. Reduce el período o aplica más filtros`,
     enSegundoPlano: 'Seguimos generando tu reporte; puedes seguir usando la aplicación',
+    mesEnCurso: (desde, hasta) => `Sin un rango de fechas se exporta el mes en curso (${desde} al ${hasta}).`,
   },
   dashboard: {
     errorIndicadores: 'No se pudieron cargar los indicadores',

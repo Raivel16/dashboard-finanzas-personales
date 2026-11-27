@@ -8,8 +8,11 @@ const FORMATOS = [
   { formato: 'xlsx', texto: 'Exportar a Excel', icono: FileSpreadsheet },
 ];
 
-/** Botones para llevarse el historial filtrado. Presentacional: todo llega por props. */
-export function BarraExportacion({ hayDatos, generando, lenta, error, deshabilitado, alExportar }) {
+/**
+ * Botones para llevarse el historial filtrado. Presentacional: todo llega por props.
+ * `periodo` ({ desde, hasta }) llega cuando no hay rango de fechas y el reporte usa el mes en curso.
+ */
+export function BarraExportacion({ sinDatos, periodo, generando, lenta, error, deshabilitado, alExportar }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
@@ -28,8 +31,11 @@ export function BarraExportacion({ hayDatos, generando, lenta, error, deshabilit
             {generando === formato ? 'Generando…' : texto}
           </Boton>
         ))}
-        {!hayDatos && <p className="text-sm text-tinta-suave">{MENSAJES.reporte.sinDatos}</p>}
+        {sinDatos && <p className="text-sm text-tinta-suave">{MENSAJES.reporte.sinDatos}</p>}
       </div>
+      {periodo && (
+        <p className="text-sm text-tinta-suave">{MENSAJES.reporte.mesEnCurso(periodo.desde, periodo.hasta)}</p>
+      )}
       {lenta && <Aviso tipo="info">{MENSAJES.reporte.enSegundoPlano}</Aviso>}
       {error && <Aviso tipo="error">{error}</Aviso>}
     </div>
