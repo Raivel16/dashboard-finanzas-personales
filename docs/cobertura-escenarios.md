@@ -286,16 +286,16 @@ Cada uno de los 132 escenarios de [historias-de-usuario.md](historias-de-usuario
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Cambio del idioma a inglés | [preferencias.test.js:29](../server/tests/preferencias.test.js#L29)<br>[preferencias.test.jsx:70](../client/tests/preferencias.test.jsx#L70) |
-| 2 | Idioma antes de iniciar sesión | [preferencias.test.js:42](../server/tests/preferencias.test.js#L42)<br>[preferencias.test.jsx:103](../client/tests/preferencias.test.jsx#L103) |
-| 3 | Mensajes de error en el idioma elegido | [preferencias.test.js:53](../server/tests/preferencias.test.js#L53)<br>[preferencias.test.jsx:122](../client/tests/preferencias.test.jsx#L122) |
-| 4 | Correos y reportes en el idioma elegido | [preferencias.test.js:119](../server/tests/preferencias.test.js#L119)<br>[preferencias.test.js:130](../server/tests/preferencias.test.js#L130) |
+| 1 | Cambio del idioma a inglés | [preferencias.test.js:45](../server/tests/preferencias.test.js#L45)<br>[preferencias.test.jsx:70](../client/tests/preferencias.test.jsx#L70) |
+| 2 | Idioma antes de iniciar sesión | [preferencias.test.js:58](../server/tests/preferencias.test.js#L58)<br>[preferencias.test.jsx:103](../client/tests/preferencias.test.jsx#L103) |
+| 3 | Mensajes de error en el idioma elegido | [preferencias.test.js:69](../server/tests/preferencias.test.js#L69)<br>[preferencias.test.jsx:122](../client/tests/preferencias.test.jsx#L122) |
+| 4 | Correos y reportes en el idioma elegido | [preferencias.test.js:96](../server/tests/preferencias.test.js#L96)<br>[preferencias.test.js:107](../server/tests/preferencias.test.js#L107) |
 
 ## HU-33 — Usar la aplicación de forma accesible
 
 | # | Escenario | Pruebas |
 |---|---|---|
 | 1 | Registro de un movimiento solo con teclado | [preferencias.test.jsx:235](../client/tests/preferencias.test.jsx#L235) |
-| 2 | Texto grande y alto contraste | [preferencias.test.js:201](../server/tests/preferencias.test.js#L201)<br>[preferencias.test.jsx:291](../client/tests/preferencias.test.jsx#L291) |
+| 2 | Texto grande y alto contraste | [preferencias.test.js:178](../server/tests/preferencias.test.js#L178)<br>[preferencias.test.jsx:291](../client/tests/preferencias.test.jsx#L291) |
 | 3 | Errores anunciados al lector de pantalla | [preferencias.test.jsx:355](../client/tests/preferencias.test.jsx#L355) |
-| 4 | Gráficos y pantallas sin barreras | [preferencias.test.jsx:376](../client/tests/preferencias.test.jsx#L376) |
+| 4 | Gráficos y pantallas sin barreras | [preferencias.test.jsx:401](../client/tests/preferencias.test.jsx#L401) |

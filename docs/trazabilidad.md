@@ -19,6 +19,7 @@ Las épicas se implementan una a la vez. Al completarse todas las historias de u
 | 9 | Épica 7: Dashboard e Indicadores Financieros | `implementar-dashboard` | `v0.9.0` |
 | 10 | Épica 9: Reportes y Exportación | `implementar-reportes` | `v0.10.0` |
 | 11 | Épica 10: Preferencias y Accesibilidad | `implementar-preferencias` | `v0.11.0` |
+| 12 | Entrega final (RT-08 y RT-09) | `preparar-entrega-final` | `v1.0.0` |
 
 Presupuestos va antes que el Dashboard porque el indicador de presupuesto utilizado (HU-12) depende de esa épica.
 
@@ -92,6 +93,8 @@ Son la base técnica del sistema. No son historias de usuario, pero cada uno hab
 | RT-05 | Usar una interfaz consistente y responsiva | No funcional (usabilidad y accesibilidad) | todas las historias con pantalla | `interfaz-usuario` | `definir-arquitectura-base` | `chore/configurar-proyecto-base` |
 | RT-06 | Poblar la base con datos de demostración | Técnico | demostración de HU-12, HU-13, HU-15, HU-28 y HU-30 | `plataforma-proyecto` | `definir-arquitectura-base` | `chore/configurar-proyecto-base` |
 | RT-07 | Crear el primer administrador | Técnico | HU-22, HU-23 | `plataforma-proyecto` | `definir-arquitectura-base` | `chore/configurar-proyecto-base` |
+| RT-08 | Identificar los recursos con UUID públicos | Técnico | todas las historias con datos | `contrato-api` | `preparar-entrega-final` | `chore/preparar-entrega-final` |
+| RT-09 | Verificar en la integración continua que cada escenario tenga su prueba | Técnico | regla de cierre de todas las historias | `plataforma-proyecto` | `preparar-entrega-final` | `chore/preparar-entrega-final` |
 
 ## Regla de cierre
 
