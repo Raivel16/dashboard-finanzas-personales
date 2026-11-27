@@ -25,7 +25,7 @@ const cuerpoDe = (llamada) => JSON.parse(llamada[1].body);
 const idiomaEnviado = (llamada) => llamada[1].headers['Accept-Language'];
 
 const CUENTA = {
-  id: '65f0000000000000000000a1',
+  id: '65f00000-0000-4000-8000-0000000000a1',
   nombre: 'Efectivo',
   tipo: 'efectivo',
   moneda: 'PEN',
@@ -33,7 +33,7 @@ const CUENTA = {
   saldoActual: '500.00',
 };
 const CATEGORIA = {
-  id: '65f000000000000000000001',
+  id: '65f00000-0000-4000-8000-000000000001',
   nombre: 'Alimentación',
   tipo: 'gasto',
   icono: 'utensils',

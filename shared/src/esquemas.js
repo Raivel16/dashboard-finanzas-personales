@@ -104,7 +104,7 @@ const idRegla = (etiqueta, obligatorio = true) => ({
   requerido: obligatorio,
   etiqueta,
   sanear: recortar,
-  reglas: [{ ok: (t) => validator.isMongoId(t), mensaje: MENSAJES.id }],
+  reglas: [{ ok: (t) => validator.isUUID(t, 4), mensaje: MENSAJES.id }],
 });
 
 const tipoMovimientoRegla = {

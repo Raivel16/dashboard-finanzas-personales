@@ -1,9 +1,9 @@
 // HU-16 · PDF, HU-17 · Excel y HU-31 · reportes por moneda, sobre la API. El reloj marca el 2026-01-15.
-import mongoose from 'mongoose';
 import request from 'supertest';
 import * as XLSX from 'xlsx';
 import { iniciarEntorno } from './helpers/api.js';
 import { Movimiento } from '../src/models/movimiento.model.js';
+import { v4 as uuid } from 'uuid';
 
 const binario = (res, cb) => {
   const trozos = [];
@@ -162,9 +162,9 @@ describe('reportes', () => {
       const cuenta = await p.cuenta();
       await mover(p.agente, cuenta.id, 'gasto', p.gasto('Salud').id, '1', '2026-01-02');
       // Acceso directo a la colección: el plugin de inquilino bloquea las consultas sin tenantId.
-      const copia = await Movimiento.collection.findOne({ cuentaId: new mongoose.Types.ObjectId(cuenta.id) });
+      const copia = await Movimiento.collection.findOne({ cuentaId: cuenta.id });
       await Movimiento.collection.insertMany(
-        Array.from({ length: 5000 }, () => ({ ...copia, _id: new mongoose.Types.ObjectId() })),
+        Array.from({ length: 5000 }, () => ({ ...copia, _id: uuid() })),
       );
       const res = await p.agente.get('/api/v1/reportes/movimientos.xlsx');
       expect(res.status).toBe(400);

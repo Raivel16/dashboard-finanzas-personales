@@ -12,13 +12,13 @@ vi.mock('../src/shared/utils/notificaciones.js', () => ({
 }));
 
 const CUENTAS = [
-  { id: '65f0000000000000000000a1', nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '500.00', saldoActual: '1460.00' },
-  { id: '65f0000000000000000000a2', nombre: 'Ahorros USD', tipo: 'banco', moneda: 'USD', saldoInicial: '200.00', saldoActual: '200.00' },
+  { id: '65f00000-0000-4000-8000-0000000000a1', nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '500.00', saldoActual: '1460.00' },
+  { id: '65f00000-0000-4000-8000-0000000000a2', nombre: 'Ahorros USD', tipo: 'banco', moneda: 'USD', saldoInicial: '200.00', saldoActual: '200.00' },
 ];
 const CATEGORIAS = [
-  { id: '65f000000000000000000001', nombre: 'Alimentación', tipo: 'gasto', icono: 'utensils' },
-  { id: '65f000000000000000000002', nombre: 'Transporte', tipo: 'gasto', icono: 'bus' },
-  { id: '65f000000000000000000003', nombre: 'Sueldo', tipo: 'ingreso', icono: 'wallet' },
+  { id: '65f00000-0000-4000-8000-000000000001', nombre: 'Alimentación', tipo: 'gasto', icono: 'utensils' },
+  { id: '65f00000-0000-4000-8000-000000000002', nombre: 'Transporte', tipo: 'gasto', icono: 'bus' },
+  { id: '65f00000-0000-4000-8000-000000000003', nombre: 'Sueldo', tipo: 'ingreso', icono: 'wallet' },
 ];
 const GASTO = {
   id: 'm1',
@@ -26,8 +26,8 @@ const GASTO = {
   monto: '40.00',
   moneda: 'PEN',
   fecha: '2026-01-10',
-  categoriaId: '65f000000000000000000001',
-  cuentaId: '65f0000000000000000000a1',
+  categoriaId: '65f00000-0000-4000-8000-000000000001',
+  cuentaId: '65f00000-0000-4000-8000-0000000000a1',
   descripcion: 'Almuerzo',
   saldoResultante: '460.00',
 };
@@ -37,8 +37,8 @@ const INGRESO = {
   monto: '1000.00',
   moneda: 'PEN',
   fecha: '2026-01-12',
-  categoriaId: '65f000000000000000000003',
-  cuentaId: '65f0000000000000000000a1',
+  categoriaId: '65f00000-0000-4000-8000-000000000003',
+  cuentaId: '65f00000-0000-4000-8000-0000000000a1',
   descripcion: '',
   saldoResultante: '1460.00',
 };
@@ -174,13 +174,13 @@ describe('HU-10 · HU-11 · consulta y filtrado', () => {
     const filtros = within(screen.getByRole('form', { name: 'Filtros del historial' }));
     fireEvent.change(filtros.getByLabelText('Desde'), { target: { value: '2026-01-01' } });
     fireEvent.change(filtros.getByLabelText('Hasta'), { target: { value: '2026-01-31' } });
-    await usuario.selectOptions(filtros.getByLabelText('Categoría'), '65f000000000000000000001');
+    await usuario.selectOptions(filtros.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000001');
     await usuario.click(filtros.getByRole('button', { name: 'Aplicar filtros' }));
     await waitFor(() => {
       const url = ultimaUrl(fetchSimulado);
       expect(url).toContain('desde=2026-01-01');
       expect(url).toContain('hasta=2026-01-31');
-      expect(url).toContain('categoriaId=65f000000000000000000001');
+      expect(url).toContain('categoriaId=65f00000-0000-4000-8000-000000000001');
     });
   });
 
@@ -219,8 +219,8 @@ describe('HU-08 · registrar', () => {
     expect(panel.getByLabelText('Fecha')).toHaveValue(fechaHoy());
 
     await entorno.usuario.type(panel.getByLabelText('Monto'), '150');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000002');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000002');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     await entorno.usuario.type(panel.getByLabelText('Descripción (opcional)'), '  Taxi al trabajo ');
     await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
 
@@ -229,8 +229,8 @@ describe('HU-08 · registrar', () => {
     expect(cuerpoDe(envio)).toEqual({
       tipo: 'gasto',
       monto: '150.00',
-      categoriaId: '65f000000000000000000002',
-      cuentaId: '65f0000000000000000000a1',
+      categoriaId: '65f00000-0000-4000-8000-000000000002',
+      cuentaId: '65f00000-0000-4000-8000-0000000000a1',
       fecha: fechaHoy(),
       descripcion: 'Taxi al trabajo',
     });
@@ -257,8 +257,8 @@ describe('HU-08 · registrar', () => {
     const panel = await abrirFormulario(entorno);
     await entorno.usuario.selectOptions(panel.getByLabelText('Tipo'), 'ingreso');
     await entorno.usuario.type(panel.getByLabelText('Monto'), '1500');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000003');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000003');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
     await waitFor(() => expect(notificar.exito).toHaveBeenCalled());
     registrado = true;
@@ -274,8 +274,8 @@ describe('HU-08 · registrar', () => {
     const entorno = await abrir();
     const panel = await abrirFormulario(entorno);
     await entorno.usuario.type(panel.getByLabelText('Monto'), '0');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000001');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000001');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     fireEvent.change(panel.getByLabelText('Fecha'), { target: { value: '' } });
     await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
 
@@ -302,8 +302,8 @@ describe('HU-08 · registrar', () => {
     const entorno = await abrir({ advertencias: ['El monto excede el saldo disponible de la cuenta'] });
     const panel = await abrirFormulario(entorno);
     await entorno.usuario.type(panel.getByLabelText('Monto'), '99999');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000001');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000001');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
 
     await waitFor(() => expect(notificar.exito).toHaveBeenCalledWith('El movimiento se registró'));
@@ -314,7 +314,7 @@ describe('HU-08 · registrar', () => {
   it('Categoría incompatible con el tipo: al cambiar a Ingreso se quita la categoría y se pide una de ingreso', async () => {
     const entorno = await abrir();
     const panel = await abrirFormulario(entorno);
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000001');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000001');
     expect(within(panel.getByLabelText('Categoría')).queryByRole('option', { name: 'Sueldo' })).not.toBeInTheDocument();
 
     await entorno.usuario.selectOptions(panel.getByLabelText('Tipo'), 'ingreso');
@@ -328,8 +328,8 @@ describe('HU-08 · registrar', () => {
     const entorno = await abrir();
     const panel = await abrirFormulario(entorno);
     await entorno.usuario.type(panel.getByLabelText('Monto'), '10');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000001');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000001');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     fireEvent.change(panel.getByLabelText('Fecha'), { target: { value: '2099-12-31' } });
     await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
 
@@ -350,8 +350,8 @@ describe('HU-08 · registrar', () => {
     });
     const panel = await abrirFormulario(entorno);
     await entorno.usuario.type(panel.getByLabelText('Monto'), '10');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f000000000000000000001');
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a1');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Categoría'), '65f00000-0000-4000-8000-000000000001');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a1');
     await entorno.usuario.click(panel.getByRole('button', { name: 'Registrar movimiento' }));
     expect(await panel.findByText('La cuenta seleccionada no existe')).toBeInTheDocument();
   });
@@ -376,8 +376,8 @@ describe('HU-09 · HU-27 · editar', () => {
     const entorno = await abrir();
     const panel = await abrirEdicion(entorno);
     expect(panel.getByLabelText('Monto')).toHaveValue('40.00');
-    expect(panel.getByLabelText('Categoría')).toHaveValue('65f000000000000000000001');
-    expect(panel.getByLabelText('Cuenta')).toHaveValue('65f0000000000000000000a1');
+    expect(panel.getByLabelText('Categoría')).toHaveValue('65f00000-0000-4000-8000-000000000001');
+    expect(panel.getByLabelText('Cuenta')).toHaveValue('65f00000-0000-4000-8000-0000000000a1');
     expect(panel.getByLabelText('Fecha')).toHaveValue('2026-01-10');
 
     await entorno.usuario.clear(panel.getByLabelText('Monto'));
@@ -389,7 +389,7 @@ describe('HU-09 · HU-27 · editar', () => {
     await waitFor(() => expect(notificar.exito).toHaveBeenCalledWith('El movimiento se actualizó'));
     const envio = llamadasA(entorno.fetchSimulado, '/movimientos/m1')[0];
     expect(envio[1].method).toBe('PATCH');
-    expect(cuerpoDe(envio)).toMatchObject({ monto: '60.00', descripcion: 'Cena', categoriaId: '65f000000000000000000001', cuentaId: '65f0000000000000000000a1' });
+    expect(cuerpoDe(envio)).toMatchObject({ monto: '60.00', descripcion: 'Cena', categoriaId: '65f00000-0000-4000-8000-000000000001', cuentaId: '65f00000-0000-4000-8000-0000000000a1' });
     expect(await screen.findByText('Cena')).toBeInTheDocument();
     expect(screen.queryByText('Almuerzo')).not.toBeInTheDocument();
   });
@@ -397,10 +397,10 @@ describe('HU-09 · HU-27 · editar', () => {
   it('Cambio de cuenta al editar: envía la cuenta nueva', async () => {
     const entorno = await abrir();
     const panel = await abrirEdicion(entorno);
-    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f0000000000000000000a2');
+    await entorno.usuario.selectOptions(panel.getByLabelText('Cuenta'), '65f00000-0000-4000-8000-0000000000a2');
     await entorno.usuario.click(panel.getByRole('button', { name: 'Guardar cambios' }));
     await waitFor(() => expect(notificar.exito).toHaveBeenCalledWith('El movimiento se actualizó'));
-    expect(cuerpoDe(llamadasA(entorno.fetchSimulado, '/movimientos/m1')[0])).toMatchObject({ cuentaId: '65f0000000000000000000a2' });
+    expect(cuerpoDe(llamadasA(entorno.fetchSimulado, '/movimientos/m1')[0])).toMatchObject({ cuentaId: '65f00000-0000-4000-8000-0000000000a2' });
   });
 
   it('Edición rechazada por datos inválidos: muestra el mensaje y no llama a la API', async () => {

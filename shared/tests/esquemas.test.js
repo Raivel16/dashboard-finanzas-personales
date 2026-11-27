@@ -23,7 +23,7 @@ import {
   validar,
 } from '../src/index.js';
 
-const ID = '64b7f0c2a1b2c3d4e5f60718';
+const ID = '0b9c1f6e-4a2d-4c8e-9f1a-2b3c4d5e6f70';
 const campos = (r) => r.errores.map((e) => e.campo);
 
 describe('validar', () => {

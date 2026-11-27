@@ -37,7 +37,7 @@ describe('categorías', () => {
       expect(res.body.data).toMatchObject({ nombre: 'Mascotas', tipo: 'gasto', icono: 'dog' });
 
       const usuario = await usuarios().findOne({ email: u.email });
-      const guardada = await categorias().findOne({ _id: new mongoose.Types.ObjectId(res.body.data.id) });
+      const guardada = await categorias().findOne({ _id: res.body.data.id });
       expect(guardada.tenantId).toBe(usuario.tenantId);
       expect(String(guardada.usuarioId)).toBe(String(usuario._id));
       expect(porNombre(await listar(agente), 'Mascotas')).toBeTruthy();
@@ -71,7 +71,7 @@ describe('categorías', () => {
       const transporte = porNombre(await listar(agente), 'Transporte');
       await movimientos().insertOne({
         tenantId: usuario.tenantId,
-        categoriaId: new mongoose.Types.ObjectId(transporte.id),
+        categoriaId: transporte.id,
       });
 
       const res = await agente.patch(`/api/v1/categorias/${transporte.id}`).send({ nombre: 'Movilidad' });
@@ -134,7 +134,7 @@ describe('categorías', () => {
       const salud = porNombre(await listar(agente), 'Salud');
       await movimientos().insertOne({
         tenantId: usuario.tenantId,
-        categoriaId: new mongoose.Types.ObjectId(salud.id),
+        categoriaId: salud.id,
       });
 
       const res = await agente.delete(`/api/v1/categorias/${salud.id}`);
@@ -157,7 +157,7 @@ describe('categorías', () => {
       const otra = porNombre(await listar(agente), 'Otros ingresos');
       await movimientos().insertOne({
         tenantId: 'otro-inquilino',
-        categoriaId: new mongoose.Types.ObjectId(otra.id),
+        categoriaId: otra.id,
       });
       expect((await agente.delete(`/api/v1/categorias/${otra.id}`)).status).toBe(204);
     });
@@ -212,7 +212,7 @@ describe('categorías', () => {
         usuarioId: String(usuarioB._id),
       });
       expect(res.status).toBe(201);
-      const guardada = await categorias().findOne({ _id: new mongoose.Types.ObjectId(res.body.data.id) });
+      const guardada = await categorias().findOne({ _id: res.body.data.id });
       expect(guardada.tenantId).not.toBe(usuarioB.tenantId);
       expect(porNombre(await listar(b.agente), 'Suplantada')).toBeUndefined();
       expect((await a.agente.delete('/api/v1/categorias/no-es-un-id')).status).toBe(404);
@@ -317,7 +317,7 @@ describe('HU-04 · HU-05 · HU-22 · lectura de categorías por administración'
   async function sesion(rol = ROLES.USUARIO) {
     const u = await e.registrar();
     if (rol !== ROLES.USUARIO) {
-      await usuarios().updateOne({ _id: new mongoose.Types.ObjectId(u.id) }, { $set: { rol } });
+      await usuarios().updateOne({ _id: u.id }, { $set: { rol } });
     }
     const { agente } = await e.iniciarSesion(u);
     return { u, agente };
@@ -351,7 +351,7 @@ describe('HU-04 · HU-05 · HU-22 · lectura de categorías por administración'
 
   it('HU-22 · un usuario inexistente o con id inválido responde 404 y uno sin categorías devuelve la lista vacía', async () => {
     const admin = await sesion(ROLES.ADMIN);
-    expect((await deUsuario(admin.agente, '65f000000000000000000000')).status).toBe(404);
+    expect((await deUsuario(admin.agente, '65f00000-0000-4000-8000-000000000000')).status).toBe(404);
     expect((await deUsuario(admin.agente, 'no-es-un-id')).status).toBe(404);
 
     const vacio = await sesion();

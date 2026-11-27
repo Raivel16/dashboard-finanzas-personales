@@ -37,4 +37,6 @@ jobs:
 
       - run: npm run lint
       - run: npm test
+      # RT-09: cada escenario de las historias tiene su prueba y docs/cobertura-escenarios.md está al día.
+      - run: npm run cobertura:comprobar
       - run: npm run build

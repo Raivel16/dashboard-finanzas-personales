@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
+import { ID_UUID } from '../src/models/plugins/identificador.js';
 import { conectar, desconectar } from '../src/config/baseDatos.js';
 import { tenantPlugin, TenantGuardError } from '../src/models/plugins/tenant.plugin.js';
 import { RepositorioBase } from '../src/repositories/base.repository.js';
 import { iniciarReplicaSet } from './helpers/baseDatos.js';
+import { v4 as uuid } from 'uuid';
 
-const esquema = new mongoose.Schema({ nombre: String, orden: Number }, { timestamps: true });
+const esquema = new mongoose.Schema({ ...ID_UUID, nombre: String, orden: Number }, { timestamps: true });
 esquema.plugin(tenantPlugin);
 const Elemento = mongoose.model('ElementoPrueba', esquema);
 
 const TENANT_A = 'a0a0a0a0-0000-4000-8000-000000000001';
 const TENANT_B = 'b0b0b0b0-0000-4000-8000-000000000002';
-const USUARIO = new mongoose.Types.ObjectId();
+const USUARIO = uuid();
 
 describe('aislamiento por tenantId (RT-02)', () => {
   let replica;
@@ -51,7 +53,7 @@ describe('aislamiento por tenantId (RT-02)', () => {
   });
 
   it('actualizarPorId descarta tenantId, usuarioId e _id: un documento no cambia de inquilino', async () => {
-    const otroUsuario = new mongoose.Types.ObjectId();
+    const otroUsuario = uuid();
     const doc = await repoA.crear({ nombre: 'original', usuarioId: USUARIO });
 
     // En el nivel superior y dentro de los operadores de actualización.
@@ -60,7 +62,7 @@ describe('aislamiento por tenantId (RT-02)', () => {
 
     const guardado = await Elemento.collection.findOne({ _id: doc._id });
     expect(guardado).toMatchObject({ nombre: 'dos', tenantId: TENANT_A });
-    expect(guardado.usuarioId.equals(USUARIO)).toBe(true);
+    expect(guardado.usuarioId === USUARIO).toBe(true);
     expect(await repoB.contar()).toBe(0);
   });
 
@@ -71,7 +73,7 @@ describe('aislamiento por tenantId (RT-02)', () => {
     for (const cambio of [
       { tenantId: TENANT_B },
       { $set: { tenantId: TENANT_B } },
-      { $set: { usuarioId: new mongoose.Types.ObjectId() } },
+      { $set: { usuarioId: uuid() } },
       { $setOnInsert: { tenantId: TENANT_B } },
     ]) {
       await expect(Elemento.updateOne(filtro, cambio)).rejects.toThrow(

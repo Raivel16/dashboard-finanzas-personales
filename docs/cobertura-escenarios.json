@@ -1,0 +1,556 @@
+{
+  "HU-01": {
+    "1": [
+      ["server/tests/registro.test.js", "Registro exitoso con datos válidos"],
+      ["client/tests/autenticacion.test.jsx", "Registro exitoso: envía los datos y lleva al inicio de sesión"]
+    ],
+    "2": [
+      ["server/tests/registro.test.js", "Creación exitosa de identificadores y aislamiento de datos"]
+    ],
+    "3": [
+      ["server/tests/registro.test.js", "Registro rechazado por correo ya registrado"],
+      ["client/tests/autenticacion.test.jsx", "Correo ya registrado"]
+    ],
+    "4": [
+      ["server/tests/registro.test.js", "Registro rechazado por contraseña insegura"],
+      ["client/tests/autenticacion.test.jsx", "Contraseña insegura"]
+    ]
+  },
+  "HU-02": {
+    "1": [
+      ["server/tests/sesion.test.js", "Inicio de sesión exitoso"],
+      ["client/tests/autenticacion.test.jsx", "Inicio de sesión exitoso"]
+    ],
+    "2": [
+      ["server/tests/sesion.test.js", "Acceso ampliado para un administrador"],
+      ["client/tests/administracion.test.jsx", "Administración autorizada"]
+    ],
+    "3": [
+      ["server/tests/sesion.test.js", "Bloqueo temporal por credenciales incorrectas"],
+      ["client/tests/autenticacion.test.jsx", "Cuenta bloqueada"]
+    ],
+    "4": [
+      ["server/tests/sesion.test.js", "Sesión invalidada por expiración del token"],
+      ["client/tests/autenticacion.test.jsx", "Sesión expirada"]
+    ]
+  },
+  "HU-03": {
+    "1": [
+      ["server/tests/recuperacion.test.js", "Solicitud de recuperación exitosa"],
+      ["client/tests/autenticacion.test.jsx", "Solicitud: muestra siempre el mensaje genérico"]
+    ],
+    "2": [
+      ["server/tests/recuperacion.test.js", "Restablecimiento exitoso"],
+      ["client/tests/autenticacion.test.jsx", "Restablecimiento exitoso"]
+    ],
+    "3": [
+      ["server/tests/recuperacion.test.js", "Correo no registrado: misma respuesta"]
+    ],
+    "4": [
+      ["server/tests/recuperacion.test.js", "Enlace expirado"],
+      ["client/tests/autenticacion.test.jsx", "Enlace expirado"]
+    ]
+  },
+  "HU-04": {
+    "1": [
+      ["server/tests/admin.test.js", "Restricción para usuario estándar"],
+      ["client/tests/administracion.test.jsx", "Restricción: un usuario estándar no ve la opción"]
+    ],
+    "2": [
+      ["server/tests/admin.test.js", "Administración autorizada"],
+      ["server/tests/movimientos.test.js", "HU-04 · el administrador consulta los movimientos"]
+    ],
+    "3": [
+      ["server/tests/admin.test.js", "Operación rechazada por falta de permisos"]
+    ],
+    "4": [
+      ["server/tests/admin.test.js", "Degradación durante la sesión"],
+      ["client/tests/administracion.test.jsx", "Degradación durante la sesión"]
+    ]
+  },
+  "HU-05": {
+    "1": [
+      ["server/tests/movimientos.test.js", "HU-05 · un usuario no ve ni modifica los movimientos de otro"]
+    ],
+    "2": [
+      ["server/tests/categorias.test.js", "HU-05 · un usuario no ve las categorías de otro"]
+    ],
+    "3": [
+      ["server/tests/movimientos.test.js", "Operación rechazada sobre un movimiento de otro usuario"]
+    ],
+    "4": [
+      ["server/tests/dashboard.test.js", "Usuarios con categorías de igual nombre"]
+    ]
+  },
+  "HU-06": {
+    "1": [
+      ["server/tests/categorias.test.js", "Creación exitosa"],
+      ["client/tests/categorias.test.jsx", "Creación exitosa"]
+    ],
+    "2": [
+      ["server/tests/categorias.test.js", "Edición exitosa: el nombre nuevo se lee en los movimientos históricos"],
+      ["client/tests/categorias.test.jsx", "Edición exitosa"]
+    ],
+    "3": [
+      ["server/tests/categorias.test.js", "Creación rechazada por nombre duplicado"],
+      ["client/tests/categorias.test.jsx", "Creación rechazada por nombre duplicado"]
+    ],
+    "4": [
+      ["server/tests/categorias.test.js", "Eliminación impedida por movimientos asociados"],
+      ["client/tests/categorias.test.jsx", "Eliminación impedida por movimientos asociados"]
+    ]
+  },
+  "HU-07": {
+    "1": [
+      ["server/tests/cuentas.test.js", "Registro exitoso: queda vinculada"],
+      ["client/tests/cuentas.test.jsx", "Registro exitoso en otra moneda"]
+    ],
+    "2": [
+      ["server/tests/cuentas.test.js", "Edición exitosa: cambia nombre y tipo"],
+      ["client/tests/cuentas.test.jsx", "Corrección del saldo inicial"]
+    ],
+    "3": [
+      ["server/tests/cuentas.test.js", "Registro rechazado por nombre vacío"],
+      ["client/tests/cuentas.test.jsx", "Nombre vacío"]
+    ],
+    "4": [
+      ["server/tests/cuentas.test.js", "Eliminación impedida por movimientos asociados"],
+      ["client/tests/cuentas.test.jsx", "Eliminación impedida por movimientos asociados"]
+    ]
+  },
+  "HU-08": {
+    "1": [
+      ["server/tests/movimientos.test.js", "Registro exitoso: guarda el gasto"],
+      ["client/tests/movimientos.test.jsx", "Registro exitoso: envía los datos del formulario"]
+    ],
+    "2": [
+      ["server/tests/movimientos.test.js", "Actualización automática de indicadores tras registrar un ingreso"],
+      ["client/tests/movimientos.test.jsx", "Actualización automática de indicadores tras registrar un ingreso"]
+    ],
+    "3": [
+      ["server/tests/movimientos.test.js", "Registro rechazado por monto o fecha inválidos"],
+      ["client/tests/movimientos.test.jsx", "Registro rechazado por monto o fecha inválidos"]
+    ],
+    "4": [
+      ["server/tests/movimientos.test.js", "Registro permitido con saldo insuficiente"],
+      ["client/tests/movimientos.test.jsx", "Registro permitido con saldo insuficiente"]
+    ]
+  },
+  "HU-09": {
+    "1": [
+      ["server/tests/movimientos.test.js", "Edición exitosa: cambia monto"],
+      ["server/tests/movimientos.test.js", "Edición exitosa: el dashboard recalcula"],
+      ["client/tests/movimientos.test.jsx", "Edición exitosa: precarga"]
+    ],
+    "2": [
+      ["server/tests/movimientos.test.js", "Eliminación exitosa: actualiza el historial, el dashboard y el seguimiento"],
+      ["client/tests/movimientos.test.jsx", "Eliminación exitosa: confirma"]
+    ],
+    "3": [
+      ["server/tests/movimientos.test.js", "Edición rechazada por datos inválidos"],
+      ["client/tests/movimientos.test.jsx", "Edición rechazada por datos inválidos"]
+    ],
+    "4": [
+      ["server/tests/movimientos.test.js", "Operación rechazada sobre un movimiento de otro usuario"]
+    ]
+  },
+  "HU-10": {
+    "1": [
+      ["server/tests/consulta-movimientos.test.js", "Consulta exitosa"],
+      ["client/tests/movimientos.test.jsx", "muestra descripción, categoría, cuenta"]
+    ],
+    "2": [
+      ["server/tests/consulta-movimientos.test.js", "Detalle de un movimiento"],
+      ["client/tests/movimientos.test.jsx", "Ver detalle"]
+    ],
+    "3": [
+      ["client/tests/movimientos.test.jsx", "un error de carga muestra el mensaje y permite reintentar"]
+    ],
+    "4": [
+      ["server/tests/consulta-movimientos.test.js", "Historial sin movimientos"],
+      ["client/tests/movimientos.test.jsx", "Historial vacío"]
+    ]
+  },
+  "HU-11": {
+    "1": [
+      ["server/tests/consulta-movimientos.test.js", "Filtrado exitoso por fecha y categoría"],
+      ["client/tests/movimientos.test.jsx", "Filtra por rango de fechas y categoría"]
+    ],
+    "2": [
+      ["server/tests/consulta-movimientos.test.js", "Combinación exitosa de filtros"]
+    ],
+    "3": [
+      ["server/tests/consulta-movimientos.test.js", "Filtro rechazado por rango de fechas inválido"],
+      ["client/tests/movimientos.test.jsx", "Rango de fechas inválido"]
+    ],
+    "4": [
+      ["server/tests/consulta-movimientos.test.js", "Resultado vacío por filtros sin coincidencias"],
+      ["client/tests/movimientos.test.jsx", "Sin resultados"]
+    ]
+  },
+  "HU-12": {
+    "1": [
+      ["server/tests/dashboard.test.js", "Indicadores del mes en curso"],
+      ["client/tests/dashboard.test.jsx", "Visualización exitosa"]
+    ],
+    "2": [
+      ["server/tests/dashboard.test.js", "Cambio de período"],
+      ["client/tests/dashboard.test.jsx", "Cambio de período"]
+    ],
+    "3": [
+      ["client/tests/dashboard.test.jsx", "Error controlado"]
+    ],
+    "4": [
+      ["server/tests/dashboard.test.js", "Sin movimientos: todo en cero"],
+      ["client/tests/dashboard.test.jsx", "Sin movimientos: valores en cero"]
+    ]
+  },
+  "HU-13": {
+    "1": [
+      ["server/tests/dashboard.test.js", "Evolución de 6 meses"],
+      ["client/tests/dashboard.test.jsx", "Evolución de ingresos y gastos"]
+    ],
+    "2": [
+      ["client/tests/dashboard.test.jsx", "Tooltip"]
+    ],
+    "3": [
+      ["client/tests/dashboard.test.jsx", "Error al generar los gráficos"]
+    ],
+    "4": [
+      ["server/tests/dashboard.test.js", "Solo ingresos: la distribución viene vacía"],
+      ["client/tests/dashboard.test.jsx", "Sin gastos: estado vacío"]
+    ]
+  },
+  "HU-14": {
+    "1": [
+      ["server/tests/presupuestos.test.js", "Definición exitosa"],
+      ["client/tests/presupuestos.test.jsx", "Definición exitosa"]
+    ],
+    "2": [
+      ["server/tests/presupuestos.test.js", "Asignación por categoría"],
+      ["client/tests/presupuestos.test.jsx", "Asignación por categoría"]
+    ],
+    "3": [
+      ["server/tests/presupuestos.test.js", "Monto inválido (%j): se rechaza"],
+      ["client/tests/presupuestos.test.jsx", "Monto inválido (%j): muestra el mensaje"]
+    ],
+    "4": [
+      ["server/tests/presupuestos.test.js", "Reemplazar un presupuesto existente"],
+      ["client/tests/presupuestos.test.jsx", "Confirmación para reemplazar"]
+    ]
+  },
+  "HU-15": {
+    "1": [
+      ["server/tests/presupuestos.test.js", "Avance del 60 %"],
+      ["client/tests/presupuestos.test.jsx", "Avance del 60 %"]
+    ],
+    "2": [
+      ["server/tests/presupuestos.test.js", "Alerta al cruzar el 90 %"],
+      ["client/tests/presupuestos.test.jsx", "Al cruzar el 90 % del general"]
+    ],
+    "3": [
+      ["server/tests/presupuestos.test.js", "Sin presupuesto definido"],
+      ["client/tests/presupuestos.test.jsx", "Sin presupuesto definido"]
+    ],
+    "4": [
+      ["server/tests/presupuestos.test.js", "Excedido: alerta de 100"],
+      ["client/tests/presupuestos.test.jsx", "Presupuesto excedido"]
+    ]
+  },
+  "HU-16": {
+    "1": [
+      ["server/tests/reportes.test.js", "Exportación exitosa: descarga un PDF válido"],
+      ["client/tests/reportes.test.jsx", "Exportación exitosa: pide el PDF"]
+    ],
+    "2": [
+      ["server/tests/reportes.test.js", "Sin filtros usa el mes en curso"],
+      ["client/tests/reportes.test.jsx", "Período por defecto"]
+    ],
+    "3": [
+      ["client/tests/reportes.test.jsx", "Sin datos: deshabilita ambos botones"],
+      ["client/tests/reportes.test.jsx", "Con movimientos solo de meses anteriores"]
+    ],
+    "4": [
+      ["client/tests/reportes.test.jsx", "Alto volumen"]
+    ]
+  },
+  "HU-17": {
+    "1": [
+      ["server/tests/reportes.test.js", "Exportación exitosa: descarga .xlsx"],
+      ["client/tests/reportes.test.jsx", "Exportación exitosa: descarga el .xlsx"]
+    ],
+    "2": [
+      ["server/tests/reportes.test.js", "Hoja \"Resumen\""]
+    ],
+    "3": [
+      ["server/tests/reportes.test.js", "Sin movimientos: 400"],
+      ["client/tests/reportes.test.jsx", "Sin datos: deshabilita ambos botones"]
+    ],
+    "4": [
+      ["client/tests/reportes.test.jsx", "Conexión cortada"]
+    ]
+  },
+  "HU-18": {
+    "1": [
+      ["server/tests/cierre.test.js", "Cierre de sesión exitoso"],
+      ["client/tests/autenticacion.test.jsx", "cierra la sesión, lleva al inicio de sesión"]
+    ],
+    "2": [
+      ["server/tests/cierre.test.js", "Cierre de sesión con otras sesiones activas"]
+    ],
+    "3": [
+      ["server/tests/cierre.test.js", "Regreso tras cerrar sesión"],
+      ["client/tests/autenticacion.test.jsx", "\"Atrás\" no vuelve a mostrar datos"]
+    ],
+    "4": [
+      ["server/tests/cierre.test.js", "Cierre con la sesión ya expirada"]
+    ]
+  },
+  "HU-19": {
+    "1": [
+      ["server/tests/sesion.test.js", "Sesión renovada mientras el usuario está activo"],
+      ["client/tests/autenticacion.test.jsx", "Token de acceso vencido"]
+    ],
+    "2": [
+      ["server/tests/sesion.test.js", "Regreso después de una pausa corta"]
+    ],
+    "3": [
+      ["server/tests/sesion.test.js", "un token de acceso de una sesión revocada"],
+      ["client/tests/autenticacion.test.jsx", "Sesión cerrada desde otro dispositivo"]
+    ],
+    "4": [
+      ["server/tests/sesion.test.js", "Límite máximo de la sesión"]
+    ]
+  },
+  "HU-20": {
+    "1": [
+      ["server/tests/perfil.test.js", "Actualización exitosa del nombre"],
+      ["client/tests/perfil.test.jsx", "Actualización exitosa del nombre"]
+    ],
+    "2": [
+      ["server/tests/perfil.test.js", "el dashboard se abre desde entonces en USD"],
+      ["client/tests/perfil.test.jsx", "Cambio de moneda principal"]
+    ],
+    "3": [
+      ["server/tests/perfil.test.js", "Nombre inválido rechazado"],
+      ["client/tests/perfil.test.jsx", "Nombre inválido"]
+    ],
+    "4": [
+      ["server/tests/perfil.test.js", "Correo no editable"],
+      ["client/tests/perfil.test.jsx", "Correo no editable"]
+    ]
+  },
+  "HU-21": {
+    "1": [
+      ["server/tests/perfil.test.js", "Cambio exitoso: la contraseña nueva funciona"],
+      ["client/tests/perfil.test.jsx", "Cambio exitoso"]
+    ],
+    "2": [
+      ["server/tests/perfil.test.js", "Cierre de las demás sesiones"]
+    ],
+    "3": [
+      ["server/tests/perfil.test.js", "Contraseña actual incorrecta"],
+      ["client/tests/perfil.test.jsx", "Contraseña actual incorrecta"]
+    ],
+    "4": [
+      ["server/tests/perfil.test.js", "Nueva contraseña igual a la actual"],
+      ["client/tests/perfil.test.jsx", "Nueva igual a la actual"]
+    ]
+  },
+  "HU-22": {
+    "1": [
+      ["client/tests/administracion.test.jsx", "Consulta de los datos de un usuario"],
+      ["client/tests/presupuestos.test.jsx", "Se muestran en solo lectura"]
+    ],
+    "2": [
+      ["server/tests/admin.test.js", "Búsqueda de usuarios"],
+      ["client/tests/administracion.test.jsx", "Búsqueda de usuarios"]
+    ],
+    "3": [
+      ["server/tests/admin.test.js", "Modificación de datos ajenos rechazada"],
+      ["server/tests/movimientos.test.js", "HU-22 · el administrador no puede modificar movimientos ajenos"]
+    ],
+    "4": [
+      ["server/tests/movimientos.test.js", "HU-22 · un usuario inexistente o inválido responde 404 y uno sin movimientos"],
+      ["client/tests/administracion.test.jsx", "\"Este usuario aún no tiene movimientos\""]
+    ]
+  },
+  "HU-23": {
+    "1": [
+      ["server/tests/admin.test.js", "Promoción: el usuario pasa a administrador"],
+      ["client/tests/administracion.test.jsx", "Promoción: confirma"]
+    ],
+    "2": [
+      ["server/tests/admin.test.js", "Degradación de otro administrador"],
+      ["client/tests/administracion.test.jsx", "Degradación de otro administrador"]
+    ],
+    "3": [
+      ["client/tests/administracion.test.jsx", "Cambio de rol sin confirmar"]
+    ],
+    "4": [
+      ["server/tests/admin.test.js", "Degradación del último administrador rechazada"],
+      ["client/tests/administracion.test.jsx", "Degradación del último administrador rechazada"]
+    ]
+  },
+  "HU-24": {
+    "1": [
+      ["server/tests/categorias.test.js", "Categorías disponibles tras el registro"],
+      ["client/tests/categorias.test.jsx", "muestra las categorías agrupadas"]
+    ],
+    "2": [
+      ["server/tests/categorias.test.js", "Edición sin afectar a otros usuarios"]
+    ],
+    "3": [
+      ["server/tests/categorias.test.js", "no queda una cuenta incompleta"]
+    ],
+    "4": [
+      ["server/tests/categorias.test.js", "Categoría predeterminada eliminada"]
+    ]
+  },
+  "HU-25": {
+    "1": [
+      ["server/tests/cuentas.test.js", "Cuenta creada en otra moneda"],
+      ["client/tests/cuentas.test.jsx", "Registro exitoso en otra moneda"]
+    ],
+    "2": [
+      ["server/tests/cuentas.test.js", "Corrección del saldo inicial: de 100.00 a 120.00"],
+      ["client/tests/cuentas.test.jsx", "Corrección del saldo inicial"]
+    ],
+    "3": [
+      ["server/tests/cuentas.test.js", "Moneda no seleccionada"],
+      ["client/tests/cuentas.test.jsx", "Moneda no seleccionada"]
+    ],
+    "4": [
+      ["server/tests/cuentas.test.js", "Cambio de moneda impedido en una cuenta con movimientos: 409"],
+      ["client/tests/cuentas.test.jsx", "Cambio de moneda impedido por movimientos"]
+    ]
+  },
+  "HU-26": {
+    "1": [
+      ["server/tests/movimientos.test.js", "Saldo coherente tras varias operaciones"]
+    ],
+    "2": [
+      ["server/tests/movimientos.test.js", "Saldo resultante en el historial"],
+      ["client/tests/movimientos.test.jsx", "el saldo que dejó cada movimiento"]
+    ],
+    "3": [
+      ["server/tests/movimientos.test.js", "Registro interrumpido"]
+    ],
+    "4": [
+      ["server/tests/movimientos.test.js", "Movimiento registrado con fecha anterior"]
+    ]
+  },
+  "HU-27": {
+    "1": [
+      ["server/tests/movimientos.test.js", "Movimiento registrado en la moneda de su cuenta"]
+    ],
+    "2": [
+      ["server/tests/movimientos.test.js", "Cambio de cuenta al editar"],
+      ["client/tests/movimientos.test.jsx", "Cambio de cuenta al editar"]
+    ],
+    "3": [
+      ["server/tests/movimientos.test.js", "Categoría incompatible con el tipo"],
+      ["client/tests/movimientos.test.jsx", "Categoría incompatible con el tipo"]
+    ],
+    "4": [
+      ["server/tests/movimientos.test.js", "Fecha futura rechazada"],
+      ["client/tests/movimientos.test.jsx", "Fecha futura rechazada"]
+    ]
+  },
+  "HU-28": {
+    "1": [
+      ["server/tests/dashboard.test.js", "Por defecto usa la moneda principal"],
+      ["client/tests/dashboard.test.jsx", "Por defecto usa la moneda principal"]
+    ],
+    "2": [
+      ["server/tests/dashboard.test.js", "Los gráficos también usan solo la moneda elegida"],
+      ["client/tests/dashboard.test.jsx", "Cambio de moneda"]
+    ],
+    "3": [
+      ["client/tests/dashboard.test.jsx", "Error al cambiar de moneda"]
+    ],
+    "4": [
+      ["server/tests/dashboard.test.js", "Selector limitado a las monedas en uso"],
+      ["client/tests/dashboard.test.jsx", "Selector limitado a las monedas en uso"]
+    ]
+  },
+  "HU-29": {
+    "1": [
+      ["server/tests/presupuestos.test.js", "Presupuestos independientes por moneda"],
+      ["client/tests/presupuestos.test.jsx", "Presupuestos independientes por moneda"]
+    ],
+    "2": [
+      ["server/tests/presupuestos.test.js", "Gastos en otra moneda no cuentan"]
+    ],
+    "3": [
+      ["server/tests/presupuestos.test.js", "Mes pasado rechazado"],
+      ["client/tests/presupuestos.test.jsx", "Mes pasado rechazado"]
+    ],
+    "4": [
+      ["server/tests/presupuestos.test.js", "Presupuesto en una moneda sin gastos"]
+    ]
+  },
+  "HU-30": {
+    "1": [
+      ["server/tests/presupuestos.test.js", "Categoría dentro del general"]
+    ],
+    "2": [
+      ["server/tests/presupuestos.test.js", "Gasto sin presupuesto de categoría"]
+    ],
+    "3": [
+      ["server/tests/presupuestos.test.js", "Suma superior al general"],
+      ["client/tests/presupuestos.test.jsx", "Suma superior al general"]
+    ],
+    "4": [
+      ["server/tests/presupuestos.test.js", "Reducción del general por debajo de lo asignado"]
+    ]
+  },
+  "HU-31": {
+    "1": [
+      ["server/tests/reportes.test.js", "Excel con varias monedas"]
+    ],
+    "2": [
+      ["server/tests/reportes.test.js", "Con varias monedas muestra ingresos, gastos y balance"]
+    ],
+    "3": [
+      ["server/tests/reportes.test.js", "Más de 5000 movimientos"],
+      ["client/tests/reportes.test.jsx", "Más de 5000"]
+    ],
+    "4": [
+      ["server/tests/reportes.test.js", "Reporte aislado por usuario"]
+    ]
+  },
+  "HU-32": {
+    "1": [
+      ["server/tests/preferencias.test.js", "Cambio del idioma a inglés: se guarda"],
+      ["client/tests/preferencias.test.jsx", "Cambio del idioma a inglés: toda la interfaz"]
+    ],
+    "2": [
+      ["server/tests/preferencias.test.js", "Idioma antes de iniciar sesión"],
+      ["client/tests/preferencias.test.jsx", "Idioma antes de iniciar sesión"]
+    ],
+    "3": [
+      ["server/tests/preferencias.test.js", "Mensajes de error en el idioma elegido"],
+      ["client/tests/preferencias.test.jsx", "Mensajes de error en el idioma elegido: un monto 0"]
+    ],
+    "4": [
+      ["server/tests/preferencias.test.js", "Correos y reportes en el idioma elegido: el correo"],
+      ["server/tests/preferencias.test.js", "Correos y reportes en el idioma elegido: el PDF"]
+    ]
+  },
+  "HU-33": {
+    "1": [
+      ["client/tests/preferencias.test.jsx", "Registro de un movimiento solo con teclado: Tab"]
+    ],
+    "2": [
+      ["server/tests/preferencias.test.js", "Texto grande y alto contraste"],
+      ["client/tests/preferencias.test.jsx", "Texto grande y alto contraste: se activan"]
+    ],
+    "3": [
+      ["client/tests/preferencias.test.jsx", "Errores anunciados al lector de pantalla"]
+    ],
+    "4": [
+      ["client/tests/preferencias.test.jsx", "Gráficos y pantallas sin barreras: cada gráfico"]
+    ]
+  }
+}

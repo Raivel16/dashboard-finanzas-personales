@@ -1,10 +1,12 @@
 // Identidad del usuario. No usa el plugin de tenantId: se consulta por correo o id antes de que exista
 // un inquilino autenticado (el tenantId se guarda aquí y viaja en el token de acceso).
 import mongoose from 'mongoose';
+import { ID_UUID } from './plugins/identificador.js';
 import { IDIOMAS, MONEDAS, ROLES } from '@finanzas/shared';
 
 const esquema = new mongoose.Schema(
   {
+    ...ID_UUID,
     tenantId: { type: String, required: true, unique: true },
     nombre: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },

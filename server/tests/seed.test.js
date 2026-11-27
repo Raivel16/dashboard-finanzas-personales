@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import { cargarDemo, crearAdministrador, validarEntorno } from '../scripts/seed.js';
 import { iniciarReplicaSet } from './helpers/baseDatos.js';
+import { v4 as uuid } from 'uuid';
 
 const coleccion = (nombre) => mongoose.connection.collection(nombre);
 const aCentimos = (decimal) => Math.round(Number(decimal.toString()) * 100);
@@ -50,7 +51,7 @@ describe('seed (RT-06, RT-07)', () => {
       expect(new Set(usuarios.map((u) => u.tenantId)).size).toBe(usuarios.length);
       for (const nombre of ['categorias', 'cuentas', 'movimientos', 'presupuestos']) {
         for (const doc of await coleccion(nombre).find().toArray()) {
-          const dueño = usuarios.find((u) => u._id.equals(doc.usuarioId));
+          const dueño = usuarios.find((u) => u._id === doc.usuarioId);
           expect(dueño?.tenantId).toBe(doc.tenantId);
         }
       }
@@ -77,7 +78,7 @@ describe('seed (RT-06, RT-07)', () => {
       const avances = presupuestos.map((p) => {
         const gastado = gastos
           .filter((m) => m.fecha.toISOString().startsWith(periodoActual))
-          .filter((m) => (p.categoriaId ? m.categoriaId.equals(p.categoriaId) : true))
+          .filter((m) => (p.categoriaId ? m.categoriaId === p.categoriaId : true))
           .reduce((suma, m) => suma + aCentimos(m.monto), 0);
         return gastado / aCentimos(p.monto);
       });
@@ -89,7 +90,7 @@ describe('seed (RT-06, RT-07)', () => {
     it('al repetirse reemplaza solo los datos demo y no toca a los demás usuarios', async () => {
       await cargarDemo({ password: 'Demo1234' });
       const real = {
-        _id: new mongoose.Types.ObjectId(),
+        _id: uuid(),
         tenantId: 'real-1',
         email: 'persona@correo.com',
         rol: 'usuario',
@@ -150,7 +151,7 @@ describe('seed (RT-06, RT-07)', () => {
 
     it('no promueve a un usuario estándar existente ni lo modifica', async () => {
       const estandar = {
-        _id: new mongoose.Types.ObjectId(),
+        _id: uuid(),
         tenantId: 't-1',
         email: 'jefe@empresa.com',
         rol: 'usuario',

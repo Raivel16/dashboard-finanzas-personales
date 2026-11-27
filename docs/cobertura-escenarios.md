@@ -1,6 +1,8 @@
 # Cobertura de escenarios
 
-Cada uno de los 132 escenarios de [historias-de-usuario.md](historias-de-usuario.md) (33 historias × 4) y la prueba automática que lo verifica. "servidor" son pruebas de la API (Jest + Supertest) y "cliente" pruebas de la interfaz (Vitest + Testing Library).
+Cada uno de los 132 escenarios de [historias-de-usuario.md](historias-de-usuario.md) (33 historias) y la prueba automática que lo verifica. "server/tests" son pruebas de la API (Jest + Supertest) y "client/tests" pruebas de la interfaz (Vitest + Testing Library).
+
+Este archivo se genera con `npm run cobertura` a partir de [cobertura-escenarios.json](cobertura-escenarios.json); la integración continua falla si un escenario queda sin prueba o si este archivo no está al día (RT-09).
 
 
 ## HU-01 — Registro de nuevo usuario
@@ -70,10 +72,10 @@ Cada uno de los 132 escenarios de [historias-de-usuario.md](historias-de-usuario
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Restricción de acceso para usuario estándar | [admin.test.js:69](../server/tests/admin.test.js#L69)<br>[administracion.test.jsx:46](../client/tests/administracion.test.jsx#L46) |
-| 2 | Administración autorizada para usuario administrador | [admin.test.js:110](../server/tests/admin.test.js#L110)<br>[movimientos.test.js:561](../server/tests/movimientos.test.js#L561) |
-| 3 | Operación rechazada por falta de permisos | [admin.test.js:86](../server/tests/admin.test.js#L86) |
-| 4 | Denegación tras degradación de rol durante una sesión | [admin.test.js:115](../server/tests/admin.test.js#L115)<br>[administracion.test.jsx:59](../client/tests/administracion.test.jsx#L59) |
+| 1 | Restricción de acceso para usuario estándar | [admin.test.js:70](../server/tests/admin.test.js#L70)<br>[administracion.test.jsx:46](../client/tests/administracion.test.jsx#L46) |
+| 2 | Administración autorizada para usuario administrador | [admin.test.js:111](../server/tests/admin.test.js#L111)<br>[movimientos.test.js:561](../server/tests/movimientos.test.js#L561) |
+| 3 | Operación rechazada por falta de permisos | [admin.test.js:87](../server/tests/admin.test.js#L87) |
+| 4 | Denegación tras degradación de rol durante una sesión | [admin.test.js:116](../server/tests/admin.test.js#L116)<br>[administracion.test.jsx:59](../client/tests/administracion.test.jsx#L59) |
 
 ## HU-05 — Privacidad de mis datos financieros
 
@@ -89,18 +91,18 @@ Cada uno de los 132 escenarios de [historias-de-usuario.md](historias-de-usuario
 | # | Escenario | Pruebas |
 |---|---|---|
 | 1 | Consulta de los datos de un usuario | [administracion.test.jsx:111](../client/tests/administracion.test.jsx#L111)<br>[presupuestos.test.jsx:342](../client/tests/presupuestos.test.jsx#L342) |
-| 2 | Búsqueda de usuarios | [admin.test.js:131](../server/tests/admin.test.js#L131)<br>[administracion.test.jsx:80](../client/tests/administracion.test.jsx#L80) |
-| 3 | Modificación de datos ajenos rechazada | [admin.test.js:175](../server/tests/admin.test.js#L175)<br>[movimientos.test.js:598](../server/tests/movimientos.test.js#L598) |
+| 2 | Búsqueda de usuarios | [admin.test.js:132](../server/tests/admin.test.js#L132)<br>[administracion.test.jsx:80](../client/tests/administracion.test.jsx#L80) |
+| 3 | Modificación de datos ajenos rechazada | [admin.test.js:176](../server/tests/admin.test.js#L176)<br>[movimientos.test.js:598](../server/tests/movimientos.test.js#L598) |
 | 4 | Usuario sin información registrada | [movimientos.test.js:587](../server/tests/movimientos.test.js#L587)<br>[administracion.test.jsx:111](../client/tests/administracion.test.jsx#L111) |
 
 ## HU-23 — Gestionar roles de usuarios
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Promoción de un usuario a administrador | [admin.test.js:217](../server/tests/admin.test.js#L217)<br>[administracion.test.jsx:222](../client/tests/administracion.test.jsx#L222) |
-| 2 | Degradación de otro administrador | [admin.test.js:226](../server/tests/admin.test.js#L226)<br>[administracion.test.jsx:268](../client/tests/administracion.test.jsx#L268) |
+| 1 | Promoción de un usuario a administrador | [admin.test.js:218](../server/tests/admin.test.js#L218)<br>[administracion.test.jsx:222](../client/tests/administracion.test.jsx#L222) |
+| 2 | Degradación de otro administrador | [admin.test.js:227](../server/tests/admin.test.js#L227)<br>[administracion.test.jsx:268](../client/tests/administracion.test.jsx#L268) |
 | 3 | Cambio de rol sin confirmar | [administracion.test.jsx:238](../client/tests/administracion.test.jsx#L238) |
-| 4 | Degradación del último administrador rechazada | [admin.test.js:239](../server/tests/admin.test.js#L239)<br>[administracion.test.jsx:249](../client/tests/administracion.test.jsx#L249) |
+| 4 | Degradación del último administrador rechazada | [admin.test.js:240](../server/tests/admin.test.js#L240)<br>[administracion.test.jsx:249](../client/tests/administracion.test.jsx#L249) |
 
 ## HU-06 — Administrar categorías de ingresos y gastos
 

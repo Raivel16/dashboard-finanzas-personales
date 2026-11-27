@@ -2,6 +2,7 @@
 // Los datos financieros aún no existen: el acceso ajeno de solo lectura se prueba con un recurso de prueba.
 import { jest } from '@jest/globals';
 import mongoose from 'mongoose';
+import { ID_UUID } from '../src/models/plugins/identificador.js';
 import request from 'supertest';
 import { ROLES } from '@finanzas/shared';
 import { tenantPlugin } from '../src/models/plugins/tenant.plugin.js';
@@ -9,7 +10,7 @@ import { RepositorioBase } from '../src/repositories/base.repository.js';
 import { crearAutorizacion } from '../src/services/autorizacion.service.js';
 import { iniciarEntorno } from './helpers/api.js';
 
-const esquemaPrueba = new mongoose.Schema({ nombre: String }, { timestamps: true });
+const esquemaPrueba = new mongoose.Schema({ ...ID_UUID, nombre: String }, { timestamps: true });
 esquemaPrueba.plugin(tenantPlugin);
 const Recurso = mongoose.models.RecursoPrueba ?? mongoose.model('RecursoPrueba', esquemaPrueba);
 
@@ -50,10 +51,10 @@ describe('control de acceso y administración', () => {
 
   const usuarios = () => mongoose.connection.collection('usuarios');
   const fijarRol = (id, rol) =>
-    usuarios().updateOne({ _id: new mongoose.Types.ObjectId(id) }, { $set: { rol } });
+    usuarios().updateOne({ _id: id }, { $set: { rol } });
   const dejarSoloAdmin = (id) =>
     usuarios().updateMany(
-      { rol: ROLES.ADMIN, _id: { $ne: new mongoose.Types.ObjectId(id) } },
+      { rol: ROLES.ADMIN, _id: { $ne: id } },
       { $set: { rol: ROLES.USUARIO } },
     );
 
@@ -70,8 +71,8 @@ describe('control de acceso y administración', () => {
       const { agente } = await sesion();
       for (const [metodo, ruta] of [
         ['get', '/api/v1/admin/usuarios'],
-        ['get', '/api/v1/admin/usuarios/65f000000000000000000000'],
-        ['patch', '/api/v1/admin/usuarios/65f000000000000000000000/rol'],
+        ['get', '/api/v1/admin/usuarios/65f00000-0000-4000-8000-000000000000'],
+        ['patch', '/api/v1/admin/usuarios/65f00000-0000-4000-8000-000000000000/rol'],
       ]) {
         const res = await agente[metodo](ruta).send({ rol: 'admin' });
         expect(res.status).toBe(403);
@@ -169,7 +170,7 @@ describe('control de acceso y administración', () => {
       const res = await agente.get(`/api/v1/admin/usuarios/${otro.id}`);
       expect(res.body.data).toMatchObject({ id: otro.id, email: otro.email, rol: 'usuario' });
       expect((await agente.get('/api/v1/admin/usuarios/no-es-un-id')).status).toBe(404);
-      expect((await agente.get('/api/v1/admin/usuarios/65f000000000000000000000')).status).toBe(404);
+      expect((await agente.get('/api/v1/admin/usuarios/65f00000-0000-4000-8000-000000000000')).status).toBe(404);
     });
 
     it('Modificación de datos ajenos rechazada: el administrador lee, pero no puede editar lo de otra persona', async () => {
@@ -250,7 +251,7 @@ describe('control de acceso y administración', () => {
       const a = await sesion(ROLES.ADMIN);
       const b = await sesion(ROLES.ADMIN);
       await usuarios().updateMany(
-        { rol: ROLES.ADMIN, _id: { $nin: [a.u.id, b.u.id].map((i) => new mongoose.Types.ObjectId(i)) } },
+        { rol: ROLES.ADMIN, _id: { $nin: [a.u.id, b.u.id].map((i) => i) } },
         { $set: { rol: ROLES.USUARIO } },
       );
 
@@ -267,7 +268,7 @@ describe('control de acceso y administración', () => {
       const otro = await e.registrar();
       expect((await rol(admin.agente, otro.id, 'root')).status).toBe(400);
       expect((await rol(admin.agente, 'no-es-un-id', 'admin')).status).toBe(404);
-      expect((await rol(admin.agente, '65f000000000000000000000', 'admin')).status).toBe(404);
+      expect((await rol(admin.agente, '65f00000-0000-4000-8000-000000000000', 'admin')).status).toBe(404);
       const igual = await rol(admin.agente, otro.id, 'usuario');
       expect(igual.status).toBe(200);
       expect(igual.body.data.rol).toBe('usuario');

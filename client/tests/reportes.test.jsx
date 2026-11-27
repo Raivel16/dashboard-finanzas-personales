@@ -10,7 +10,7 @@ vi.mock('../src/shared/utils/descargas.js', () => ({ guardarArchivo: vi.fn() }))
 
 const CUENTAS = [
   {
-    id: '65f0000000000000000000a1',
+    id: '65f00000-0000-4000-8000-0000000000a1',
     nombre: 'Efectivo',
     tipo: 'efectivo',
     moneda: 'PEN',
@@ -19,7 +19,7 @@ const CUENTAS = [
   },
 ];
 const CATEGORIAS = [
-  { id: '65f000000000000000000001', nombre: 'Alimentación', tipo: 'gasto', icono: 'utensils' },
+  { id: '65f00000-0000-4000-8000-000000000001', nombre: 'Alimentación', tipo: 'gasto', icono: 'utensils' },
 ];
 const GASTO = {
   id: 'm1',
@@ -27,8 +27,8 @@ const GASTO = {
   monto: '40.00',
   moneda: 'PEN',
   fecha: '2026-01-10',
-  categoriaId: '65f000000000000000000001',
-  cuentaId: '65f0000000000000000000a1',
+  categoriaId: '65f00000-0000-4000-8000-000000000001',
+  cuentaId: '65f00000-0000-4000-8000-0000000000a1',
   descripcion: 'Almuerzo',
   saldoResultante: '460.00',
 };
