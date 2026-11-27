@@ -59,6 +59,11 @@ export const usuarioRepository = {
     return Usuario.findByIdAndUpdate(id, { $set: cambios }, { returnDocument: 'after' }).lean();
   },
 
+  /** Guarda las preferencias de idioma y accesibilidad recibidas (HU-32, HU-33). */
+  async actualizarPreferencias(id, preferencias) {
+    return Usuario.findByIdAndUpdate(id, { $set: preferencias }, { returnDocument: 'after' }).lean();
+  },
+
   /** Guarda la nueva contraseña y levanta cualquier bloqueo por intentos. */
   async actualizarPassword(id, passwordHash) {
     await Usuario.updateOne(

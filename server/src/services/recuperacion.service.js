@@ -53,6 +53,7 @@ export function crearRecuperacionService({ config, reloj, correo, logger, sesion
           nombre: usuario.nombre,
           enlace: `${config.clientUrl}/restablecer-contrasena?token=${token}`,
           minutos: config.resetTokenTtlMin,
+          idioma: usuario.idioma,
         }),
       });
     },
@@ -75,7 +76,7 @@ export function crearRecuperacionService({ config, reloj, correo, logger, sesion
       try {
         await correo.enviar({
           para: usuario.email,
-          ...correoContrasenaActualizada({ nombre: usuario.nombre }),
+          ...correoContrasenaActualizada({ nombre: usuario.nombre, idioma: usuario.idioma }),
         });
       } catch (error) {
         logger.error({ err: error }, 'no se pudo enviar el aviso de contraseña actualizada');

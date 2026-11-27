@@ -84,6 +84,6 @@ export async function montarApp({
   const router = crearRouterMemoria(ruta);
   const vista = render(<RouterProvider router={router} />);
   // La sesión se consulta al abrir la app: se espera a saber si hay sesión antes de seguir.
-  await waitFor(() => expect(screen.queryByText('Comprobando tu sesión…')).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.queryByText(/Comprobando tu sesión…|Checking your session…/)).not.toBeInTheDocument());
   return { router, ...vista };
 }

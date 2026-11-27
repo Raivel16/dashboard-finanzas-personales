@@ -2,6 +2,7 @@ import { FileSpreadsheet, FileText, LoaderCircle } from 'lucide-react';
 import { MENSAJES } from '@finanzas/shared';
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { Boton } from '../../shared/components/Boton.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 const FORMATOS = [
   { formato: 'pdf', texto: 'Exportar a PDF', icono: FileText },
@@ -13,6 +14,7 @@ const FORMATOS = [
  * `periodo` ({ desde, hasta }) llega cuando no hay rango de fechas y el reporte usa el mes en curso.
  */
 export function BarraExportacion({ sinDatos, periodo, generando, lenta, error, deshabilitado, alExportar }) {
+  const t = useT();
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
@@ -28,13 +30,13 @@ export function BarraExportacion({ sinDatos, periodo, generando, lenta, error, d
             ) : (
               <Icono aria-hidden="true" size={18} />
             )}
-            {generando === formato ? 'Generando…' : texto}
+            {generando === formato ? t('Generando…') : t(texto)}
           </Boton>
         ))}
-        {sinDatos && <p className="text-sm text-tinta-suave">{MENSAJES.reporte.sinDatos}</p>}
+        {sinDatos && <p className="text-sm text-tinta-suave">{t(MENSAJES.reporte.sinDatos)}</p>}
       </div>
       {periodo && (
-        <p className="text-sm text-tinta-suave">{MENSAJES.reporte.mesEnCurso(periodo.desde, periodo.hasta)}</p>
+        <p className="text-sm text-tinta-suave">{t(MENSAJES.reporte.mesEnCurso(periodo.desde, periodo.hasta))}</p>
       )}
       {lenta && <Aviso tipo="info">{MENSAJES.reporte.enSegundoPlano}</Aviso>}
       {error && <Aviso tipo="error">{error}</Aviso>}

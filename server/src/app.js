@@ -40,6 +40,7 @@ import { crearServicioCorreo } from './services/correo.service.js';
 import { crearAutenticar, sinCache } from './middlewares/autenticacion.middleware.js';
 import { relojSistema } from './utils/reloj.js';
 import { manejadorErrores, rutaNoEncontrada } from './middlewares/errores.middleware.js';
+import { idiomaDeRespuesta } from './middlewares/idioma.middleware.js';
 import { crearLogger } from './utils/logger.js';
 
 /**
@@ -73,6 +74,7 @@ export function crearApp({
     }),
   );
   app.use(pinoHttp({ logger }));
+  app.use(idiomaDeRespuesta);
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 

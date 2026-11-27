@@ -18,6 +18,7 @@ Las épicas se implementan una a la vez. Al completarse todas las historias de u
 | 8 | Épica 8: Presupuestos | `implementar-presupuestos` | `v0.8.0` |
 | 9 | Épica 7: Dashboard e Indicadores Financieros | `implementar-dashboard` | `v0.9.0` |
 | 10 | Épica 9: Reportes y Exportación | `implementar-reportes` | `v0.10.0` |
+| 11 | Épica 10: Preferencias y Accesibilidad | `implementar-preferencias` | `v0.11.0` |
 
 Presupuestos va antes que el Dashboard porque el indicador de presupuesto utilizado (HU-12) depende de esa épica.
 
@@ -75,6 +76,8 @@ Estado de las obligaciones por recurso:
 | HU-29 | Definir presupuestos por moneda y período | 8 | `presupuestos` | `implementar-presupuestos` | `feature/implementar-presupuestos` |
 | HU-30 | Mantener los presupuestos por categoría dentro del general | 8 | `presupuestos` | `implementar-presupuestos` | `feature/implementar-presupuestos` |
 | HU-31 | Exportar reportes separados por moneda | 9 | `reportes-exportacion` | `implementar-reportes` | `feature/implementar-reportes` |
+| HU-32 | Elegir el idioma de la aplicación | 10 | `preferencias-usuario` | `implementar-preferencias` | `feature/implementar-preferencias` |
+| HU-33 | Usar la aplicación de forma accesible | 10 | `preferencias-usuario` | `implementar-preferencias` | `feature/implementar-preferencias` |
 
 ## Requisitos técnicos
 
@@ -94,4 +97,4 @@ Son la base técnica del sistema. No son historias de usuario, pero cada uno hab
 
 Una historia o requisito técnico está terminado cuando sus 4 escenarios tienen pruebas automatizadas que pasan, el lint y la integración continua están en verde y su cambio fue fusionado en `dev` por pull request. No se exige un porcentaje mínimo de cobertura.
 
-La prueba que verifica cada uno de los 124 escenarios está en [cobertura-escenarios.md](cobertura-escenarios.md).
+La prueba que verifica cada uno de los escenarios está en [cobertura-escenarios.md](cobertura-escenarios.md).

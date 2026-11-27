@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ROLES } from '@finanzas/shared';
 import { useSesion } from '../../autenticacion/index.js';
 import { confirmar, notificar } from '../../shared/utils/notificaciones.js';
+import { traducir } from '../../shared/preferencias/traducir.js';
 import { cambiarRol } from '../services/administracion.service.js';
 import { ETIQUETAS_ROL } from '../etiquetas.js';
 
@@ -14,7 +15,10 @@ export function useCambioRol({ alCambiar }) {
     if (rol === objetivo.rol) return;
     const acepto = await confirmar({
       titulo: 'Cambiar rol',
-      texto: `${objetivo.nombre} (${objetivo.email}) pasará a ser ${ETIQUETAS_ROL[rol].toLowerCase()}.`,
+      texto: traducir('{nombre} ({email}) pasará a ser {rol}.', {
+        ...objetivo,
+        rol: traducir(ETIQUETAS_ROL[rol]).toLowerCase(),
+      }),
       confirmar: 'Cambiar rol',
       peligro: rol !== ROLES.ADMIN,
     });
@@ -24,7 +28,12 @@ export function useCambioRol({ alCambiar }) {
     try {
       const actualizado = await cambiarRol(objetivo.id, rol);
       alCambiar(actualizado);
-      notificar.exito(`${actualizado.nombre} ahora es ${ETIQUETAS_ROL[actualizado.rol].toLowerCase()}`);
+      notificar.exito(
+        traducir('{nombre} ahora es {rol}', {
+          nombre: actualizado.nombre,
+          rol: traducir(ETIQUETAS_ROL[actualizado.rol]).toLowerCase(),
+        }),
+      );
       // Si la persona cambió su propio rol, el menú debe reflejarlo.
       if (objetivo.id === yo.id) await refrescarSesion();
     } catch (error) {

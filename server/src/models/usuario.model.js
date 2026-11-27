@@ -1,7 +1,7 @@
 // Identidad del usuario. No usa el plugin de tenantId: se consulta por correo o id antes de que exista
 // un inquilino autenticado (el tenantId se guarda aquí y viaja en el token de acceso).
 import mongoose from 'mongoose';
-import { MONEDAS, ROLES } from '@finanzas/shared';
+import { IDIOMAS, MONEDAS, ROLES } from '@finanzas/shared';
 
 const esquema = new mongoose.Schema(
   {
@@ -11,6 +11,10 @@ const esquema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     rol: { type: String, enum: Object.values(ROLES), default: ROLES.USUARIO },
     monedaPrincipal: { type: String, enum: MONEDAS, default: 'PEN' },
+    // Preferencias de idioma y accesibilidad (HU-32, HU-33).
+    idioma: { type: String, enum: Object.values(IDIOMAS), default: IDIOMAS.ES },
+    textoGrande: { type: Boolean, default: false },
+    altoContraste: { type: Boolean, default: false },
     intentosFallidos: { type: Number, default: 0 },
     bloqueadoHasta: { type: Date, default: null },
     activo: { type: Boolean, default: true },

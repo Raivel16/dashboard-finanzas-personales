@@ -1,11 +1,13 @@
 import { ICONOS_CATEGORIA } from '@finanzas/shared';
 import { ETIQUETAS_ICONO, ICONOS, ICONO_GENERICO } from '../iconos.js';
+import { useT } from '../../shared/preferencias/traducir.js';
 
-/** Selector de ícono: grupo de opciones (radio) navegable con teclado; cada opción tiene su nombre en español. */
+/** Selector de ícono: grupo de opciones (radio) navegable con teclado; cada opción tiene su nombre en el idioma vigente. */
 export function SelectorIcono({ valor, alCambiar, error }) {
+  const t = useT();
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="text-[0.8125rem] font-medium leading-[1.35] text-tinta-suave">Ícono</legend>
+      <legend className="text-[0.8125rem] font-medium leading-[1.35] text-tinta-suave">{t('Ícono')}</legend>
       <div className="grid grid-cols-6 gap-1">
         {ICONOS_CATEGORIA.map((nombre) => {
           const Icono = ICONOS[nombre] ?? ICONO_GENERICO;
@@ -24,7 +26,7 @@ export function SelectorIcono({ valor, alCambiar, error }) {
                 checked={marcado}
                 onChange={alCambiar}
                 className="absolute inset-0 size-full cursor-pointer opacity-0"
-                aria-label={ETIQUETAS_ICONO[nombre] ?? nombre}
+                aria-label={t(ETIQUETAS_ICONO[nombre] ?? nombre)}
               />
               <Icono aria-hidden="true" size={22} />
             </label>
@@ -33,7 +35,7 @@ export function SelectorIcono({ valor, alCambiar, error }) {
       </div>
       {error && (
         <p role="alert" className="text-sm font-medium text-gasto">
-          {error}
+          {t(error)}
         </p>
       )}
     </fieldset>

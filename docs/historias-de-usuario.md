@@ -1140,6 +1140,80 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - **CUANDO** el usuario A exporta su reporte
 - **ENTONCES** el archivo contiene solo los datos del usuario A
 
+## Épica 10: Preferencias y Accesibilidad
+
+### HU-32 — Elegir el idioma de la aplicación
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-32 |
+| **Rol** | Como usuario que prefiere leer en inglés |
+| **Funcionalidad** | Quiero elegir entre español e inglés como idioma de la aplicación |
+| **Razón / Resultado** | Para entender las pantallas, los mensajes, los correos y los reportes en mi idioma |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-32)
+
+**Escenario 1: Cambio del idioma a inglés**
+
+- **DADO QUE** el usuario usa la aplicación en español
+- **CUANDO** elige "English" como idioma en su perfil
+- **ENTONCES** toda la interfaz se muestra en inglés de inmediato, sin recargar la página, y el idioma se conserva al volver a iniciar sesión
+
+**Escenario 2: Idioma antes de iniciar sesión**
+
+- **DADO QUE** un visitante sin sesión usa un navegador configurado en inglés
+- **CUANDO** abre la pantalla de inicio de sesión
+- **ENTONCES** la ve en inglés y puede cambiar a español desde el selector de idioma de esa misma pantalla
+
+**Escenario 3: Mensajes de error en el idioma elegido**
+
+- **DADO QUE** el usuario usa la aplicación en inglés
+- **CUANDO** intenta registrar un movimiento con monto 0
+- **ENTONCES** el sistema rechaza el registro y muestra el mensaje de validación en inglés "The amount must be greater than 0, with up to 2 decimals"
+
+**Escenario 4: Correos y reportes en el idioma elegido**
+
+- **DADO QUE** el usuario eligió inglés como idioma
+- **CUANDO** solicita la recuperación de su contraseña o exporta un reporte en PDF o Excel
+- **ENTONCES** el correo y el archivo (títulos, columnas y totales) están en inglés, y los nombres que él mismo registró (categorías, cuentas y descripciones) se mantienen tal como los escribió
+
+### HU-33 — Usar la aplicación de forma accesible
+
+| Campo | Descripción |
+|---|---|
+| **ID** | HU-33 |
+| **Rol** | Como usuario con discapacidad visual o motriz |
+| **Funcionalidad** | Quiero usar la aplicación con teclado y lector de pantalla, y ajustar el tamaño del texto y el contraste |
+| **Razón / Resultado** | Para gestionar mis finanzas sin depender del ratón ni de una buena visión |
+| **Prioridad** | Media |
+
+#### Criterios de Aceptación en Sintaxis Gherkin (HU-33)
+
+**Escenario 1: Registro de un movimiento solo con teclado**
+
+- **DADO QUE** el usuario navega únicamente con el teclado
+- **CUANDO** recorre el menú, abre el formulario de un nuevo movimiento, lo completa y lo registra
+- **ENTONCES** completa toda la operación con Tab, Enter y Escape, el foco es siempre visible y, al cerrar el panel, vuelve al botón que lo abrió
+
+**Escenario 2: Texto grande y alto contraste**
+
+- **DADO QUE** el usuario activa "Texto grande" y "Alto contraste" en su perfil
+- **CUANDO** navega por la aplicación
+- **ENTONCES** todas las pantallas usan el texto ampliado y los colores de alto contraste, y las preferencias se conservan al volver a iniciar sesión
+
+**Escenario 3: Errores anunciados al lector de pantalla**
+
+- **DADO QUE** el usuario usa un lector de pantalla
+- **CUANDO** envía un formulario con datos inválidos
+- **ENTONCES** el lector anuncia el error, el campo queda marcado como inválido y asociado a su mensaje, y el foco pasa al primer campo con error
+
+**Escenario 4: Gráficos y pantallas sin barreras**
+
+- **DADO QUE** el usuario usa un lector de pantalla
+- **CUANDO** abre el dashboard y las demás pantallas principales
+- **ENTONCES** cada gráfico ofrece una tabla equivalente con los mismos datos, y las pantallas no presentan infracciones de accesibilidad detectables automáticamente (WCAG 2.1 nivel AA)
+
 ## Resumen General de Historias de Usuario
 
 | ID | Épica | Título de la Historia | Prioridad |
@@ -1175,6 +1249,8 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 | HU-29 | Presupuestos | Definir presupuestos por moneda y período | Media |
 | HU-30 | Presupuestos | Mantener los presupuestos por categoría dentro del general | Media |
 | HU-31 | Reportes y Exportación | Exportar reportes separados por moneda | Media |
+| HU-32 | Preferencias y Accesibilidad | Elegir el idioma de la aplicación | Media |
+| HU-33 | Preferencias y Accesibilidad | Usar la aplicación de forma accesible | Media |
 
 ## Supuestos y Vacíos Detectados
 
@@ -1184,11 +1260,12 @@ El presente documento contiene las Historias de Usuario (HU) y sus respectivos C
 - La guía pedagógica no exige explícitamente un campo "Prioridad" dentro de la estructura de la Historia de Usuario (ID, Rol, Funcionalidad, Razón/Resultado). Se incluyó como buena práctica estándar de gestión de backlog (Scrum/INVEST), aclarando que es un campo adicional y no forma parte del formato obligatorio descrito en la guía.
 - El proyecto no detalla el/los umbral(es) exacto(s) de notificación de presupuesto (por ejemplo 80%, 90% o 100%). Se utilizó 90% como umbral de alerta a modo ilustrativo en HU-15, sujeto a validación con el equipo de negocio.
 - No se especifica si el rol "administrador" puede modificar movimientos financieros de otros usuarios o solo visualizarlos/consultarlos de forma consolidada. Se asumió, en HU-04, que el administrador puede visualizar los datos de todos los tenants (según el texto del proyecto: "visualización de todos los datos"), pero no se le otorgó capacidad de edición sobre movimientos ajenos por no estar explícitamente solicitado; se recomienda confirmar este alcance con el cliente.
+- El documento del proyecto no menciona el idioma ni la accesibilidad. A solicitud del equipo se incorporaron HU-32 "Elegir el idioma de la aplicación" (español e inglés) y HU-33 "Usar la aplicación de forma accesible" (teclado, lector de pantalla, texto grande y alto contraste, con WCAG 2.1 nivel AA como referencia).
 
 ## Verificación de Cumplimiento de la Rúbrica de Evaluación
 
 | Criterio de la Rúbrica | Evidencia en este documento |
 |---|---|
-| Sintaxis y Estructura Gherkin (40%) | Las 31 historias incluyen 4 escenarios cada una (Happy Path, Flujo Alternativo, Manejo de Errores, Caso de Borde) redactados estrictamente en formato Dado que / Cuando / Entonces, sin mezclar contexto, acción y resultado. |
+| Sintaxis y Estructura Gherkin (40%) | Las 33 historias incluyen 4 escenarios cada una (Happy Path, Flujo Alternativo, Manejo de Errores, Caso de Borde) redactados estrictamente en formato Dado que / Cuando / Entonces, sin mezclar contexto, acción y resultado. |
 | Coherencia y Valor de Negocio (35%) | Cada historia está delimitada al alcance funcional del proyecto (a-l del documento), especifica un rol concreto, una funcionalidad accionable y un beneficio de negocio claro y justificable. |
 | Completitud y Uso de Plantilla (25%) | Se completan los campos ID, Rol, Funcionalidad, Razón/Resultado y Prioridad para cada historia, agrupadas por épica, con tabla resumen final y sección de supuestos, siguiendo el formato de la guía pedagógica. |

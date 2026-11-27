@@ -1,7 +1,9 @@
 import { usePrefiereMovimientoReducido } from '../hooks/useMediaQuery.js';
+import { useT } from '../preferencias/traducir.js';
 
 /** Sello violeta con el que queda "asentado" un movimiento. Sin animación si se prefiere menos movimiento. */
 export function SelloAsentado() {
+  const t = useT();
   const reducido = usePrefiereMovimientoReducido();
   return (
     <span
@@ -11,7 +13,7 @@ export function SelloAsentado() {
         reducido ? '' : 'sello-animado'
       }`}
     >
-      Asentado
+      {t('Asentado')}
     </span>
   );
 }

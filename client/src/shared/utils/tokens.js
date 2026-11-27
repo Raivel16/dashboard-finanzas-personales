@@ -20,6 +20,27 @@ export const COLORES = Object.freeze({
   atencionFondo: '#FBEFCB',
 });
 
+// Alto contraste (HU-33): redefine los mismos tokens en html[data-contraste='alto'] con pares de al menos 7:1.
+export const COLORES_ALTO_CONTRASTE = Object.freeze({
+  tapa: '#0B2229',
+  tapaTexto: '#FFFFFF',
+  tapaTextoSuave: '#DBE8E6',
+  sello: '#3B2280',
+  selloOscuro: '#2A1660',
+  papel: '#FFFFFF',
+  hoja: '#FFFFFF',
+  tinta: '#000000',
+  tintaSuave: '#25343A',
+  filete: '#5B6B66',
+  borde: '#25343A',
+  ingreso: '#004A3B',
+  ingresoFondo: '#E3F4ED',
+  gasto: '#7D1A14',
+  gastoFondo: '#FDEBE8',
+  atencion: '#4D3200',
+  atencionFondo: '#FFF3D1',
+});
+
 // Gráficos validados sobre la hoja (#F9FBFA).
 export const COLORES_GRAFICO = Object.freeze({
   ingresos: '#00897B',

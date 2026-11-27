@@ -5,12 +5,14 @@ import { ListaMovimientosSoloLectura } from '../../movimientos/index.js';
 import { ListaPresupuestosSoloLectura } from '../../presupuestos/index.js';
 import { Aviso } from '../../shared/components/Aviso.jsx';
 import { ETIQUETAS_ROL } from '../etiquetas.js';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas, movimientos, presupuestos }) {
+  const t = useT();
   if (estado === 'cargando') {
     return (
       <p role="status" className="text-tinta-suave">
-        Cargando datos del usuario…
+        {t('Cargando datos del usuario…')}
       </p>
     );
   }
@@ -22,27 +24,27 @@ export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas, 
         <h2 className="text-xl font-semibold">{usuario.nombre}</h2>
         <p className="text-tinta-suave">{usuario.email}</p>
         <p className="text-sm text-tinta-suave">
-          {ETIQUETAS_ROL[usuario.rol]} · Moneda principal {usuario.monedaPrincipal}
+          {t(ETIQUETAS_ROL[usuario.rol])} · {t('Moneda principal')} {usuario.monedaPrincipal}
         </p>
       </div>
       <p className="text-sm text-tinta-suave">
-        Vista de solo lectura: no puedes crear, editar ni eliminar sus datos.
+        {t('Vista de solo lectura: no puedes crear, editar ni eliminar sus datos.')}
       </p>
       <section aria-labelledby="seccion-categorias" className="flex flex-col gap-2">
         <h3 id="seccion-categorias" className="text-lg font-semibold">
-          Categorías
+          {t('Categorías')}
         </h3>
         <ListaCategoriasSoloLectura {...categorias} />
       </section>
       <section aria-labelledby="seccion-cuentas" className="flex flex-col gap-2">
         <h3 id="seccion-cuentas" className="text-lg font-semibold">
-          Cuentas
+          {t('Cuentas')}
         </h3>
         <ListaCuentasSoloLectura {...cuentas} />
       </section>
       <section aria-labelledby="seccion-movimientos" className="flex flex-col gap-2">
         <h3 id="seccion-movimientos" className="text-lg font-semibold">
-          Movimientos
+          {t('Movimientos')}
         </h3>
         <ListaMovimientosSoloLectura
           {...movimientos}
@@ -52,7 +54,7 @@ export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas, 
       </section>
       <section aria-labelledby="seccion-presupuestos" className="flex flex-col gap-2">
         <h3 id="seccion-presupuestos" className="text-lg font-semibold">
-          Presupuestos
+          {t('Presupuestos')}
         </h3>
         <ListaPresupuestosSoloLectura
           {...presupuestos}
@@ -63,7 +65,7 @@ export function DetalleUsuario({ estado, usuario, mensaje, categorias, cuentas, 
         to="/administracion"
         className="inline-flex min-h-11 items-center font-medium text-sello underline underline-offset-2"
       >
-        Volver a usuarios
+        {t('Volver a usuarios')}
       </Link>
     </div>
   );

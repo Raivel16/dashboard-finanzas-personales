@@ -26,7 +26,7 @@ export function crearAuthService({
   const credencialesInvalidas = () => new UnauthorizedError(MENSAJES.auth.credencialesInvalidas);
 
   return {
-    async registrar({ nombre, email, password }) {
+    async registrar({ nombre, email, password, idioma }) {
       if (await usuarioRepository.buscarPorEmail(email))
         throw new ConflictError(MENSAJES.auth.correoRegistrado);
 
@@ -38,10 +38,10 @@ export function crearAuthService({
       try {
         await sesionBd.withTransaction(async () => {
           usuario = await usuarioRepository.crear(
-            { tenantId, nombre, email, passwordHash, rol: ROLES.USUARIO },
+            { tenantId, nombre, email, passwordHash, rol: ROLES.USUARIO, idioma },
             { session: sesionBd },
           );
-          await crearCategoriasIniciales({ tenantId, usuarioId: usuario._id }, { session: sesionBd });
+          await crearCategoriasIniciales({ tenantId, usuarioId: usuario._id, idioma }, { session: sesionBd });
         });
       } catch (error) {
         // Dos registros simultáneos con el mismo correo: el índice único decide.
@@ -56,7 +56,11 @@ export function crearAuthService({
       try {
         await correo.enviar({
           para: usuario.email,
-          ...correoBienvenida({ nombre: usuario.nombre, urlInicio: `${config.clientUrl}/iniciar-sesion` }),
+          ...correoBienvenida({
+            nombre: usuario.nombre,
+            urlInicio: `${config.clientUrl}/iniciar-sesion`,
+            idioma: usuario.idioma,
+          }),
         });
       } catch (error) {
         logger.error({ err: error }, 'no se pudo enviar el correo de bienvenida');

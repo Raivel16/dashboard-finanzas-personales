@@ -7,6 +7,9 @@ export function usuarioJson(usuario) {
     email: usuario.email,
     rol: usuario.rol,
     monedaPrincipal: usuario.monedaPrincipal,
+    idioma: usuario.idioma ?? 'es',
+    textoGrande: Boolean(usuario.textoGrande),
+    altoContraste: Boolean(usuario.altoContraste),
   };
 }
 

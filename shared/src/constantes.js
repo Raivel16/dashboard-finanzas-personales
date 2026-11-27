@@ -13,6 +13,9 @@ export const TIPOS_CUENTA = Object.freeze({
 export const MONEDAS = Object.freeze(['PEN', 'USD', 'EUR']);
 export const MONEDA_PRINCIPAL_POR_DEFECTO = 'PEN';
 
+// Idiomas de la aplicación (HU-32). El español es el idioma fuente de todos los textos.
+export const IDIOMAS = Object.freeze({ ES: 'es', EN: 'en' });
+
 export const ZONA_HORARIA_POR_DEFECTO = 'America/Lima';
 
 /** Máximo de movimientos por reporte exportado (PDF o Excel). */

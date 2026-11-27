@@ -1,4 +1,5 @@
 import { CircleAlert } from 'lucide-react';
+import { useT } from '../preferencias/traducir.js';
 
 /**
  * Campo de formulario. Con error se marca con ícono y texto (no solo con color) y se anuncia a
@@ -16,6 +17,7 @@ export function Campo({
   inputRef,
   ...props
 }) {
+  const t = useT();
   const idError = `${id}-error`;
   const idAyuda = `${id}-ayuda`;
   const describe = [error && idError, ayuda && idAyuda].filter(Boolean).join(' ') || undefined;
@@ -41,13 +43,13 @@ export function Campo({
       />
       {ayuda && !error && (
         <p id={idAyuda} className="text-sm text-tinta-suave">
-          {ayuda}
+          {t(ayuda)}
         </p>
       )}
       {error && (
         <p id={idError} role="alert" className="flex items-start gap-1.5 text-sm font-medium text-gasto">
           <CircleAlert aria-hidden="true" size={18} className="mt-0.5 shrink-0" />
-          <span>{error}</span>
+          <span>{t(error)}</span>
         </p>
       )}
     </div>

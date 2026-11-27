@@ -1,4 +1,5 @@
 import { CircleAlert, CircleCheck, Info } from 'lucide-react';
+import { useT } from '../preferencias/traducir.js';
 
 const TIPOS = {
   error: { icono: CircleAlert, clase: 'border-gasto bg-gasto-fondo text-gasto', rol: 'alert' },
@@ -7,8 +8,9 @@ const TIPOS = {
   info: { icono: Info, clase: 'border-filete bg-papel text-tinta', rol: 'status' },
 };
 
-/** Mensaje destacado de un formulario. Lleva ícono y texto, no solo color. */
+/** Mensaje destacado de un formulario. Lleva ícono y texto, no solo color. Un texto se traduce al idioma vigente. */
 export function Aviso({ tipo = 'info', children }) {
+  const t = useT();
   const { icono: Icono, clase, rol } = TIPOS[tipo];
   return (
     <p
@@ -16,7 +18,7 @@ export function Aviso({ tipo = 'info', children }) {
       className={`flex items-start gap-2 rounded-control border px-3 py-2 text-sm font-medium ${clase}`}
     >
       <Icono aria-hidden="true" size={18} className="mt-0.5 shrink-0" />
-      <span>{children}</span>
+      <span>{typeof children === 'string' ? t(children) : children}</span>
     </p>
   );
 }
