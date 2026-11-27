@@ -38,6 +38,22 @@ describe('HU-20 · perfil', () => {
     expect((await agente.get('/api/v1/auth/me')).body.data.monedaPrincipal).toBe('USD');
   });
 
+  it('Cambio de moneda principal: el dashboard se abre desde entonces en USD y los datos existentes no cambian', async () => {
+    const { agente } = await sesionIniciada();
+    const cuenta = (
+      await agente.post('/api/v1/cuentas').send({ nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '300' })
+    ).body.data;
+    expect((await agente.get('/api/v1/dashboard/indicadores')).body.data.moneda).toBe('PEN');
+
+    await agente.patch('/api/v1/perfil').send({ nombre: 'Ana Torres', monedaPrincipal: 'USD' });
+    expect((await agente.get('/api/v1/dashboard/indicadores')).body.data.moneda).toBe('USD');
+    expect((await agente.get('/api/v1/dashboard/monedas')).body.data.principal).toBe('USD');
+    expect((await agente.get(`/api/v1/cuentas/${cuenta.id}`)).body.data).toMatchObject({
+      moneda: 'PEN',
+      saldoActual: '300.00',
+    });
+  });
+
   it('sin enviar la moneda se conserva la actual', async () => {
     const { agente } = await sesionIniciada();
     await agente.patch('/api/v1/perfil').send({ nombre: 'Ana', monedaPrincipal: 'EUR' });
