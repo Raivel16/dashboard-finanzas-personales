@@ -5,6 +5,8 @@ export const MENSAJES_EN = Object.freeze({
   generales: {
     requerido: (campo) => `${campo} is required`,
     invalido: (campo) => `${campo} is not valid`,
+    requerida: (campo) => `${campo} is required`,
+    invalida: (campo) => `${campo} is not valid`,
     noExiste: 'The requested resource does not exist or you are not allowed to access it',
     errorInterno: 'An unexpected error occurred. Please try again.',
     noAutorizado: 'Unauthorized access',
