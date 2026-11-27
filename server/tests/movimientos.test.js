@@ -57,6 +57,9 @@ describe('movimientos', () => {
     ...extra,
   });
 
+  const indicadores = async (agente) => (await agente.get('/api/v1/dashboard/indicadores')).body.data;
+  const evolucionDelMes = async (agente) => (await agente.get('/api/v1/dashboard/graficos')).body.data.evolucion.at(-1);
+
   describe('HU-08 · registrar un movimiento', () => {
     it('Registro exitoso: guarda el gasto con su usuario y tenant, y descuenta el saldo de la cuenta', async () => {
       const p = await preparar();
@@ -89,6 +92,17 @@ describe('movimientos', () => {
       const cuenta = await p.cuenta();
       expect((await registrar(p.agente, ingresoDe(p, cuenta, '75.25'))).status).toBe(201);
       expect(await saldo(p.agente, cuenta.id)).toBe('575.25');
+    });
+
+    it('Actualización automática de indicadores tras registrar un ingreso: balance, gráfico y resumen del mes', async () => {
+      const p = await preparar();
+      const cuenta = await p.cuenta();
+      await registrar(p.agente, gastoDe(p, cuenta, '200'));
+      expect(await indicadores(p.agente)).toMatchObject({ ingresos: '0.00', gastos: '200.00', balance: '-200.00' });
+
+      expect((await registrar(p.agente, ingresoDe(p, cuenta, '1500'))).status).toBe(201);
+      expect(await indicadores(p.agente)).toMatchObject({ ingresos: '1500.00', gastos: '200.00', balance: '1300.00' });
+      expect(await evolucionDelMes(p.agente)).toEqual({ periodo: '2026-01', ingresos: '1500.00', gastos: '200.00' });
     });
 
     it('Registro rechazado por monto o fecha inválidos: 400 con los mensajes y sin tocar el saldo', async () => {
@@ -172,6 +186,30 @@ describe('movimientos', () => {
       expect(res.status).toBe(200);
       expect(res.body.data).toMatchObject({ monto: '60.50', categoriaId: p.gasto2.id, descripcion: 'Corregido' });
       expect(await saldo(p.agente, cuenta.id)).toBe('439.50');
+    });
+
+    it('Edición exitosa: el dashboard recalcula los indicadores con el monto nuevo', async () => {
+      const p = await preparar();
+      const cuenta = await p.cuenta();
+      const mov = (await registrar(p.agente, gastoDe(p, cuenta, '40'))).body.data;
+      expect((await indicadores(p.agente)).gastos).toBe('40.00');
+      await p.agente.patch(`/api/v1/movimientos/${mov.id}`).send({ monto: '60.50' });
+      expect(await indicadores(p.agente)).toMatchObject({ gastos: '60.50', balance: '-60.50' });
+    });
+
+    it('Eliminación exitosa: actualiza el historial, el dashboard y el seguimiento del presupuesto', async () => {
+      const p = await preparar();
+      const cuenta = await p.cuenta();
+      await p.agente.post('/api/v1/presupuestos').send({ periodo: '2026-01', moneda: 'PEN', monto: '1000' });
+      const mov = (await registrar(p.agente, gastoDe(p, cuenta, '400'))).body.data;
+      const avance = async () =>
+        (await p.agente.get('/api/v1/presupuestos/seguimiento?periodo=2026-01')).body.data[0];
+      expect(await avance()).toMatchObject({ gastado: '400.00', porcentaje: 40 });
+
+      expect((await p.agente.delete(`/api/v1/movimientos/${mov.id}`)).status).toBe(204);
+      expect((await listar(p.agente)).meta.total).toBe(0);
+      expect(await indicadores(p.agente)).toMatchObject({ gastos: '0.00', hayMovimientos: false });
+      expect(await avance()).toMatchObject({ gastado: '0.00', porcentaje: 0 });
     });
 
     it('Edición rechazada por datos inválidos: 400 y el registro y el saldo no cambian', async () => {
