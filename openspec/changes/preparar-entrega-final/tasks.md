@@ -9,8 +9,8 @@
 
 ## 2. Cobertura de escenarios [RT-09]
 
-- [ ] 2.1 Mover el mapa a `docs/cobertura-escenarios.json` y crear `server/scripts/cobertura-escenarios.js` con los modos generar y comprobar; probar los 4 escenarios de RT-09
-- [ ] 2.2 Agregar `npm run cobertura` y `npm run cobertura:comprobar`, y el paso en `.github/workflows/ci.yml`
+- [x] 2.1 Mover el mapa a `docs/cobertura-escenarios.json` y crear `server/scripts/cobertura-escenarios.js` con los modos generar y comprobar; probar los 4 escenarios de RT-09
+- [x] 2.2 Agregar `npm run cobertura` y `npm run cobertura:comprobar`, y el paso en `.github/workflows/ci.yml`
 
 ## 3. MongoDB Atlas [RT-01, RT-06, RT-07]
 

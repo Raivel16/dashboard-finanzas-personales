@@ -18,7 +18,9 @@
     "build": "npm run build -w client",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "cobertura": "node server/scripts/cobertura-escenarios.js",
+    "cobertura:comprobar": "node server/scripts/cobertura-escenarios.js --comprobar"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
