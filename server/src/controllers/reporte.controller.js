@@ -12,7 +12,7 @@ const TIPOS = {
 export function crearReporteController({ reportes }) {
   const descargar = (extension) => async (req, res) => {
     const datos = await reportes.movimientos(req.usuario, req.consulta);
-    const archivo = TIPOS[extension].generar(datos);
+    const archivo = TIPOS[extension].generar({ ...datos, idioma: req.usuario.idioma });
     res.set({
       'Content-Type': TIPOS[extension].mime,
       'Content-Disposition': `attachment; filename="${nombreArchivo(datos, extension)}"`,

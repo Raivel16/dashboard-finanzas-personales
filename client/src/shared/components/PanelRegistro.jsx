@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useEsEscritorio } from '../hooks/useMediaQuery.js';
+import { useT } from '../preferencias/traducir.js';
 
 /**
  * Contenedor del formulario de registro.
@@ -9,6 +10,7 @@ import { useEsEscritorio } from '../hooks/useMediaQuery.js';
  * Escape lo cierra y el foco vuelve al botón que lo abrió.
  */
 export function PanelRegistro({ abierto, titulo, alCerrar, children }) {
+  const t = useT();
   const esEscritorio = useEsEscritorio();
   const origenFoco = useRef(null);
 
@@ -54,7 +56,7 @@ export function PanelRegistro({ abierto, titulo, alCerrar, children }) {
         <button
           type="button"
           onClick={alCerrar}
-          aria-label="Cerrar"
+          aria-label={t('Cerrar')}
           className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control text-tinta-suave hover:bg-papel"
         >
           <X aria-hidden="true" size={22} />

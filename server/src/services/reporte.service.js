@@ -12,13 +12,13 @@ import { movimientoRepository } from '../repositories/movimiento.repository.js';
 const dec = (valor) => new Decimal(String(valor));
 const LIMITE_NOMBRES = 1000;
 
-/** Sin fechas el reporte cubre el mes en curso; con alguna, el rango pedido. */
+/** Sin fechas el reporte cubre el mes en curso; con alguna, el rango pedido (la vista arma la etiqueta). */
 function periodoDe({ desde, hasta }, actual) {
   if (!desde && !hasta) {
     const mes = limitesDelMes(actual);
-    return { desde: mes.desde, hasta: mes.hasta, etiqueta: `${mes.desde} al ${mes.hasta}` };
+    return { desde: mes.desde, hasta: mes.hasta };
   }
-  return { desde, hasta, etiqueta: `${desde ?? 'el inicio'} al ${hasta ?? 'hoy'}` };
+  return { desde, hasta };
 }
 
 export function crearReporteService({ config, reloj }) {

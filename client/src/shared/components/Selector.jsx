@@ -1,8 +1,11 @@
+import { useT } from '../preferencias/traducir.js';
+
 /**
  * Lista desplegable de formulario con el mismo trato de errores que <Campo>: se marca con texto y se anuncia.
  * `props` son los de `propsCampo(campo)`; `vacio` agrega una primera opción sin valor ("Selecciona…").
  */
 export function Selector({ etiqueta, props, onChange = props.alCambiar, vacio, opciones }) {
+  const t = useT();
   const idError = `${props.id}-error`;
   return (
     <div className="flex flex-col gap-1">
@@ -29,7 +32,7 @@ export function Selector({ etiqueta, props, onChange = props.alCambiar, vacio, o
       </select>
       {props.error && (
         <p id={idError} role="alert" className="text-sm font-medium text-gasto">
-          {props.error}
+          {t(props.error)}
         </p>
       )}
     </div>

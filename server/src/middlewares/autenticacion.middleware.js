@@ -11,6 +11,9 @@ export const crearAutenticar = (sesiones) => async (req, _res, next) => {
     nombre: usuario.nombre,
     email: usuario.email,
     monedaPrincipal: usuario.monedaPrincipal,
+    idioma: usuario.idioma,
+    textoGrande: usuario.textoGrande,
+    altoContraste: usuario.altoContraste,
   };
   req.sesionId = String(sesion._id);
   next();

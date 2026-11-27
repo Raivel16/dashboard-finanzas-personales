@@ -228,6 +228,19 @@ Desde el historial de movimientos se exportan los movimientos filtrados. Rutas d
 - Reciben los mismos filtros del historial (`desde`, `hasta`, `tipo`, `categoriaId`, `cuentaId`, `moneda`). Sin fechas, el reporte cubre el mes en curso.
 - Máximo 5000 movimientos por archivo; sin movimientos o por encima del tope responden 400 con el mensaje que explica qué hacer. El archivo se arma completo antes de responder, así que un fallo nunca deja un archivo a medias.
 - SheetJS se instala desde `https://cdn.sheetjs.com/` (el paquete `xlsx` de npm está desactualizado), con la versión fijada en `server/package.json`.
+- Los títulos, columnas y totales salen en el idioma de la persona; los nombres que ella escribió (categorías, cuentas, descripciones) no se traducen.
+
+## Idioma y accesibilidad
+
+La aplicación está en español e inglés (HU-32) y se puede usar con teclado, lector de pantalla, texto grande y alto contraste (HU-33).
+
+| Método y ruta | Qué hace |
+|---|---|
+| `PATCH /perfil/preferencias` | Guarda `idioma` (`es` \| `en`), `textoGrande` y `altoContraste` (al menos uno). Devuelve la persona, igual que `/auth/me`. |
+
+- **Idioma.** Sin sesión sale del navegador y se elige en el pie de las pantallas públicas (queda en `localStorage`); con sesión manda el perfil. El registro guarda el idioma en uso y crea las categorías predeterminadas en ese idioma. El cliente envía `Accept-Language` y la API responde sus mensajes (errores, advertencias) en el idioma del usuario o, sin sesión, en el del encabezado. Los correos y los reportes usan el idioma del usuario.
+- **Cómo se traduce.** El español es la fuente. `shared/src/i18n/` tiene `MENSAJES_EN` (misma forma que `MENSAJES`, lo exige una prueba) y `crearTraductor`, que traduce por texto, incluidas las plantillas con valores. En el cliente cada texto va en `t('texto en español')` (`useT()`), con su traducción en `client/src/shared/preferencias/textos.en.js`; una prueba recorre el código y falla si un texto no tiene traducción.
+- **Accesibilidad.** "Texto grande" y "Alto contraste" están en *Mi perfil* y se aplican como `data-texto="grande"` y `data-contraste="alto"` en `<html>` (los colores de alto contraste cumplen al menos 7:1). Las pruebas pasan `axe-core` por las pantallas principales (el contraste se calcula aparte, jsdom no pinta), recorren con teclado el registro de un movimiento y comprueban el anuncio de errores.
 
 ## Flujo de ramas y commits
 

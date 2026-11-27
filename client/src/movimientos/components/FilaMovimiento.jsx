@@ -1,5 +1,6 @@
 import { Monto } from '../../shared/components/Monto.jsx';
 import { formatearFecha, formatearSaldo } from '../../shared/utils/formato.js';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 /**
  * Un movimiento en una lista: descripción (o categoría), categoría y cuenta, fecha, monto con signo y, si lo trae,
@@ -7,10 +8,11 @@ import { formatearFecha, formatearSaldo } from '../../shared/utils/formato.js';
  * parte de texto abra el detalle.
  */
 export function FilaMovimiento({ movimiento, categoria, cuenta, acciones, alVerDetalle }) {
+  const t = useT();
   const lugar = [categoria, cuenta, formatearFecha(movimiento.fecha)].filter(Boolean).join(' · ');
   const texto = (
     <>
-      <span className="block truncate font-medium">{movimiento.descripcion || categoria || 'Movimiento'}</span>
+      <span className="block truncate font-medium">{movimiento.descripcion || categoria || t('Movimiento')}</span>
       <span className="block truncate text-sm text-tinta-suave">{lugar}</span>
     </>
   );
@@ -20,7 +22,7 @@ export function FilaMovimiento({ movimiento, categoria, cuenta, acciones, alVerD
         <button
           type="button"
           onClick={() => alVerDetalle(movimiento)}
-          aria-label={`Ver detalle del movimiento del ${movimiento.fecha} por ${movimiento.monto}`}
+          aria-label={t('Ver detalle del movimiento del {fecha} por {monto}', movimiento)}
           className="min-h-11 min-w-0 flex-1 rounded-control text-left"
         >
           {texto}
@@ -32,7 +34,7 @@ export function FilaMovimiento({ movimiento, categoria, cuenta, acciones, alVerD
         <Monto valor={movimiento.monto} moneda={movimiento.moneda} tipo={movimiento.tipo} className="font-semibold" />
         {movimiento.saldoResultante !== undefined && (
           <p className="text-sm text-tinta-suave">
-            Saldo {formatearSaldo(movimiento.saldoResultante, movimiento.moneda)}
+            {t('Saldo')} {formatearSaldo(movimiento.saldoResultante, movimiento.moneda)}
           </p>
         )}
       </div>

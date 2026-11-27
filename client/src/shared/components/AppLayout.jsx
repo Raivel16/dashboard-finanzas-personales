@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { useEsEscritorio } from '../hooks/useMediaQuery.js';
 import { usePanelRegistro } from '../hooks/usePanelRegistro.js';
 import { PanelRegistro } from './PanelRegistro.jsx';
+import { useT } from '../preferencias/traducir.js';
 
 const claseEnlaceLateral = ({ isActive }) =>
   `flex min-h-11 items-center gap-3 rounded-control px-3 text-base font-medium ${
@@ -15,11 +16,12 @@ const claseEnlaceInferior = ({ isActive }) =>
   }`;
 
 function EnlaceDestino({ destino, clase, conIcono = true }) {
+  const t = useT();
   const Icono = destino.icono;
   return (
     <NavLink to={destino.ruta} end={destino.ruta === '/'} className={clase}>
       {conIcono && Icono && <Icono aria-hidden="true" size={22} />}
-      <span>{destino.etiqueta}</span>
+      <span>{t(destino.etiqueta)}</span>
     </NavLink>
   );
 }
@@ -39,6 +41,7 @@ function EnlaceDestino({ destino, clase, conIcono = true }) {
  * @param {{ etiqueta: string, titulo: string, contenido: (cerrar: () => void) => React.ReactNode } | undefined} registrar
  */
 export function AppLayout({ destinos: todos, registrar, esAdmin = false, menuUsuario }) {
+  const t = useT();
   const panel = usePanelRegistro();
   const escritorio = useEsEscritorio();
   const destinos = todos.filter((d) => !d.soloAdmin || esAdmin);
@@ -56,33 +59,36 @@ export function AppLayout({ destinos: todos, registrar, esAdmin = false, menuUsu
         href="#contenido"
         className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[60] focus:rounded-control focus:bg-hoja focus:px-3 focus:py-2"
       >
-        Saltar al contenido
+        {t('Saltar al contenido')}
       </a>
 
-      {/* Barra lateral (escritorio) */}
-      <aside className="sobre-tapa fixed inset-y-0 left-0 hidden w-[232px] flex-col gap-6 bg-tapa p-4 lg:flex">
-        <p className="px-3 pt-2 text-lg font-semibold text-tapa-texto">Finanzas personales</p>
-        <nav aria-label="Principal" className="flex flex-col gap-1">
-          {destinos.map((d) => (
-            <EnlaceDestino key={d.ruta} destino={d} clase={claseEnlaceLateral} />
-          ))}
-        </nav>
-        {registrar && (
-          <button
-            type="button"
-            onClick={panel.abrir}
-            className="mt-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-sello bg-sello px-4 text-base font-semibold text-hoja hover:bg-sello-oscuro"
-          >
-            <Plus aria-hidden="true" size={20} />
-            {registrar.etiqueta}
-          </button>
-        )}
-        {escritorio && menuUsuario && <div className={registrar ? '' : 'mt-auto'}>{menuUsuario(false)}</div>}
-      </aside>
+      {/* Barra lateral (escritorio). Solo se monta la navegación del ancho actual: así nunca hay dos regiones
+          "Principal" para el lector de pantalla. */}
+      {escritorio && (
+        <aside className="sobre-tapa fixed inset-y-0 left-0 hidden w-[232px] flex-col gap-6 bg-tapa p-4 lg:flex">
+          <p className="px-3 pt-2 text-lg font-semibold text-tapa-texto">{t('Finanzas personales')}</p>
+          <nav aria-label={t('Principal')} className="flex flex-col gap-1">
+            {destinos.map((d) => (
+              <EnlaceDestino key={d.ruta} destino={d} clase={claseEnlaceLateral} />
+            ))}
+          </nav>
+          {registrar && (
+            <button
+              type="button"
+              onClick={panel.abrir}
+              className="mt-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-sello bg-sello px-4 text-base font-semibold text-hoja hover:bg-sello-oscuro"
+            >
+              <Plus aria-hidden="true" size={20} />
+              {t(registrar.etiqueta)}
+            </button>
+          )}
+          {menuUsuario && <div className={registrar ? '' : 'mt-auto'}>{menuUsuario(false)}</div>}
+        </aside>
+      )}
 
       {/* Barra superior (celular) */}
       <header className="sobre-tapa sticky top-0 z-30 flex min-h-14 items-center bg-tapa px-4 lg:hidden">
-        <p className="text-lg font-semibold text-tapa-texto">{titulo}</p>
+        <p className="text-lg font-semibold text-tapa-texto">{t(titulo)}</p>
         {!escritorio && menuUsuario && <div className="ml-auto">{menuUsuario(true)}</div>}
       </header>
 
@@ -91,32 +97,34 @@ export function AppLayout({ destinos: todos, registrar, esAdmin = false, menuUsu
       </main>
 
       {/* Navegación inferior (celular) */}
-      <nav
-        aria-label="Principal"
-        className="sobre-tapa fixed inset-x-0 bottom-0 z-30 flex items-stretch bg-tapa px-2 pb-[env(safe-area-inset-bottom)] lg:hidden"
-      >
-        {izquierda.map((d) => (
-          <EnlaceDestino key={d.ruta} destino={d} clase={claseEnlaceInferior} />
-        ))}
-        {registrar && (
-          <div className="flex flex-1 items-center justify-center py-1">
-            <button
-              type="button"
-              onClick={panel.abrir}
-              className="flex min-h-12 min-w-16 flex-col items-center justify-center gap-0.5 rounded-control bg-sello px-3 text-xs font-semibold text-hoja"
-            >
-              <Plus aria-hidden="true" size={22} />
-              Registrar
-            </button>
-          </div>
-        )}
-        {derecha.map((d) => (
-          <EnlaceDestino key={d.ruta} destino={d} clase={claseEnlaceInferior} />
-        ))}
-      </nav>
+      {!escritorio && (
+        <nav
+          aria-label={t('Principal')}
+          className="sobre-tapa fixed inset-x-0 bottom-0 z-30 flex items-stretch bg-tapa px-2 pb-[env(safe-area-inset-bottom)] lg:hidden"
+        >
+          {izquierda.map((d) => (
+            <EnlaceDestino key={d.ruta} destino={d} clase={claseEnlaceInferior} />
+          ))}
+          {registrar && (
+            <div className="flex flex-1 items-center justify-center py-1">
+              <button
+                type="button"
+                onClick={panel.abrir}
+                className="flex min-h-12 min-w-16 flex-col items-center justify-center gap-0.5 rounded-control bg-sello px-3 text-xs font-semibold text-hoja"
+              >
+                <Plus aria-hidden="true" size={22} />
+                {t('Registrar')}
+              </button>
+            </div>
+          )}
+          {derecha.map((d) => (
+            <EnlaceDestino key={d.ruta} destino={d} clase={claseEnlaceInferior} />
+          ))}
+        </nav>
+      )}
 
       {registrar && (
-        <PanelRegistro abierto={panel.abierto} titulo={registrar.titulo} alCerrar={panel.cerrar}>
+        <PanelRegistro abierto={panel.abierto} titulo={t(registrar.titulo)} alCerrar={panel.cerrar}>
           {registrar.contenido(panel.cerrar)}
         </PanelRegistro>
       )}

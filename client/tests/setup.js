@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { createElement } from 'react';
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
+import { reiniciarPreferencias } from '../src/shared/preferencias/preferencias.js';
 
 // jsdom no tiene canvas: Chart.js no puede dibujar. Los gráficos se simulan con un elemento que conserva sus
 // propiedades (datos y opciones) en `globalThis.__graficos` para que las pruebas las comprueben.
@@ -29,3 +30,14 @@ simularMediaQuery();
 
 // jsdom tampoco implementa scrollIntoView ni ResizeObserver.
 Element.prototype.scrollIntoView ??= () => {};
+
+// jsdom informa un navegador en inglés (en-US). Las pruebas parten de un navegador en español y sin preferencias
+// guardadas; las de idioma (HU-32) cambian `navigator.language` o el almacenamiento a propósito.
+export function simularIdiomaNavegador(idioma) {
+  Object.defineProperty(window.navigator, 'language', { value: idioma, configurable: true });
+}
+beforeEach(() => {
+  window.localStorage.clear();
+  simularIdiomaNavegador('es-PE');
+  reiniciarPreferencias();
+});

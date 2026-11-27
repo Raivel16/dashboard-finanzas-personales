@@ -2,15 +2,17 @@ import { PanelRegistro } from '../../shared/components/PanelRegistro.jsx';
 import { ListaPresupuestos } from '../components/ListaPresupuestos.jsx';
 import { usePresupuestos } from '../hooks/usePresupuestos.js';
 import { FormularioPresupuestoPanel } from './FormularioPresupuestoPanel.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 export function PresupuestosPage() {
+  const t = useT();
   const presupuestos = usePresupuestos();
   const { panel, cerrarPanel } = presupuestos;
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-[650] leading-tight">Presupuestos</h1>
-        <p className="mt-1 text-tinta-suave">Cuánto planeas gastar cada mes y cuánto llevas.</p>
+        <h1 className="text-2xl font-[650] leading-tight">{t('Presupuestos')}</h1>
+        <p className="mt-1 text-tinta-suave">{t('Cuánto planeas gastar cada mes y cuánto llevas.')}</p>
       </div>
       <ListaPresupuestos
         {...presupuestos}
@@ -20,7 +22,7 @@ export function PresupuestosPage() {
       />
       <PanelRegistro
         abierto={Boolean(panel)}
-        titulo={panel?.modo === 'editar' ? 'Editar presupuesto' : 'Nuevo presupuesto'}
+        titulo={panel?.modo === 'editar' ? t('Editar presupuesto') : t('Nuevo presupuesto')}
         alCerrar={cerrarPanel}
       >
         {panel && (

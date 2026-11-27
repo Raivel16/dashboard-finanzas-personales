@@ -4,6 +4,7 @@ import { MENSAJES, esquemaRegistro } from '@finanzas/shared';
 import { useFormulario } from '../../shared/hooks/useFormulario.js';
 import { registrar } from '../services/autenticacion.service.js';
 import { erroresPorCampo } from '../../shared/utils/erroresApi.js';
+import { obtenerIdioma } from '../../shared/preferencias/preferencias.js';
 
 const VALORES_INICIALES = { nombre: '', email: '', password: '' };
 
@@ -17,7 +18,8 @@ export function useRegistro() {
     alEnviar: async (datos) => {
       setErrorGeneral('');
       try {
-        await registrar(datos);
+        // Se registra en el idioma que la persona está usando: define sus categorías predeterminadas (HU-32).
+        await registrar({ ...datos, idioma: obtenerIdioma() });
       } catch (error) {
         const porCampo = erroresPorCampo(error);
         if (porCampo) formulario.fijarErrores(porCampo);

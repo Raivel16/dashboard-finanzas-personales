@@ -6,11 +6,13 @@ import { useExportacion } from '../hooks/useExportacion.js';
 import { useFiltrosMovimientos } from '../hooks/useFiltrosMovimientos.js';
 import { useMovimientos } from '../hooks/useMovimientos.js';
 import { FormularioMovimientoPanel } from './FormularioMovimientoPanel.jsx';
+import { useT } from '../../shared/preferencias/traducir.js';
 
 const TITULOS = { crear: 'Nuevo movimiento', editar: 'Editar movimiento', detalle: 'Detalle del movimiento' };
 const nombreDe = (lista, id) => lista.find((elemento) => elemento.id === id)?.nombre;
 
 export function MovimientosPage() {
+  const t = useT();
   const movimientos = useMovimientos();
   const { panel, cerrarPanel, cuentas, categorias } = movimientos;
   const formFiltros = useFiltrosMovimientos({
@@ -31,12 +33,12 @@ export function MovimientosPage() {
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-[650] leading-tight">Movimientos</h1>
-        <p className="mt-1 text-tinta-suave">Tus ingresos y gastos, con el saldo que dejó cada uno.</p>
+        <h1 className="text-2xl font-[650] leading-tight">{t('Movimientos')}</h1>
+        <p className="mt-1 text-tinta-suave">{t('Tus ingresos y gastos, con el saldo que dejó cada uno.')}</p>
       </div>
       <section aria-labelledby="historial-movimientos" className="flex flex-col gap-3">
         <h2 id="historial-movimientos" className="text-lg font-semibold">
-          Historial de movimientos
+          {t('Historial de movimientos')}
         </h2>
         <BarraExportacion {...exportacion} alExportar={exportacion.exportar} />
         <ListaMovimientos
@@ -50,7 +52,7 @@ export function MovimientosPage() {
       </section>
       <PanelRegistro
         abierto={Boolean(panel)}
-        titulo={panel ? TITULOS[panel.modo] : ''}
+        titulo={panel ? t(TITULOS[panel.modo]) : ''}
         alCerrar={cerrarPanel}
       >
         {detalle && (

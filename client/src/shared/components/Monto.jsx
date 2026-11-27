@@ -1,4 +1,5 @@
 import { formatearMonto, signoDe } from '../utils/formato.js';
+import { useT } from '../preferencias/traducir.js';
 
 const COLOR = { ingreso: 'text-ingreso', gasto: 'text-gasto', neutro: 'text-tinta' };
 const NOMBRE = { ingreso: 'Ingreso', gasto: 'Gasto' };
@@ -8,9 +9,10 @@ const NOMBRE = { ingreso: 'Ingreso', gasto: 'Gasto' };
  * Nunca depende solo del color: ingreso lleva "+" y gasto "−", y el texto oculto lo nombra.
  */
 export function Monto({ valor, moneda, tipo = 'neutro', className = '' }) {
+  const t = useT();
   return (
     <span className={`font-mono tabular-nums whitespace-nowrap text-right ${COLOR[tipo]} ${className}`}>
-      {NOMBRE[tipo] && <span className="sr-only">{NOMBRE[tipo]}: </span>}
+      {NOMBRE[tipo] && <span className="sr-only">{t(NOMBRE[tipo])}: </span>}
       <span aria-hidden={NOMBRE[tipo] ? 'true' : undefined}>{signoDe(tipo)}</span>{' '}
       {formatearMonto(valor, moneda)}
     </span>

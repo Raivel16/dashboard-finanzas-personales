@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { MENSAJES } from '@finanzas/shared';
 import { confirmar, notificar } from '../../shared/utils/notificaciones.js';
+import { traducir } from '../../shared/preferencias/traducir.js';
 import { eliminarCategoria, listarCategorias } from '../services/categorias.service.js';
 
 const porNombre = (a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' });
@@ -59,7 +60,7 @@ export function useCategorias() {
   const eliminar = async (categoria) => {
     const acepto = await confirmar({
       titulo: 'Eliminar categoría',
-      texto: `Se eliminará la categoría "${categoria.nombre}". Esta acción no se puede deshacer.`,
+      texto: traducir('Se eliminará la categoría "{nombre}". Esta acción no se puede deshacer.', categoria),
       confirmar: 'Eliminar',
       peligro: true,
     });

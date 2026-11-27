@@ -5,9 +5,28 @@ import { autoTable } from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { montoATexto } from '../utils/dinero.js';
 
-const TIPO = { ingreso: 'Ingreso', gasto: 'Gasto' };
-const CABECERA_MOVIMIENTOS = ['Fecha', 'Tipo', 'Categoría', 'Cuenta', 'Moneda', 'Monto', 'Descripción'];
-const CABECERA_RESUMEN = ['Moneda', 'Tipo', 'Categoría', 'Cantidad', 'Total'];
+// Textos del archivo en el idioma de la persona (HU-32). Los nombres que ella registró no se traducen.
+const TEXTOS = {
+  es: {
+    tipo: { ingreso: 'Ingreso', gasto: 'Gasto' },
+    movimientos: ['Fecha', 'Tipo', 'Categoría', 'Cuenta', 'Moneda', 'Monto', 'Descripción'],
+    resumen: ['Moneda', 'Tipo', 'Categoría', 'Cantidad', 'Total'],
+    totales: ['Moneda', 'Ingresos', 'Gastos', 'Balance'],
+    hojas: ['Movimientos', 'Resumen'],
+    titulo: 'Reporte de movimientos',
+    periodo: (desde, hasta) => `Período: ${desde ?? 'el inicio'} al ${hasta ?? 'hoy'}`,
+  },
+  en: {
+    tipo: { ingreso: 'Income', gasto: 'Expense' },
+    movimientos: ['Date', 'Type', 'Category', 'Account', 'Currency', 'Amount', 'Description'],
+    resumen: ['Currency', 'Type', 'Category', 'Count', 'Total'],
+    totales: ['Currency', 'Income', 'Expenses', 'Balance'],
+    hojas: ['Movements', 'Summary'],
+    titulo: 'Movements report',
+    periodo: (desde, hasta) => `Period: ${desde ?? 'the beginning'} to ${hasta ?? 'today'}`,
+  },
+};
+const textos = (idioma) => TEXTOS[idioma] ?? TEXTOS.es;
 
 /** Monto con separador de miles y dos decimales (la moneda va en su propia columna). */
 function conMiles(valor) {
@@ -20,13 +39,14 @@ export function nombreArchivo(datos, extension) {
   return `movimientos-${base}.${extension}`;
 }
 
-export function excelDeMovimientos({ filas, resumen }) {
+export function excelDeMovimientos({ filas, resumen, idioma }) {
+  const t = textos(idioma);
   const libro = XLSX.utils.book_new();
   const movimientos = XLSX.utils.aoa_to_sheet([
-    CABECERA_MOVIMIENTOS,
+    t.movimientos,
     ...filas.map((f) => [
       f.fecha,
-      TIPO[f.tipo],
+      t.tipo[f.tipo],
       f.categoria,
       f.cuenta,
       f.moneda,
@@ -43,25 +63,26 @@ export function excelDeMovimientos({ filas, resumen }) {
     { wch: 14 },
     { wch: 40 },
   ];
-  XLSX.utils.book_append_sheet(libro, movimientos, 'Movimientos');
+  XLSX.utils.book_append_sheet(libro, movimientos, t.hojas[0]);
 
   const hojaResumen = XLSX.utils.aoa_to_sheet([
-    CABECERA_RESUMEN,
-    ...resumen.map((r) => [r.moneda, TIPO[r.tipo], r.categoria, r.cantidad, Number(montoATexto(r.total))]),
+    t.resumen,
+    ...resumen.map((r) => [r.moneda, t.tipo[r.tipo], r.categoria, r.cantidad, Number(montoATexto(r.total))]),
   ]);
   hojaResumen['!cols'] = [{ wch: 8 }, { wch: 10 }, { wch: 24 }, { wch: 10 }, { wch: 16 }];
-  XLSX.utils.book_append_sheet(libro, hojaResumen, 'Resumen');
+  XLSX.utils.book_append_sheet(libro, hojaResumen, t.hojas[1]);
   return XLSX.write(libro, { type: 'buffer', bookType: 'xlsx' });
 }
 
-export function pdfDeMovimientos({ periodo, filas, porMoneda }) {
+export function pdfDeMovimientos({ periodo, filas, porMoneda, idioma }) {
+  const t = textos(idioma);
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  doc.setFontSize(16).text('Reporte de movimientos', 40, 48);
-  doc.setFontSize(10).text(`Período: ${periodo.etiqueta}`, 40, 66);
+  doc.setFontSize(16).text(t.titulo, 40, 48);
+  doc.setFontSize(10).text(t.periodo(periodo.desde, periodo.hasta), 40, 66);
 
   autoTable(doc, {
     startY: 84,
-    head: [['Moneda', 'Ingresos', 'Gastos', 'Balance']],
+    head: [t.totales],
     body: porMoneda.map((t) => [t.moneda, conMiles(t.ingresos), conMiles(t.gastos), conMiles(t.balance)]),
     styles: { fontSize: 9 },
     headStyles: { fillColor: [31, 94, 74] },
@@ -69,10 +90,10 @@ export function pdfDeMovimientos({ periodo, filas, porMoneda }) {
   });
   autoTable(doc, {
     startY: doc.lastAutoTable.finalY + 18,
-    head: [CABECERA_MOVIMIENTOS],
+    head: [t.movimientos],
     body: filas.map((f) => [
       f.fecha,
-      TIPO[f.tipo],
+      t.tipo[f.tipo],
       f.categoria,
       f.cuenta,
       f.moneda,
