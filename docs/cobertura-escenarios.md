@@ -144,18 +144,18 @@ Este archivo se genera con `npm run cobertura` a partir de [cobertura-escenarios
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Registro exitoso de un movimiento financiero | [movimientos.test.js:64](../server/tests/movimientos.test.js#L64)<br>[movimientos.test.jsx:215](../client/tests/movimientos.test.jsx#L215) |
-| 2 | Actualización automática de indicadores tras registrar un ingreso | [movimientos.test.js:97](../server/tests/movimientos.test.js#L97)<br>[movimientos.test.jsx:242](../client/tests/movimientos.test.jsx#L242) |
-| 3 | Registro rechazado por monto o fecha inválidos | [movimientos.test.js:108](../server/tests/movimientos.test.js#L108)<br>[movimientos.test.jsx:273](../client/tests/movimientos.test.jsx#L273) |
-| 4 | Registro permitido con saldo insuficiente y advertencia | [movimientos.test.js:129](../server/tests/movimientos.test.js#L129)<br>[movimientos.test.jsx:301](../client/tests/movimientos.test.jsx#L301) |
+| 1 | Registro exitoso de un movimiento financiero | [movimientos.test.js:64](../server/tests/movimientos.test.js#L64)<br>[movimientos.test.jsx:218](../client/tests/movimientos.test.jsx#L218) |
+| 2 | Actualización automática de indicadores tras registrar un ingreso | [movimientos.test.js:97](../server/tests/movimientos.test.js#L97)<br>[movimientos.test.jsx:245](../client/tests/movimientos.test.jsx#L245) |
+| 3 | Registro rechazado por monto o fecha inválidos | [movimientos.test.js:108](../server/tests/movimientos.test.js#L108)<br>[movimientos.test.jsx:276](../client/tests/movimientos.test.jsx#L276) |
+| 4 | Registro permitido con saldo insuficiente y advertencia | [movimientos.test.js:129](../server/tests/movimientos.test.js#L129)<br>[movimientos.test.jsx:304](../client/tests/movimientos.test.jsx#L304) |
 
 ## HU-09 — Editar/Eliminar movimiento (HU adicional)
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Edición exitosa de un movimiento propio | [movimientos.test.js:177](../server/tests/movimientos.test.js#L177)<br>[movimientos.test.js:191](../server/tests/movimientos.test.js#L191)<br>[movimientos.test.jsx:375](../client/tests/movimientos.test.jsx#L375) |
-| 2 | Eliminación exitosa de un movimiento propio | [movimientos.test.js:200](../server/tests/movimientos.test.js#L200)<br>[movimientos.test.jsx:420](../client/tests/movimientos.test.jsx#L420) |
-| 3 | Edición rechazada por datos inválidos | [movimientos.test.js:215](../server/tests/movimientos.test.js#L215)<br>[movimientos.test.jsx:406](../client/tests/movimientos.test.jsx#L406) |
+| 1 | Edición exitosa de un movimiento propio | [movimientos.test.js:177](../server/tests/movimientos.test.js#L177)<br>[movimientos.test.js:191](../server/tests/movimientos.test.js#L191)<br>[movimientos.test.jsx:378](../client/tests/movimientos.test.jsx#L378) |
+| 2 | Eliminación exitosa de un movimiento propio | [movimientos.test.js:200](../server/tests/movimientos.test.js#L200)<br>[movimientos.test.jsx:423](../client/tests/movimientos.test.jsx#L423) |
+| 3 | Edición rechazada por datos inválidos | [movimientos.test.js:215](../server/tests/movimientos.test.js#L215)<br>[movimientos.test.jsx:409](../client/tests/movimientos.test.jsx#L409) |
 | 4 | Operación rechazada sobre un movimiento de otro usuario | [movimientos.test.js:260](../server/tests/movimientos.test.js#L260) |
 
 ## HU-26 — Mantener el saldo de la cuenta consistente
@@ -172,27 +172,27 @@ Este archivo se genera con `npm run cobertura` a partir de [cobertura-escenarios
 | # | Escenario | Pruebas |
 |---|---|---|
 | 1 | Movimiento registrado en la moneda de su cuenta | [movimientos.test.js:417](../server/tests/movimientos.test.js#L417) |
-| 2 | Cambio de cuenta al editar un movimiento | [movimientos.test.js:425](../server/tests/movimientos.test.js#L425)<br>[movimientos.test.jsx:397](../client/tests/movimientos.test.jsx#L397) |
-| 3 | Categoría incompatible con el tipo | [movimientos.test.js:440](../server/tests/movimientos.test.js#L440)<br>[movimientos.test.jsx:314](../client/tests/movimientos.test.jsx#L314) |
-| 4 | Fecha futura rechazada | [movimientos.test.js:477](../server/tests/movimientos.test.js#L477)<br>[movimientos.test.jsx:327](../client/tests/movimientos.test.jsx#L327) |
+| 2 | Cambio de cuenta al editar un movimiento | [movimientos.test.js:425](../server/tests/movimientos.test.js#L425)<br>[movimientos.test.jsx:400](../client/tests/movimientos.test.jsx#L400) |
+| 3 | Categoría incompatible con el tipo | [movimientos.test.js:440](../server/tests/movimientos.test.js#L440)<br>[movimientos.test.jsx:317](../client/tests/movimientos.test.jsx#L317) |
+| 4 | Fecha futura rechazada | [movimientos.test.js:477](../server/tests/movimientos.test.js#L477)<br>[movimientos.test.jsx:330](../client/tests/movimientos.test.jsx#L330) |
 
 ## HU-10 — Consultar historial de movimientos financieros
 
 | # | Escenario | Pruebas |
 |---|---|---|
 | 1 | Consulta exitosa del historial de movimientos | [consulta-movimientos.test.js:29](../server/tests/consulta-movimientos.test.js#L29)<br>[movimientos.test.jsx:94](../client/tests/movimientos.test.jsx#L94) |
-| 2 | Visualización del detalle de un movimiento | [consulta-movimientos.test.js:63](../server/tests/consulta-movimientos.test.js#L63)<br>[movimientos.test.jsx:152](../client/tests/movimientos.test.jsx#L152) |
+| 2 | Visualización del detalle de un movimiento | [consulta-movimientos.test.js:63](../server/tests/consulta-movimientos.test.js#L63)<br>[movimientos.test.jsx:155](../client/tests/movimientos.test.jsx#L155) |
 | 3 | Error controlado al cargar el historial | [movimientos.test.jsx:119](../client/tests/movimientos.test.jsx#L119) |
-| 4 | Visualización del historial sin movimientos | [consulta-movimientos.test.js:90](../server/tests/consulta-movimientos.test.js#L90)<br>[movimientos.test.jsx:164](../client/tests/movimientos.test.jsx#L164) |
+| 4 | Visualización del historial sin movimientos | [consulta-movimientos.test.js:90](../server/tests/consulta-movimientos.test.js#L90)<br>[movimientos.test.jsx:167](../client/tests/movimientos.test.jsx#L167) |
 
 ## HU-11 — Filtrar movimientos por fecha, categoría y tipo
 
 | # | Escenario | Pruebas |
 |---|---|---|
-| 1 | Filtrado exitoso por fecha y categoría | [consulta-movimientos.test.js:116](../server/tests/consulta-movimientos.test.js#L116)<br>[movimientos.test.jsx:171](../client/tests/movimientos.test.jsx#L171) |
+| 1 | Filtrado exitoso por fecha y categoría | [consulta-movimientos.test.js:116](../server/tests/consulta-movimientos.test.js#L116)<br>[movimientos.test.jsx:174](../client/tests/movimientos.test.jsx#L174) |
 | 2 | Combinación exitosa de filtros | [consulta-movimientos.test.js:121](../server/tests/consulta-movimientos.test.js#L121) |
-| 3 | Filtro rechazado por rango de fechas inválido | [consulta-movimientos.test.js:127](../server/tests/consulta-movimientos.test.js#L127)<br>[movimientos.test.jsx:187](../client/tests/movimientos.test.jsx#L187) |
-| 4 | Resultado vacío por filtros sin coincidencias | [consulta-movimientos.test.js:136](../server/tests/consulta-movimientos.test.js#L136)<br>[movimientos.test.jsx:197](../client/tests/movimientos.test.jsx#L197) |
+| 3 | Filtro rechazado por rango de fechas inválido | [consulta-movimientos.test.js:127](../server/tests/consulta-movimientos.test.js#L127)<br>[movimientos.test.jsx:190](../client/tests/movimientos.test.jsx#L190) |
+| 4 | Resultado vacío por filtros sin coincidencias | [consulta-movimientos.test.js:136](../server/tests/consulta-movimientos.test.js#L136)<br>[movimientos.test.jsx:200](../client/tests/movimientos.test.jsx#L200) |
 
 ## HU-12 — Visualizar indicadores financieros en el dashboard
 
