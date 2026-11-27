@@ -364,7 +364,7 @@ describe('HU-33 · accesibilidad', () => {
     expect(alertas.map((a) => a.textContent)).toEqual(
       expect.arrayContaining([
         'El correo electrónico es obligatorio',
-        expect.stringMatching(/^La contraseña es obligatori/),
+        'La contraseña es obligatoria',
       ]),
     );
     expect(correo).toHaveAttribute('aria-invalid', 'true');

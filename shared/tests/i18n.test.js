@@ -71,6 +71,7 @@ describe('traductor por texto (HU-32)', () => {
   it('traduce las plantillas y también los valores que llevan dentro', () => {
     expect(traducirMensaje(MENSAJES.reporte.supera(5000), 'en')).toBe(MENSAJES_EN.reporte.supera(5000));
     expect(traducirMensaje(MENSAJES.generales.requerido('El nombre'), 'en')).toBe('The name is required');
+    expect(traducirMensaje(MENSAJES.generales.requerida('La contraseña'), 'en')).toBe('The password is required');
     expect(traducirMensaje(MENSAJES.auth.bloqueado(1), 'en')).toBe(MENSAJES_EN.auth.bloqueado(1));
     expect(traducirMensaje(MENSAJES.auth.bloqueado(15), 'en')).toBe(MENSAJES_EN.auth.bloqueado(15));
     expect(traducirMensaje(MENSAJES.presupuesto.alertaCategoria(90, 'Comida rápida'), 'en')).toBe(

@@ -9,6 +9,13 @@
 // Validator.js solo trabaja con texto: los valores primitivos se convierten a cadena antes de validar.
 import { MENSAJES } from './mensajes.js';
 
+// El adjetivo concuerda con el artículo de la etiqueta: "El nombre es obligatorio", "La contraseña es obligatoria".
+const esFemenina = (etiqueta) => /^las? /i.test(etiqueta);
+export const mensajeRequerido = (etiqueta) =>
+  esFemenina(etiqueta) ? MENSAJES.generales.requerida(etiqueta) : MENSAJES.generales.requerido(etiqueta);
+export const mensajeInvalido = (etiqueta) =>
+  esFemenina(etiqueta) ? MENSAJES.generales.invalida(etiqueta) : MENSAJES.generales.invalido(etiqueta);
+
 function comoTexto(valor) {
   if (valor === undefined || valor === null) return '';
   if (typeof valor === 'object' || typeof valor === 'function') return null; // no es un valor simple
@@ -23,7 +30,7 @@ export function validar(esquema, entrada = {}) {
   for (const [campo, regla] of Object.entries(esquema)) {
     let texto = comoTexto(origen[campo]);
     if (texto === null) {
-      errores.push({ campo, mensaje: MENSAJES.generales.invalido(regla.etiqueta ?? campo) });
+      errores.push({ campo, mensaje: mensajeInvalido(regla.etiqueta ?? campo) });
       continue;
     }
     if (regla.sanear) texto = regla.sanear(texto);
@@ -32,7 +39,7 @@ export function validar(esquema, entrada = {}) {
       if (regla.requerido) {
         errores.push({
           campo,
-          mensaje: regla.mensajeRequerido ?? MENSAJES.generales.requerido(regla.etiqueta ?? campo),
+          mensaje: regla.mensajeRequerido ?? mensajeRequerido(regla.etiqueta ?? campo),
         });
       } else if (regla.porDefecto !== undefined) {
         datos[campo] = regla.porDefecto;
