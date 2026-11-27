@@ -87,14 +87,14 @@ Before starting any task, branch from an up-to-date `dev`: `git switch dev && gi
 
 ## Requirements sources
 
-- [docs/historias-de-usuario.md](docs/historias-de-usuario.md) is the source of truth for requirements: 31 user stories (HU-01 … HU-31) grouped into 9 epics, each with exactly 4 Gherkin scenarios (camino feliz, flujo alternativo, manejo de errores, caso de borde). HU-01 … HU-17 are the team's original stories and must not be reworded; HU-18 … HU-31 fill functional gaps. Stories hold only user needs: development-only work (seed data, CI, project base, API conventions, first admin) is never a story; it lives as technical requirements RT-01 … RT-07 in the specs and [docs/trazabilidad.md](docs/trazabilidad.md). Confirmed decisions and field validation rules are in section 25 of the architecture design — check them before deciding those behaviours.
+- [docs/historias-de-usuario.md](docs/historias-de-usuario.md) is the source of truth for requirements: 33 user stories (HU-01 … HU-33) grouped into 10 epics, each with exactly 4 Gherkin scenarios (camino feliz, flujo alternativo, manejo de errores, caso de borde). HU-01 … HU-17 are the team's original stories and must not be reworded; HU-18 … HU-33 fill functional gaps. Stories hold only user needs: development-only work (seed data, CI, project base, API conventions, first admin) is never a story; it lives as technical requirements RT-01 … RT-07 in the specs and [docs/trazabilidad.md](docs/trazabilidad.md). Confirmed decisions and field validation rules are in section 25 of the architecture design — check them before deciding those behaviours.
 - `docs/HU_Dashboard_Finanzas_Personales_editado.docx` is the Word version of the same content. Whenever the Markdown changes, update the .docx too so both stay identical.
 
 ## OpenSpec workflow
 
 Development is spec-driven with OpenSpec (CLI `openspec`, v2.x, schema `spec-driven`).
 
-- `openspec/specs/<capability>/spec.md` — one spec per capability (autenticacion-usuarios, control-acceso, gestion-categorias, gestion-cuentas, gestion-movimientos, consulta-movimientos, dashboard-indicadores, presupuestos, reportes-exportacion; `definir-arquitectura-base` adds contrato-api, plataforma-proyecto and interfaz-usuario when archived). Each `Requirement` cites its origin story (`Origen: HU-xx`), keep that traceability when adding or changing requirements.
+- `openspec/specs/<capability>/spec.md` — one spec per capability (autenticacion-usuarios, control-acceso, gestion-categorias, gestion-cuentas, gestion-movimientos, consulta-movimientos, dashboard-indicadores, presupuestos, reportes-exportacion, preferencias-usuario; `definir-arquitectura-base` adds contrato-api, plataforma-proyecto and interfaz-usuario when archived). Each `Requirement` cites its origin story (`Origen: HU-xx`), keep that traceability when adding or changing requirements.
 - `openspec/changes/` — in-progress change proposals; completed ones go to `openspec/changes/archive/`.
 - Workflow skills live in `.claude/skills/` (mirrored in `.agents/skills/` for other agents — keep both in sync if edited): `openspec-propose` → `openspec-apply-change` → `openspec-sync-specs` / `openspec-archive-change`, plus `openspec-explore` and `openspec-update-change`. New features should go through a change proposal rather than editing code or main specs directly.
 
