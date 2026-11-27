@@ -149,6 +149,7 @@ export const TEXTOS_EN = Object.freeze({
   'Mi perfil': 'My profile',
   'Mis datos': 'My details',
   Moneda: 'Currency',
+  'Mostrar contraseña': 'Show password',
   'Moneda principal': 'Main currency',
   Monto: 'Amount',
   Movimiento: 'Movement',
