@@ -1,6 +1,8 @@
 import { PanelRegistro } from '../../shared/components/PanelRegistro.jsx';
 import { DetalleMovimiento } from '../components/DetalleMovimiento.jsx';
+import { BarraExportacion } from '../components/BarraExportacion.jsx';
 import { ListaMovimientos } from '../components/ListaMovimientos.jsx';
+import { useExportacion } from '../hooks/useExportacion.js';
 import { useFiltrosMovimientos } from '../hooks/useFiltrosMovimientos.js';
 import { useMovimientos } from '../hooks/useMovimientos.js';
 import { FormularioMovimientoPanel } from './FormularioMovimientoPanel.jsx';
@@ -15,6 +17,11 @@ export function MovimientosPage() {
     filtros: movimientos.filtros,
     alAplicar: movimientos.aplicarFiltros,
     alLimpiar: movimientos.limpiarFiltros,
+  });
+
+  const exportacion = useExportacion({
+    filtros: movimientos.filtros,
+    hayDatos: movimientos.estado === 'listo' && (movimientos.meta?.total ?? 0) > 0,
   });
 
   const detalle = panel?.modo === 'detalle' ? panel.movimiento : null;
@@ -33,6 +40,11 @@ export function MovimientosPage() {
         <h2 id="historial-movimientos" className="text-lg font-semibold">
           Historial de movimientos
         </h2>
+        <BarraExportacion
+          hayDatos={movimientos.estado !== 'listo' || (movimientos.meta?.total ?? 0) > 0}
+          {...exportacion}
+          alExportar={exportacion.exportar}
+        />
         <ListaMovimientos
           {...movimientos}
           formFiltros={formFiltros}
@@ -42,7 +54,11 @@ export function MovimientosPage() {
           alVerDetalle={movimientos.abrirDetalle}
         />
       </section>
-      <PanelRegistro abierto={Boolean(panel)} titulo={panel ? TITULOS[panel.modo] : ''} alCerrar={cerrarPanel}>
+      <PanelRegistro
+        abierto={Boolean(panel)}
+        titulo={panel ? TITULOS[panel.modo] : ''}
+        alCerrar={cerrarPanel}
+      >
         {detalle && (
           <DetalleMovimiento
             movimiento={detalle}

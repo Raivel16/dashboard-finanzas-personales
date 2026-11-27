@@ -14,6 +14,9 @@ import { crearCategoriaService } from './services/categoria.service.js';
 import { crearCategoriaController } from './controllers/categoria.controller.js';
 import { crearCategoriasRoutes } from './routes/categorias.routes.js';
 import { crearCuentaService } from './services/cuenta.service.js';
+import { crearReporteService } from './services/reporte.service.js';
+import { crearReporteController } from './controllers/reporte.controller.js';
+import { crearReportesRoutes } from './routes/reportes.routes.js';
 import { crearDashboardService } from './services/dashboard.service.js';
 import { crearDashboardController } from './controllers/dashboard.controller.js';
 import { crearDashboardRoutes } from './routes/dashboard.routes.js';
@@ -98,9 +101,11 @@ export function crearApp({
   const presupuestoController = crearPresupuestoController({ presupuestos });
   const dashboard = crearDashboardService({ config, reloj });
   const dashboardController = crearDashboardController({ dashboard });
+  const reportes = crearReporteService({ config, reloj });
+  const reporteController = crearReporteController({ reportes });
   const autenticar = crearAutenticar(sesiones);
   const requerirRol = crearRequerirRol(autorizacion);
-  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas, movimientos, presupuestos, dashboard };
+  app.locals.servicios = { sesiones, auth, recuperacion, perfil, autorizacion, admin, categorias, cuentas, movimientos, presupuestos, dashboard, reportes };
 
   const api = express.Router();
   api.use(sinCache);
@@ -117,6 +122,7 @@ export function crearApp({
   api.use('/cuentas', crearCuentasRoutes({ controlador: cuentaController, autenticar }));
   api.use('/movimientos', crearMovimientosRoutes({ controlador: movimientoController, autenticar }));
   api.use('/dashboard', crearDashboardRoutes({ controlador: dashboardController, autenticar }));
+  api.use('/reportes', crearReportesRoutes({ controlador: reporteController, autenticar }));
   api.use('/presupuestos', crearPresupuestosRoutes({ controlador: presupuestoController, autenticar }));
   api.use(
     '/admin',

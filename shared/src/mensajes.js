@@ -63,6 +63,12 @@ export const MENSAJES = Object.freeze({
     categoriaIngreso: 'Selecciona una categoría de ingreso',
     categoriaGasto: 'Selecciona una categoría de gasto',
   },
+  reporte: {
+    sinDatos: 'No hay datos disponibles para exportar',
+    errorGenerar: 'Ocurrió un error al generar el archivo. Intenta nuevamente',
+    supera: (maximo) => `El reporte supera los ${maximo} movimientos. Reduce el período o aplica más filtros`,
+    enSegundoPlano: 'Seguimos generando tu reporte; puedes seguir usando la aplicación',
+  },
   dashboard: {
     errorIndicadores: 'No se pudieron cargar los indicadores',
     errorIndicadoresMoneda: (moneda) => `No se pudieron cargar los indicadores en ${moneda}`,
