@@ -101,7 +101,7 @@ export function crearRutas() {
   ];
 }
 
-export const crearRouterNavegador = (opciones) => createBrowserRouter(crearRutas(opciones));
+export const crearRouterNavegador = () => createBrowserRouter(crearRutas());
 
-export const crearRouterMemoria = (rutaInicial = '/', opciones) =>
-  createMemoryRouter(crearRutas(opciones), { initialEntries: [rutaInicial] });
+export const crearRouterMemoria = (rutaInicial = '/') =>
+  createMemoryRouter(crearRutas(), { initialEntries: [rutaInicial] });
