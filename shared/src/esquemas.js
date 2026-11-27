@@ -330,6 +330,16 @@ export const esquemaConsultaMovimientos = {
   moneda: monedaRegla(false),
 };
 
+/** Filtros del reporte exportable: los mismos del historial, sin paginación ni orden. */
+export const esquemaConsultaReporte = (({ desde, hasta, tipo, categoriaId, cuentaId, moneda }) => ({
+  desde,
+  hasta,
+  tipo,
+  categoriaId,
+  cuentaId,
+  moneda,
+}))(esquemaConsultaMovimientos);
+
 /** Consulta del dashboard (indicadores y gráficos): mes (por defecto el actual) y moneda (por defecto la principal). */
 export const esquemaConsultaDashboard = esquemaSeguimientoPresupuestos;
 

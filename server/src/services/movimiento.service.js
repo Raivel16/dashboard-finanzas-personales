@@ -2,12 +2,12 @@
 // Crear, editar y eliminar son una sola transacción que guarda el movimiento y ajusta el saldo de las cuentas
 // afectadas: nunca queda un movimiento sin descontarse ni un descuento sin movimiento.
 import Decimal from 'decimal.js';
-import mongoose from 'mongoose';
 import { MENSAJES, TIPOS_MOVIMIENTO, crearEsquemaMovimiento, validar } from '@finanzas/shared';
 import { NotFoundError, ValidationError } from '../utils/errores.js';
 import { aDecimal128, montoATexto } from '../utils/dinero.js';
 import { dateATexto, hoy, textoADate } from '../utils/fechas.js';
 import { porcentajeUsado, umbralCruzado } from '../utils/presupuesto.js';
+import { filtroDeMovimientos as filtroDe } from '../utils/filtro-movimientos.js';
 import { enTransaccion } from '../utils/transaccion.js';
 import { categoriaRepository } from '../repositories/categoria.repository.js';
 import { cuentaRepository } from '../repositories/cuenta.repository.js';
@@ -18,22 +18,6 @@ const CAMPOS_EDITABLES = ['tipo', 'monto', 'fecha', 'categoriaId', 'cuentaId', '
 const comoDecimal = (valor) => new Decimal(String(valor));
 /** Efecto de un movimiento sobre el saldo de su cuenta: un ingreso suma y un gasto resta. */
 const efecto = (tipo, monto) => (tipo === TIPOS_MOVIMIENTO.INGRESO ? comoDecimal(monto) : comoDecimal(monto).neg());
-const id = (valor) => new mongoose.Types.ObjectId(valor);
-
-/** Filtros del historial (ya validados por el esquema compartido) en el formato de la base de datos. */
-function filtroDe({ desde, hasta, tipo, categoriaId, cuentaId, moneda }) {
-  const fecha = {
-    ...(desde && { $gte: textoADate(desde) }),
-    ...(hasta && { $lte: textoADate(hasta) }),
-  };
-  return {
-    ...(Object.keys(fecha).length > 0 && { fecha }),
-    ...(tipo && { tipo }),
-    ...(categoriaId && { categoriaId: id(categoriaId) }),
-    ...(cuentaId && { cuentaId: id(cuentaId) }),
-    ...(moneda && { moneda }),
-  };
-}
 
 /** Un movimiento visto como gasto de un mes y una moneda (null si es un ingreso o no existe). */
 const comoGasto = (movimiento) =>

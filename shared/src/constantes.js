@@ -15,6 +15,9 @@ export const MONEDA_PRINCIPAL_POR_DEFECTO = 'PEN';
 
 export const ZONA_HORARIA_POR_DEFECTO = 'America/Lima';
 
+/** Máximo de movimientos por reporte exportado (PDF o Excel). */
+export const MAX_MOVIMIENTOS_REPORTE = 5000;
+
 export const PAGINACION = Object.freeze({ PAGINA: 1, LIMITE: 20, LIMITE_MAXIMO: 100 });
 
 export const LIMITES = Object.freeze({

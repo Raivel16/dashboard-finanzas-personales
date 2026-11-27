@@ -29,14 +29,17 @@ function construirUrl(ruta, consulta) {
   return `${BASE}${ruta}${texto ? `?${texto}` : ''}`;
 }
 
-async function ejecutar(ruta, { metodo = 'GET', cuerpo, consulta, signal, fetchImpl = fetch } = {}) {
+async function ejecutar(
+  ruta,
+  { metodo = 'GET', cuerpo, consulta, signal, binario = false, fetchImpl = fetch } = {},
+) {
   let respuesta;
   try {
     respuesta = await fetchImpl(construirUrl(ruta, consulta), {
       method: metodo,
       credentials: 'include',
       headers: {
-        Accept: 'application/json',
+        Accept: binario ? '*/*' : 'application/json',
         ...(cuerpo !== undefined && { 'Content-Type': 'application/json' }),
       },
       body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined,
@@ -46,6 +49,8 @@ async function ejecutar(ruta, { metodo = 'GET', cuerpo, consulta, signal, fetchI
     if (error?.name === 'AbortError') throw error;
     throw new ErrorApi({ estado: 0, codigo: 'NETWORK_ERROR', mensaje: MENSAJE_RED });
   }
+
+  if (binario && respuesta.ok) return leerArchivo(respuesta);
 
   const texto = await respuesta.text();
   let json = null;
@@ -64,6 +69,17 @@ async function ejecutar(ruta, { metodo = 'GET', cuerpo, consulta, signal, fetchI
     });
   }
   return { data: json?.data ?? null, meta: json?.meta ?? null };
+}
+
+/** Cuerpo de una descarga: { data: Blob, meta: { nombre } }. Si la conexión se corta a medias no devuelve nada. */
+async function leerArchivo(respuesta) {
+  try {
+    const nombre =
+      /filename="?([^";]+)"?/.exec(respuesta.headers?.get?.('Content-Disposition') ?? '')?.[1] ?? 'reporte';
+    return { data: await respuesta.blob(), meta: { nombre } };
+  } catch {
+    throw new ErrorApi({ estado: 0, codigo: 'NETWORK_ERROR', mensaje: MENSAJE_RED });
+  }
 }
 
 // --- Sesión: renovación automática del token de acceso (HU-19) ---------------------------------------
@@ -132,6 +148,8 @@ export async function solicitar(ruta, opciones = {}) {
 
 export const api = {
   get: (ruta, opciones) => solicitar(ruta, { ...opciones, metodo: 'GET' }),
+  /** Descarga un archivo: { data: Blob, meta: { nombre } }. Los errores llegan como ErrorApi, nunca como archivo. */
+  descargar: (ruta, opciones) => solicitar(ruta, { ...opciones, metodo: 'GET', binario: true }),
   post: (ruta, cuerpo, opciones) => solicitar(ruta, { ...opciones, metodo: 'POST', cuerpo }),
   put: (ruta, cuerpo, opciones) => solicitar(ruta, { ...opciones, metodo: 'PUT', cuerpo }),
   patch: (ruta, cuerpo, opciones) => solicitar(ruta, { ...opciones, metodo: 'PATCH', cuerpo }),
