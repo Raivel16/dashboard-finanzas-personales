@@ -1,25 +1,37 @@
 // Los 4 escenarios de RT-05 (interfaz-usuario): registro en celular, trabajo en escritorio,
-// error comprensible, y movimiento reducido con teclado.
+// error comprensible, y movimiento reducido con teclado. Se verifican con el formulario real de movimientos.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { montarApp, simularFetch } from './ayudas.jsx';
+import { montarApp, respuestaApi, simularFetch } from './ayudas.jsx';
+import { SelloAsentado } from '../src/shared/components/SelloAsentado.jsx';
+import { simularMediaQuery } from './setup.js';
 
-beforeEach(() => simularFetch());
+const CUENTA = { id: 'c1', nombre: 'Efectivo', tipo: 'efectivo', moneda: 'PEN', saldoInicial: '0.00', saldoActual: '0.00' };
+const lista = (data) => respuestaApi(200, { data, meta: { page: 1, limit: 100, total: data.length, totalPages: 1 } });
+
+beforeEach(() =>
+  simularFetch(undefined, {
+    rutas: {
+      '/cuentas': async () => lista([CUENTA]),
+      '/categorias': async () => lista([]),
+      '/movimientos': async () => lista([]),
+    },
+  }),
+);
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
 
-const botonesRegistrar = () => screen.getAllByRole('button', { name: /Registrar/ });
+const abrirBoton = async () => (await screen.findAllByRole('button', { name: 'Nuevo movimiento' }))[0];
 
 describe('RT-05 · interfaz consistente y responsiva', () => {
   it('Registro rápido en celular: abre a pantalla completa con el monto primero y teclado numérico', async () => {
-    await montarApp({ escritorio: false });
-    const navegacionInferior = screen.getAllByRole('navigation', { name: 'Principal' }).at(-1);
-    await userEvent.click(within(navegacionInferior).getByRole('button', { name: /Registrar/ }));
+    await montarApp({ ruta: '/movimientos', escritorio: false });
+    await userEvent.click(await abrirBoton());
 
-    const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
+    const panel = screen.getByRole('dialog', { name: 'Nuevo movimiento' });
     expect(panel).toHaveAttribute('data-variante', 'pantalla-completa');
     expect(panel).toHaveAttribute('aria-modal', 'true');
     const campos = within(panel).getAllByRole('textbox');
@@ -28,23 +40,23 @@ describe('RT-05 · interfaz consistente y responsiva', () => {
   });
 
   it('Trabajo en escritorio: el formulario va en un panel lateral y el historial sigue visible', async () => {
-    await montarApp({ escritorio: true });
-    await userEvent.click(botonesRegistrar()[0]);
+    await montarApp({ ruta: '/movimientos', escritorio: true });
+    await userEvent.click(await abrirBoton());
 
-    const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
+    const panel = screen.getByRole('dialog', { name: 'Nuevo movimiento' });
     expect(panel).toHaveAttribute('data-variante', 'panel-lateral');
     expect(panel).toHaveAttribute('aria-modal', 'false');
     expect(screen.getByRole('main')).toBeVisible();
-    expect(await screen.findByRole('heading', { level: 1, name: 'Finanzas personales' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Movimientos' })).toBeInTheDocument();
   });
 
   it('Error comprensible: marca el campo con ícono y texto y lleva el foco al primer error', async () => {
-    await montarApp({ escritorio: true });
-    await userEvent.click(botonesRegistrar()[0]);
-    const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
+    await montarApp({ ruta: '/movimientos', escritorio: true });
+    await userEvent.click(await abrirBoton());
+    const panel = screen.getByRole('dialog', { name: 'Nuevo movimiento' });
 
     await userEvent.type(within(panel).getByLabelText('Monto'), 'abc');
-    await userEvent.click(within(panel).getByRole('button', { name: 'Asentar' }));
+    await userEvent.click(within(panel).getByRole('button', { name: 'Registrar movimiento' }));
 
     const monto = within(panel).getByLabelText('Monto');
     expect(monto).toHaveAttribute('aria-invalid', 'true');
@@ -55,34 +67,27 @@ describe('RT-05 · interfaz consistente y responsiva', () => {
     expect(monto).toHaveAccessibleDescription(aviso.textContent.trim());
   });
 
-  it('Movimiento reducido y teclado: Escape cierra el panel, el foco vuelve y el sello no se anima', async () => {
-    await montarApp({ escritorio: true, movimientoReducido: true });
-    const abrir = botonesRegistrar()[0];
+  it('Teclado: Enter abre el panel, Escape lo cierra y el foco vuelve al botón', async () => {
+    await montarApp({ ruta: '/movimientos', escritorio: true, movimientoReducido: true });
+    const abrir = await abrirBoton();
     abrir.focus();
     await userEvent.keyboard('{Enter}');
-    const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
-
-    await userEvent.type(within(panel).getByLabelText('Monto'), '25.50');
-    await userEvent.type(within(panel).getByLabelText('Nombre'), 'Caja chica');
-    await userEvent.click(within(panel).getByRole('button', { name: 'Asentar' }));
-
-    const sello = await within(panel).findByRole('status');
-    expect(sello).toHaveTextContent('Asentado');
-    expect(sello).toHaveAttribute('data-animado', 'false');
-    expect(sello).not.toHaveClass('sello-animado');
+    expect(screen.getByRole('dialog', { name: 'Nuevo movimiento' })).toBeInTheDocument();
 
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(abrir).toHaveFocus();
   });
 
-  it('anima el sello cuando no se pidió menos movimiento', async () => {
-    await montarApp({ escritorio: true, movimientoReducido: false });
-    await userEvent.click(botonesRegistrar()[0]);
-    const panel = screen.getByRole('dialog', { name: 'Nuevo registro' });
-    await userEvent.type(within(panel).getByLabelText('Monto'), '10');
-    await userEvent.type(within(panel).getByLabelText('Nombre'), 'Ahorros');
-    await userEvent.click(within(panel).getByRole('button', { name: 'Asentar' }));
-    expect(await within(panel).findByRole('status')).toHaveClass('sello-animado');
+  it('El sello "Asentado" no se anima si se pidió menos movimiento y sí en caso contrario', () => {
+    simularMediaQuery({ '(prefers-reduced-motion: reduce)': true });
+    const { unmount } = render(<SelloAsentado />);
+    expect(screen.getByRole('status')).toHaveAttribute('data-animado', 'false');
+    expect(screen.getByRole('status')).not.toHaveClass('sello-animado');
+    unmount();
+
+    simularMediaQuery({ '(prefers-reduced-motion: reduce)': false });
+    render(<SelloAsentado />);
+    expect(screen.getByRole('status')).toHaveClass('sello-animado');
   });
 });

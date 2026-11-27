@@ -1,8 +1,7 @@
 // Único lugar donde se declaran las rutas. Cada dominio expone su página por su index.js.
 import { createBrowserRouter, createMemoryRouter, Outlet } from 'react-router-dom';
-import { ArrowLeftRight, Home, LayoutGrid, PiggyBank, ShieldCheck, Tags, UserRound, Wallet } from 'lucide-react';
+import { ArrowLeftRight, Home, PiggyBank, ShieldCheck, Tags, UserRound, Wallet } from 'lucide-react';
 import { InicioPage } from '../inicio/index.js';
-import { CatalogoPage, FormularioDemo, useFormularioDemo } from '../catalogo/index.js';
 import {
   InicioSesionPage,
   LayoutAutenticado,
@@ -23,17 +22,6 @@ import { PerfilPage } from '../perfil/index.js';
 import { PresupuestosPage } from '../presupuestos/index.js';
 import { PaginaNoEncontrada } from '../shared/components/PaginaNoEncontrada.jsx';
 
-function FormularioRegistroDemo({ cerrar }) {
-  const formulario = useFormularioDemo({});
-  return <FormularioDemo formulario={formulario} alCerrar={cerrar} />;
-}
-
-const REGISTRAR_DEMO = {
-  etiqueta: 'Registrar',
-  titulo: 'Nuevo registro',
-  contenido: (cerrar) => <FormularioRegistroDemo cerrar={cerrar} />,
-};
-
 /** La sesión vive por encima de todas las rutas: las públicas y las protegidas la comparten. */
 const RaizSesion = () => (
   <ProveedorSesion>
@@ -41,8 +29,8 @@ const RaizSesion = () => (
   </ProveedorSesion>
 );
 
-/** Los destinos de navegación crecerán con cada dominio; el catálogo solo existe en desarrollo. */
-export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
+/** Los destinos de navegación crecerán con cada dominio. */
+export function crearRutas() {
   const destinos = [{ ruta: '/', etiqueta: 'Inicio', icono: Home }];
   const hijas = [{ index: true, element: <InicioPage />, handle: { titulo: 'Inicio' } }];
 
@@ -74,10 +62,6 @@ export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
     ],
   });
 
-  if (desarrollo) {
-    destinos.push({ ruta: '/catalogo', etiqueta: 'Catálogo', icono: LayoutGrid });
-    hijas.push({ path: 'catalogo', element: <CatalogoPage />, handle: { titulo: 'Catálogo' } });
-  }
   hijas.push({ path: '*', element: <PaginaNoEncontrada />, handle: { titulo: 'No encontrada' } });
 
   return [
@@ -107,9 +91,7 @@ export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
           children: [
             {
               path: '/',
-              element: (
-                <LayoutAutenticado destinos={destinos} registrar={desarrollo ? REGISTRAR_DEMO : undefined} />
-              ),
+              element: <LayoutAutenticado destinos={destinos} />,
               children: hijas,
             },
           ],
@@ -119,7 +101,7 @@ export function crearRutas({ desarrollo = import.meta.env.DEV } = {}) {
   ];
 }
 
-export const crearRouterNavegador = (opciones) => createBrowserRouter(crearRutas(opciones));
+export const crearRouterNavegador = () => createBrowserRouter(crearRutas());
 
-export const crearRouterMemoria = (rutaInicial = '/', opciones) =>
-  createMemoryRouter(crearRutas(opciones), { initialEntries: [rutaInicial] });
+export const crearRouterMemoria = (rutaInicial = '/') =>
+  createMemoryRouter(crearRutas(), { initialEntries: [rutaInicial] });

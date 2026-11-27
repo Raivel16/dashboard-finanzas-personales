@@ -76,13 +76,12 @@ export async function montarApp({
   ruta = '/',
   escritorio = false,
   movimientoReducido = false,
-  desarrollo = true,
 } = {}) {
   simularMediaQuery({
     '(min-width: 1024px)': escritorio,
     '(prefers-reduced-motion: reduce)': movimientoReducido,
   });
-  const router = crearRouterMemoria(ruta, { desarrollo });
+  const router = crearRouterMemoria(ruta);
   const vista = render(<RouterProvider router={router} />);
   // La sesión se consulta al abrir la app: se espera a saber si hay sesión antes de seguir.
   await waitFor(() => expect(screen.queryByText('Comprobando tu sesión…')).not.toBeInTheDocument());
