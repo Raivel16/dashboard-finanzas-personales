@@ -390,3 +390,20 @@ describe('cuentas (HU-07, HU-25)', () => {
     expect(validar(esquemaConsultaCuentas, { sort: 'passwordHash' }).valido).toBe(false);
   });
 });
+
+describe('concordancia de los mensajes genéricos', () => {
+  it('usa "obligatoria" con las etiquetas femeninas y "obligatorio" con las masculinas', () => {
+    expect(validar(esquemaInicioSesion, {}).errores).toEqual([
+      { campo: 'email', mensaje: 'El correo electrónico es obligatorio' },
+      { campo: 'password', mensaje: 'La contraseña es obligatoria' },
+    ]);
+  });
+
+  it('usa "válida" con las etiquetas femeninas', () => {
+    const esquema = { clave: { etiqueta: 'La clave' }, codigo: { etiqueta: 'El código' } };
+    expect(validar(esquema, { clave: {}, codigo: [] }).errores).toEqual([
+      { campo: 'clave', mensaje: 'La clave no es válida' },
+      { campo: 'codigo', mensaje: 'El código no es válido' },
+    ]);
+  });
+});

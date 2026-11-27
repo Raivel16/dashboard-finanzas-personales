@@ -364,13 +364,38 @@ describe('HU-33 · accesibilidad', () => {
     expect(alertas.map((a) => a.textContent)).toEqual(
       expect.arrayContaining([
         'El correo electrónico es obligatorio',
-        expect.stringMatching(/^La contraseña es obligatori/),
+        'La contraseña es obligatoria',
       ]),
     );
     expect(correo).toHaveAttribute('aria-invalid', 'true');
     expect(correo).toHaveAccessibleDescription('El correo electrónico es obligatorio');
     expect(screen.getByLabelText('Contraseña')).toHaveAttribute('aria-invalid', 'true');
     expect(correo).toHaveFocus();
+  });
+
+  it('Mostrar la contraseña: el botón del ojo alterna el texto visible, se usa con teclado y anuncia su estado', async () => {
+    const fetchSimulado = simularServidor({ sesion: null });
+    await montarApp({ ruta: '/iniciar-sesion' });
+    const usuario = userEvent.setup();
+    const contrasena = screen.getByLabelText('Contraseña');
+    const ojo = screen.getByRole('button', { name: 'Mostrar contraseña' });
+    expect(contrasena).toHaveAttribute('type', 'password');
+    expect(ojo).toHaveAttribute('aria-pressed', 'false');
+    expect(ojo).toHaveAttribute('aria-controls', contrasena.id);
+
+    await usuario.type(contrasena, 'Secreta123');
+    await usuario.tab();
+    expect(ojo).toHaveFocus();
+    await usuario.keyboard('{Enter}');
+    expect(contrasena).toHaveAttribute('type', 'text');
+    expect(contrasena).toHaveValue('Secreta123');
+    expect(ojo).toHaveAttribute('aria-pressed', 'true');
+
+    await usuario.keyboard(' ');
+    expect(contrasena).toHaveAttribute('type', 'password');
+    expect(ojo).toHaveAttribute('aria-pressed', 'false');
+    // Mostrar la contraseña no envía el formulario.
+    expect(llamadasA(fetchSimulado, '/auth/login')).toHaveLength(0);
   });
 
   it('Gráficos y pantallas sin barreras: cada gráfico tiene nombre y una tabla equivalente con los mismos datos', async () => {

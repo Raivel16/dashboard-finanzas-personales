@@ -5,6 +5,9 @@ export const MENSAJES = Object.freeze({
   generales: {
     requerido: (campo) => `${campo} es obligatorio`,
     invalido: (campo) => `${campo} no es válido`,
+    // Variantes para las etiquetas femeninas ("La contraseña es obligatoria"); validar() elige según el artículo.
+    requerida: (campo) => `${campo} es obligatoria`,
+    invalida: (campo) => `${campo} no es válida`,
     noExiste: 'El recurso solicitado no existe o no tienes permiso para acceder a él',
     errorInterno: 'Ocurrió un error inesperado. Inténtalo nuevamente.',
     noAutorizado: 'Acceso no autorizado',
