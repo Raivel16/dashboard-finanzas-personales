@@ -14,7 +14,7 @@
 
 ## 3. MongoDB Atlas [RT-01, RT-06, RT-07]
 
-- [ ] 3.1 Documentar la creación del clúster, la URI y la carga del administrador y los datos demo; verificar la conexión contra el clúster real cuando esté disponible
+- [x] 3.1 Documentar la creación del clúster, la URI y la carga del administrador y los datos demo; verificar la conexión contra el clúster real cuando esté disponible
 
 ## 4. Documentación y cierre
 
